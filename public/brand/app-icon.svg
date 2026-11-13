@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#FFFFFF"/><g transform="translate(56 56) scale(2)">
+<circle cx="100" cy="100" r="88" fill="#FFFFFF" stroke="#1D3FBF" stroke-width="10"/>
+<path fill="none" stroke="#FF4D1A" stroke-width="8" stroke-linecap="square" d="M56 72V56h22M122 56h22v16M56 128v16h22M122 144h22v-44h-16"/>
+<path fill="#FF4D1A" d="M66 120V80h8l9 16 9-16h8v40h-8V94l-9 15-9-15v26z"/><path fill="#FF4D1A" d="M102 80h32v8h-12v32h-8V88h-12z"/>
+<text x="100" y="72" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="12.5" fill="#0A1640" letter-spacing=".5">MELAMCHI</text>
+<text x="100" y="138" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="12.5" fill="#0A1640" letter-spacing="1">TECH</text>
+</g></svg>
