@@ -147,7 +147,7 @@ public/brand/ public/products/ public/payments/
 
 ### Phase 1: Foundation
 - [x] **1.1** Brand assets → `public/brand/`; favicon + app icon *(placeholder vectors until the official logo files arrive)*
-- [ ] **1.2** Design tokens in `globals.css` (colors, radius, shadows, gradients, glow), light + dark
+- [x] **1.2** Design tokens in `globals.css` (colors, radius, shadows, gradients, glow), light + dark
 - [ ] **1.3** Fonts (`next/font`), root metadata, theme provider (dark mode)
 - [ ] **1.4** Types + mock data for the 6 domains (~8 products each, with plans and delivery types)
 - [ ] **1.5** UI kit (buttons incl. orange CTA, inputs, badges, cards, tabs, sheet, modal, skeleton, toast)
@@ -254,3 +254,4 @@ Admin panel (domains, products, plans, stock/codes, banners, deals, orders, user
 |---|---|---|---|
 | 2026-11-12 | Workflow v2 (TOPX NEPAL, 6 domains) | ✅ | Brand board read; waiting on logo source files |
 | 2026-11-13 | 1.1 Brand assets + icons | ✅ | Placeholder SVG logo set, favicon, icon.svg, apple-icon, PWA PNGs |
+| 2026-11-13 | 1.2 Design tokens | ✅ | Light/dark tokens, brand scales, glow/gradient/glass/swoosh utilities; preview at `/styleguide` |
