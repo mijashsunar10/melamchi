@@ -150,25 +150,25 @@ public/brand/ public/products/ public/payments/
 - [x] **1.2** Design tokens in `globals.css` (colors, radius, shadows, gradients, glow), light + dark
 - [x] **1.3** Fonts (`next/font`), root metadata, theme provider (dark mode)
 - [x] **1.4** Types + mock data for the 6 domains (~8 products each, with plans and delivery types)
-- [ ] **1.5** UI kit (buttons incl. orange CTA, inputs, badges, cards, tabs, sheet, modal, skeleton, toast)
+- [x] **1.5** UI kit (buttons incl. orange CTA, inputs, badges, cards, tabs, sheet, modal, skeleton, toast)
 
 ### Phase 2: Layout shell
-- [ ] **2.1** Top bar (rotating notices, EN/NP toggle, WhatsApp number)
-- [ ] **2.2** Header: logo, Home pill, **6 domain mega-menus**, search, cart (count), account
-- [ ] **2.3** Mobile: hamburger drawer + **bottom tab bar** (Home, Explore, Search, Cart, Account)
+- [x] **2.1** Top bar (rotating notices, EN/NP toggle, WhatsApp number)
+- [x] **2.2** Header: logo, Home pill, **6 domain mega-menus**, search, cart (count), account
+- [x] **2.3** Mobile: hamburger drawer + **bottom tab bar** (Home, Explore, Search, Cart, Account)
 - [ ] **2.4** Search dialog (Ctrl+K) across all domains
-- [ ] **2.5** Footer: domains, links, contact, payments, socials, Melamchi Tech credit
-- [ ] **2.6** Floating support (WhatsApp / Messenger / call)
+- [x] **2.5** Footer: domains, links, contact, payments, socials, Melamchi Tech credit
+- [x] **2.6** Floating support (WhatsApp / Messenger / call)
 
 ### Phase 3: Home page
-- [ ] **3.1** Hero: navy + glow, "TOPX NEPAL / Everything Digital. One Place.", Explore Now CTA, trust pills
-- [ ] **3.2** 6 domain tiles (AI · Gaming · Gift Cards · Software · Digital · Support)
-- [ ] **3.3** Flash deals carousel (discount %, countdown)
-- [ ] **3.4** Domain showcases: a product row for each domain with tabs
-- [ ] **3.5** Trending / best sellers
-- [ ] **3.6** How it works (Choose → Details → Pay → Instant delivery)
-- [ ] **3.7** "Nepal's Digital Powerhouse" stats band (orders, customers, avg delivery, rating) with Himalaya art
-- [ ] **3.8** Reviews (verified)
+- [x] **3.1** Hero: navy + glow, "TOPX NEPAL / Everything Digital. One Place.", Explore Now CTA, trust pills
+- [x] **3.2** 6 domain tiles (AI · Gaming · Gift Cards · Software · Digital · Support)
+- [x] **3.3** Flash deals carousel (discount %, countdown)
+- [x] **3.4** Domain showcases: a product row for each domain with tabs
+- [x] **3.5** Trending / best sellers
+- [x] **3.6** How it works (Choose → Details → Pay → Instant delivery)
+- [x] **3.7** "Nepal's Digital Powerhouse" stats band (orders, customers, avg delivery, rating) with Himalaya art
+- [x] **3.8** Reviews (verified)
 - [ ] **3.9** Payment partners + live orders ticker
 - [ ] **3.10** Blog/guides preview + FAQ + app download / reseller CTA
 
@@ -257,3 +257,4 @@ Admin panel (domains, products, plans, stock/codes, banners, deals, orders, user
 | 2026-11-13 | 1.2 Design tokens | ✅ | Light/dark tokens, brand scales, glow/gradient/glass/swoosh utilities; preview at `/styleguide` |
 | 2026-11-13 | 1.3 Fonts, metadata, dark mode | ✅ | Montserrat / Plus Jakarta Sans / Noto Sans Devanagari, SEO metadata + theme-color, no-flash dark mode toggle, `src/lib/site.ts` |
 | 2026-11-13 | 1.4 Types + mock data | ✅ | 47 sample products across 6 domains, 5 delivery types, deals, reviews, payment methods; async data layer in `src/lib/catalog.ts`; preview at `/styleguide/catalog` |
+| 2026-11-13 | 1.5 UI kit + header, footer, home page | ✅ | Real landing page with photos (Unsplash), brand-logo product covers, mega menus, mobile nav, dark mode |
