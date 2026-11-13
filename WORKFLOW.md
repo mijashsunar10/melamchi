@@ -149,7 +149,7 @@ public/brand/ public/products/ public/payments/
 - [x] **1.1** Brand assets → `public/brand/`; favicon + app icon *(placeholder vectors until the official logo files arrive)*
 - [x] **1.2** Design tokens in `globals.css` (colors, radius, shadows, gradients, glow), light + dark
 - [x] **1.3** Fonts (`next/font`), root metadata, theme provider (dark mode)
-- [ ] **1.4** Types + mock data for the 6 domains (~8 products each, with plans and delivery types)
+- [x] **1.4** Types + mock data for the 6 domains (~8 products each, with plans and delivery types)
 - [ ] **1.5** UI kit (buttons incl. orange CTA, inputs, badges, cards, tabs, sheet, modal, skeleton, toast)
 
 ### Phase 2: Layout shell
@@ -256,3 +256,4 @@ Admin panel (domains, products, plans, stock/codes, banners, deals, orders, user
 | 2026-11-13 | 1.1 Brand assets + icons | ✅ | Placeholder SVG logo set, favicon, icon.svg, apple-icon, PWA PNGs |
 | 2026-11-13 | 1.2 Design tokens | ✅ | Light/dark tokens, brand scales, glow/gradient/glass/swoosh utilities; preview at `/styleguide` |
 | 2026-11-13 | 1.3 Fonts, metadata, dark mode | ✅ | Montserrat / Plus Jakarta Sans / Noto Sans Devanagari, SEO metadata + theme-color, no-flash dark mode toggle, `src/lib/site.ts` |
+| 2026-11-13 | 1.4 Types + mock data | ✅ | 47 sample products across 6 domains, 5 delivery types, deals, reviews, payment methods; async data layer in `src/lib/catalog.ts`; preview at `/styleguide/catalog` |

@@ -1,0 +1,78 @@
+import { accountEmailField, deliveryEmailField } from "../fields";
+import { plan, product } from "./helpers";
+
+export const digitalProducts = [
+  product({
+    slug: "netflix-premium", name: "Netflix Premium", brand: "Netflix", domain: "digital-products", category: "streaming",
+    deliveryType: "ACCOUNT", initials: "N", color: "#E50914",
+    shortDescription: "4K Ultra HD streaming — profile delivered or activated on your account.",
+    rating: 4.8, reviewCount: 980, sold: 11200, tags: ["bestseller", "hot"],
+    fields: [accountEmailField("Netflix")],
+    plans: [plan("1 Screen · 1 Month", 450, { popular: true }), plan("1 Screen · 3 Months", 1290), plan("Full Account · 1 Month", 1650)],
+  }),
+  product({
+    slug: "spotify-premium", name: "Spotify Premium", brand: "Spotify", domain: "digital-products", category: "streaming",
+    deliveryType: "ACCOUNT", initials: "S", color: "#1DB954",
+    shortDescription: "Ad-free music, offline downloads, on your own account.",
+    reviewCount: 520, sold: 5400,
+    fields: [accountEmailField("Spotify")],
+    plans: [plan("1 Month", 399), plan("12 Months", 3999, { originalPrice: 4788, popular: true })],
+  }),
+  product({
+    slug: "youtube-premium", name: "YouTube Premium", brand: "Google", domain: "digital-products", category: "streaming",
+    deliveryType: "ACCOUNT", initials: "YT", color: "#FF0000",
+    shortDescription: "No ads, background play and YouTube Music.",
+    reviewCount: 610, sold: 6900, tags: ["hot"],
+    fields: [accountEmailField("Google")],
+    plans: [plan("1 Month", 349, { popular: true }), plan("12 Months", 3600)],
+  }),
+  product({
+    slug: "prime-video", name: "Prime Video", brand: "Amazon", domain: "digital-products", category: "streaming",
+    deliveryType: "ACCOUNT", initials: "PV", color: "#00A8E1",
+    shortDescription: "Amazon originals, movies and live sports.",
+    reviewCount: 140, sold: 1200,
+    fields: [accountEmailField("Amazon")],
+    plans: [plan("1 Month", 399, { popular: true }), plan("6 Months", 2100)],
+  }),
+  product({
+    slug: "disney-plus-hotstar", name: "JioHotstar", brand: "JioStar", domain: "digital-products", category: "streaming",
+    deliveryType: "ACCOUNT", initials: "JH", color: "#0F1014",
+    shortDescription: "Cricket, Indian movies and shows.",
+    reviewCount: 230, sold: 2600, tags: ["hot"],
+    fields: [accountEmailField("JioHotstar")],
+    plans: [plan("Super · 3 Months", 950), plan("Premium · 12 Months", 3900, { popular: true })],
+  }),
+  product({
+    slug: "coursera-plus", name: "Coursera Plus", brand: "Coursera", domain: "digital-products", category: "learning",
+    deliveryType: "ACCOUNT", initials: "C", color: "#0056D2",
+    shortDescription: "7,000+ courses and certificates from Google, IBM and top universities.",
+    reviewCount: 45, sold: 260,
+    fields: [accountEmailField("Coursera")],
+    plans: [plan("1 Month", 7900), plan("12 Months", 49000, { popular: true })],
+  }),
+  product({
+    slug: "linkedin-premium", name: "LinkedIn Premium Career", brand: "LinkedIn", domain: "digital-products", category: "learning",
+    deliveryType: "ACCOUNT", initials: "in", color: "#0A66C2",
+    shortDescription: "InMail, who viewed your profile and LinkedIn Learning.",
+    reviewCount: 38, sold: 210, tags: ["new"],
+    fields: [accountEmailField("LinkedIn")],
+    plans: [plan("1 Month", 3900, { popular: true }), plan("3 Months", 10900)],
+  }),
+  product({
+    slug: "google-one", name: "Google One Storage", brand: "Google", domain: "digital-products", category: "cloud",
+    deliveryType: "ACCOUNT", initials: "1", color: "#4285F4",
+    shortDescription: "Extra storage for Drive, Gmail and Photos.",
+    reviewCount: 72, sold: 640,
+    fields: [accountEmailField("Google")],
+    plans: [plan("100 GB · 12 Months", 2900), plan("2 TB · 12 Months", 14500, { popular: true })],
+  }),
+  product({
+    slug: "resume-cv-templates", name: "Resume & CV Template Pack", brand: "TOPX", domain: "digital-products", category: "templates",
+    deliveryType: "CODE", initials: "CV", color: "#1D3FBF",
+    shortDescription: "50+ editable CV templates (Word, Canva, Google Docs) — instant download.",
+    reviewCount: 25, sold: 310, tags: ["new"], region: "Global",
+    fields: [deliveryEmailField],
+    howTo: ["Pay for the pack.", "Download link appears on your order page.", "Edit in Word, Canva or Google Docs."],
+    plans: [plan("Full Pack", 299, { originalPrice: 599, popular: true })],
+  }),
+];

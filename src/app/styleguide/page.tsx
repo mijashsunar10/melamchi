@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export const metadata: Metadata = {
@@ -97,7 +98,12 @@ export default function StyleguidePage() {
             TOPX NEPAL <span className="swoosh">design system</span>
           </h1>
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-3">
+          <Link href="/styleguide/catalog" className="text-sm font-semibold text-primary hover:underline">
+            Catalog data →
+          </Link>
+          <ThemeToggle />
+        </div>
       </header>
 
       {/* Hero preview */}
