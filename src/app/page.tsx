@@ -1,10 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 // Temporary placeholder — the real home page is built in Phase 3 (see WORKFLOW.md).
 export default function Home() {
   return (
-    <main className="bg-hero flex min-h-dvh flex-col items-center justify-center gap-8 px-6 text-center text-white">
+    <main className="bg-hero relative flex min-h-dvh flex-col items-center justify-center gap-8 px-6 text-center text-white">
+      <ThemeToggle className="absolute right-4 top-4" />
       <Image
         src="/brand/logo-full-dark.svg"
         alt="Melamchi Tech · TOPX Nepal"

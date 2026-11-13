@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export const metadata: Metadata = {
-  title: "Styleguide · TOPX NEPAL",
+  title: "Styleguide",
   robots: { index: false },
 };
 
@@ -89,11 +90,14 @@ function ThemePanel({ dark }: { dark?: boolean }) {
 export default function StyleguidePage() {
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 py-10 sm:px-6">
-      <header>
-        <p className="text-sm font-semibold uppercase tracking-widest text-accent">Step 1.2</p>
-        <h1 className="mt-2 text-3xl font-extrabold italic sm:text-4xl">
-          TOPX NEPAL <span className="swoosh">design tokens</span>
-        </h1>
+      <header className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-widest text-accent">Styleguide</p>
+          <h1 className="mt-2 text-3xl font-extrabold italic sm:text-4xl">
+            TOPX NEPAL <span className="swoosh">design system</span>
+          </h1>
+        </div>
+        <ThemeToggle />
       </header>
 
       {/* Hero preview */}
@@ -108,6 +112,39 @@ export default function StyleguidePage() {
         <span className="mt-8 inline-flex rounded-full bg-cta-gradient px-6 py-3 font-semibold shadow-glow-orange">
           Explore Now →
         </span>
+      </section>
+
+      {/* Typography */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-2xl font-extrabold italic">Typography</h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="rounded-xl border border-border bg-surface p-5">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Display · Montserrat</p>
+            <p className="mt-3 font-display text-4xl font-black italic">TOPX NEPAL</p>
+            <p className="font-display text-xl font-extrabold italic">Nepal&apos;s Digital Powerhouse</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface p-5">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Body · Plus Jakarta Sans</p>
+            <p className="mt-3 text-base">
+              Instant delivery for game top-ups, gift cards, AI tools and software — paid with eSewa, Khalti or bank.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">Small / muted text for hints and captions.</p>
+          </div>
+          <div className="rounded-xl border border-border bg-surface p-5">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Nepali · Noto Sans Devanagari</p>
+            <p className="mt-3 font-nepali text-2xl font-bold">सबै डिजिटल, एकै ठाउँमा।</p>
+            <p className="font-nepali text-base">१०–१५ सेकेन्डमा डेलिभरी, २४ घण्टा सेवा।</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-1 rounded-xl border border-border bg-surface p-5">
+          <p className="font-display text-5xl font-black italic">Heading 1</p>
+          <p className="font-display text-4xl font-extrabold italic">Heading 2</p>
+          <p className="font-display text-2xl font-extrabold italic">Heading 3</p>
+          <p className="font-display text-xl font-bold">Heading 4</p>
+          <p className="text-lg">Body large</p>
+          <p className="text-base">Body</p>
+          <p className="text-sm text-muted-foreground">Caption</p>
+        </div>
       </section>
 
       {/* Brand scales */}
