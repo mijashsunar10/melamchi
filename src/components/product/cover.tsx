@@ -4,6 +4,7 @@ import {
   siKaspersky, siNetflix, siNordvpn, siPerplexity, siPlaystation, siPubg, siRazer, siSpotify, siSteam, siValorant, siYoutube,
 } from "simple-icons";
 import { cn } from "@/lib/cn";
+import { coverPhotos } from "@/lib/cover-photos";
 import type { Product } from "@/types/catalog";
 
 type Glyph = { path: string; viewBox?: string } | "windows" | "microsoft";
@@ -102,27 +103,57 @@ export function Cover({
   const glyphSize = { sm: "size-6", md: "size-[30%]", lg: "size-[34%]" }[size];
   const textSize = { sm: "text-[9px]", md: "text-[clamp(0.85rem,2.2vw,1.35rem)]", lg: "text-3xl" }[size];
 
+  const photo = coverPhotos[product.slug];
+
   return (
     <div
       aria-hidden
       className={cn("relative isolate flex flex-col items-center justify-center overflow-hidden text-white", className)}
       style={{ backgroundColor: product.color }}
     >
-      {/* soft light from top-left + subtle depth */}
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,rgba(255,255,255,0.18),rgba(255,255,255,0)_45%,rgba(0,0,0,0.18))]" />
-      {/* faint oversized watermark */}
-      {c.glyph && size !== "sm" && (
-        <GlyphSvg glyph={c.glyph} className="absolute -right-[12%] -bottom-[18%] -z-10 size-[70%] opacity-[0.08]" />
+      {photo ? (
+        <>
+          {/* real photo, tinted with the brand colour */}
+          <Image
+            src={photo}
+            alt=""
+            placeholder="blur"
+            sizes={size === "sm" ? "48px" : "(min-width: 1024px) 300px, 50vw"}
+            className="absolute inset-0 -z-20 size-full object-cover transition-transform duration-700 group-hover:scale-110"
+          />
+          <div
+            className="absolute inset-0 -z-10"
+            style={{
+              background: `linear-gradient(155deg, ${product.color}f0 0%, ${product.color}a6 48%, ${product.color}e6 100%)`,
+            }}
+          />
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(90%_70%_at_50%_45%,transparent_30%,rgba(0,0,0,0.35))]" />
+        </>
+      ) : (
+        <>
+          {/* soft light from top-left + subtle depth */}
+          <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,rgba(255,255,255,0.18),rgba(255,255,255,0)_45%,rgba(0,0,0,0.18))]" />
+          {c.glyph && size !== "sm" && (
+            <GlyphSvg glyph={c.glyph} className="absolute -right-[12%] -bottom-[18%] -z-10 size-[70%] opacity-[0.08]" />
+          )}
+        </>
       )}
 
       {c.glyph ? (
-        <GlyphSvg glyph={c.glyph} className={cn(glyphSize, "drop-shadow-sm")} />
+        <GlyphSvg glyph={c.glyph} className={cn(glyphSize, "drop-shadow-[0_4px_12px_rgba(0,0,0,0.35)]")} />
       ) : (
-        <span className={cn("px-2 text-center leading-none font-extrabold tracking-tight", textSize)}>{c.text}</span>
+        <span
+          className={cn(
+            "px-2 text-center leading-none font-extrabold tracking-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.35)]",
+            textSize,
+          )}
+        >
+          {c.text}
+        </span>
       )}
 
       {showCaption && size !== "sm" && c.caption && (
-        <span className="mt-2 text-[11px] font-semibold tracking-wide text-white/80 uppercase">{c.caption}</span>
+        <span className="mt-2 text-[11px] font-semibold tracking-wide text-white/85 uppercase drop-shadow">{c.caption}</span>
       )}
     </div>
   );
