@@ -23,9 +23,9 @@ function SocialIcon({ label, path }: { label: string; path: string }) {
     <a
       href="#"
       aria-label={label}
-      className="flex size-9 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-accent"
+      className="flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-accent hover:text-foreground dark:hover:text-white dark:bg-white/10 dark:text-white"
     >
-      <svg viewBox="0 0 24 24" className="size-4 fill-white" aria-hidden>
+      <svg viewBox="0 0 24 24" className="size-4 fill-current" aria-hidden>
         <path d={path} />
       </svg>
     </a>
@@ -36,13 +36,13 @@ export async function Footer() {
   const [domains, payments] = await Promise.all([getDomains(), getPaymentMethods()]);
 
   return (
-    <footer className="relative overflow-hidden bg-brand-navy-deep text-white/70">
-      <div className="pointer-events-none absolute -top-40 right-0 size-[500px] rounded-full bg-brand-blue-600/20 blur-3xl" />
+    <footer className="relative overflow-hidden border-t border-border bg-surface text-muted-foreground dark:border-transparent dark:bg-brand-navy-deep dark:text-white/70">
+      <div className="pointer-events-none absolute -top-40 right-0 size-[500px] rounded-full bg-brand-blue-500/10 blur-3xl dark:bg-brand-blue-600/20" />
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pt-16 pb-10 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div className="flex flex-col gap-5">
           <Logo priority={false} className="[&_img]:h-16 sm:[&_img]:h-[72px]" />
           <p className="max-w-xs text-sm leading-relaxed">
-            <span className="font-semibold text-white">{siteConfig.tagline}</span> {siteConfig.positioning} — AI tools,
+            <span className="font-semibold text-foreground dark:text-white">{siteConfig.tagline}</span> {siteConfig.positioning} — AI tools,
             game top-ups, gift cards, software and digital subscriptions with local payment and 24/7 support.
           </p>
           <div className="flex gap-2">
@@ -54,11 +54,11 @@ export async function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-4 font-display text-sm font-extrabold tracking-wide text-white uppercase italic">Shop</h3>
+          <h3 className="mb-4 font-display text-sm font-extrabold tracking-wide text-foreground uppercase italic dark:text-white">Shop</h3>
           <ul className="flex flex-col gap-2.5 text-sm">
             {domains.map((d) => (
               <li key={d.slug}>
-                <Link href={`/${d.slug}`} className="transition-colors hover:text-white">
+                <Link href={`/${d.slug}`} className="transition-colors hover:text-foreground dark:hover:text-white">
                   {d.name}
                 </Link>
               </li>
@@ -67,11 +67,11 @@ export async function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-4 font-display text-sm font-extrabold tracking-wide text-white uppercase italic">Company & Help</h3>
+          <h3 className="mb-4 font-display text-sm font-extrabold tracking-wide text-foreground uppercase italic dark:text-white">Company & Help</h3>
           <ul className="flex flex-col gap-2.5 text-sm">
             {[...company, ...help].slice(0, 7).map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="transition-colors hover:text-white">
+                <Link href={l.href} className="transition-colors hover:text-foreground dark:hover:text-white">
                   {l.label}
                 </Link>
               </li>
@@ -80,18 +80,18 @@ export async function Footer() {
         </div>
 
         <div>
-          <h3 className="mb-4 font-display text-sm font-extrabold tracking-wide text-white uppercase italic">Contact</h3>
+          <h3 className="mb-4 font-display text-sm font-extrabold tracking-wide text-foreground uppercase italic dark:text-white">Contact</h3>
           <ul className="flex flex-col gap-3 text-sm">
             <li className="flex items-center gap-2.5">
               <MessageCircle className="size-4 text-success" />
-              <a href={siteConfig.contact.whatsapp} className="hover:text-white">WhatsApp 24/7</a>
+              <a href={siteConfig.contact.whatsapp} className="hover:text-foreground dark:hover:text-white">WhatsApp 24/7</a>
             </li>
             <li className="flex items-center gap-2.5">
               <Phone className="size-4 text-brand-sky" /> {siteConfig.contact.phone}
             </li>
             <li className="flex items-center gap-2.5">
               <Mail className="size-4 text-brand-sky" />
-              <a href={`mailto:${siteConfig.contact.email}`} className="hover:text-white">{siteConfig.contact.email}</a>
+              <a href={`mailto:${siteConfig.contact.email}`} className="hover:text-foreground dark:hover:text-white">{siteConfig.contact.email}</a>
             </li>
             <li className="flex items-center gap-2.5">
               <MapPin className="size-4 text-brand-orange-400" /> {siteConfig.contact.address}
@@ -100,7 +100,7 @@ export async function Footer() {
         </div>
       </div>
 
-      <div className="relative border-t border-white/10">
+      <div className="relative border-t border-border dark:border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-6 sm:px-6 lg:flex-row">
           <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="mr-1 text-xs">We accept</span>
@@ -111,7 +111,7 @@ export async function Footer() {
             ))}
           </div>
           <p className="text-center text-xs">
-            © 2026 {siteConfig.name} · A product of <span className="text-white">{siteConfig.company}</span> · Made in Nepal
+            © 2026 {siteConfig.name} · A product of <span className="font-semibold text-foreground dark:text-white">{siteConfig.company}</span> · Made in Nepal
           </p>
         </div>
       </div>

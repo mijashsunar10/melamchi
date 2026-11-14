@@ -45,3 +45,4 @@ Replace with the company's own photography when available.
 | padlock | 1614064548237-096f735f344f |
 | design-desk | 1626785774625-ddcddc3445e9 |
 | drawing-tablet | 1611241893603-3c359704e0ee |
+| himalaya-day.jpg | photo-1718429205172-0d91b73ab23c |

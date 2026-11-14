@@ -78,13 +78,13 @@ export default async function DomainPage({ params }: PageProps<"/[domain]">) {
           <SectionHeading eyebrow="FAQ" title={`${domain.shortName === "AI" ? "AI tools" : domain.name} — questions`} />
           <Accordion items={domainFaq[slug]} name="domain-faq" />
         </div>
-        <aside className="flex flex-col justify-between gap-6 self-start rounded-3xl bg-brand-navy p-7 text-white">
+        <aside className="flex flex-col justify-between gap-6 self-start rounded-3xl border border-border bg-surface p-7 shadow-card dark:border-transparent dark:bg-brand-navy dark:text-white">
           <div>
-            <span className="flex size-12 items-center justify-center rounded-2xl bg-white/10">
+            <span className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary dark:bg-white/10 dark:text-white">
               <MessageCircle className="size-6" />
             </span>
             <h3 className="mt-5 font-display text-2xl font-black italic">Not sure what to pick?</h3>
-            <p className="mt-2 text-sm leading-relaxed text-white/70">
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground dark:text-white/70">
               Tell us what you need on WhatsApp and we&apos;ll recommend the right plan — usually within minutes.
             </p>
           </div>

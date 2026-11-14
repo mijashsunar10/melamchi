@@ -6,11 +6,12 @@ import domainGiftCards from "../../public/images/domain-gift-cards.jpg";
 import domainSoftware from "../../public/images/domain-software.jpg";
 import domainSupport from "../../public/images/domain-support.jpg";
 import heroGamer from "../../public/images/hero-gamer.jpg";
+import himalayaDay from "../../public/images/himalaya-day.jpg";
 import himalayaNight from "../../public/images/himalaya-night.jpg";
 import supportAgent from "../../public/images/support-agent.jpg";
 import type { DomainSlug } from "@/types/catalog";
 
-export const images = { heroGamer, himalayaNight, supportAgent };
+export const images = { heroGamer, himalayaDay, himalayaNight, supportAgent };
 
 export const domainImages: Record<DomainSlug, typeof heroGamer> = {
   "ai-tools": domainAi,

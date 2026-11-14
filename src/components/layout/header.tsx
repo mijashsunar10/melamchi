@@ -9,20 +9,20 @@ import { NavLinks } from "./nav-links";
 
 function TopBar() {
   return (
-    <div className="bg-brand-navy text-[12px] text-white/80">
+    <div className="border-b border-border bg-surface-2 text-[12px] text-muted-foreground dark:border-transparent dark:bg-brand-navy dark:text-white/80">
       <div className="mx-auto flex h-9 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         <p className="flex min-w-0 items-center gap-2 truncate">
-          <Zap className="size-3.5 shrink-0 fill-amber-300 text-amber-300" />
+          <Zap className="size-3.5 shrink-0 fill-amber-400 text-amber-400 dark:fill-amber-300 dark:text-amber-300" />
           <span className="truncate">
-            <strong className="font-semibold text-white">Instant delivery</strong> on top-ups & gift cards ·
+            <strong className="font-semibold text-foreground dark:text-white">Instant delivery</strong> on top-ups & gift cards ·
             <span className="font-nepali"> १०–६० सेकेन्डमा डेलिभरी</span>
           </span>
         </p>
         <div className="hidden shrink-0 items-center gap-5 md:flex">
-          <a href={siteConfig.contact.whatsapp} className="flex items-center gap-1.5 transition-colors hover:text-white">
+          <a href={siteConfig.contact.whatsapp} className="flex items-center gap-1.5 transition-colors hover:text-foreground dark:hover:text-white">
             <MessageCircle className="size-3.5" /> WhatsApp 24/7
           </a>
-          <a href={`mailto:${siteConfig.contact.email}`} className="flex items-center gap-1.5 transition-colors hover:text-white">
+          <a href={`mailto:${siteConfig.contact.email}`} className="flex items-center gap-1.5 transition-colors hover:text-foreground dark:hover:text-white">
             <Mail className="size-3.5" /> {siteConfig.contact.email}
           </a>
         </div>
