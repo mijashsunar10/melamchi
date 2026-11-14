@@ -1,11 +1,16 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { siteConfig } from "@/lib/site";
 
 export function FloatingSupport() {
+  // Product pages have their own sticky WhatsApp order bar on phones
+  const onProduct = usePathname().startsWith("/product/");
   return (
     <a
       href={siteConfig.contact.whatsapp}
       aria-label="Chat with us on WhatsApp"
-      className="group fixed right-4 bottom-20 z-40 flex items-center gap-2 rounded-full bg-[#25D366] p-3.5 text-white shadow-[0_10px_30px_-5px_rgba(37,211,102,0.6)] transition-transform hover:scale-105 lg:right-6 lg:bottom-6"
+      className={`group fixed right-4 bottom-20 z-40 ${onProduct ? "hidden lg:flex" : "flex"} items-center gap-2 rounded-full bg-[#25D366] p-3.5 text-white shadow-[0_10px_30px_-5px_rgba(37,211,102,0.6)] transition-transform hover:scale-105 lg:right-6 lg:bottom-6`}
     >
       <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-[#25D366]/40 [animation-duration:2.5s]" />
       <svg viewBox="0 0 24 24" className="size-6 fill-white" aria-hidden>
