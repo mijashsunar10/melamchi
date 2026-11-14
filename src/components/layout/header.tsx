@@ -30,8 +30,12 @@ function TopBar() {
   );
 }
 
-const navLabel = (slug: string, name: string) =>
-  slug === "gaming" ? "Gaming" : slug === "software" ? "Software" : slug === "digital-products" ? "Digital" : name;
+/** Full label on wide screens, short label on smaller laptops */
+const navLabel = (slug: string, name: string) => {
+  const short = slug === "gaming" ? "Gaming" : slug === "software" ? "Software" : slug === "digital-products" ? "Digital" : name;
+  const full = slug === "gaming" ? "Gaming" : name;
+  return { short, full };
+};
 
 export async function Header() {
   const domains = await getDomains();
@@ -45,22 +49,26 @@ export async function Header() {
           <Logo />
 
           {/* Simple desktop navigation */}
-          <nav aria-label="Main" className="ml-6 hidden flex-1 items-center gap-1 lg:flex">
+          <nav aria-label="Main" className="ml-4 hidden flex-1 items-center gap-0.5 lg:flex xl:ml-6">
             <Link
               href="/"
-              className="rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground shadow-sm"
+              className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm xl:px-5 xl:text-[15px]"
             >
               Home
             </Link>
-            {domains.map((d) => (
-              <Link
-                key={d.slug}
-                href={`/${d.slug}`}
-                className="rounded-full px-3 py-2 text-[13px] font-semibold text-foreground/75 transition-colors hover:bg-muted hover:text-primary xl:px-3.5"
-              >
-                {navLabel(d.slug, d.name)}
-              </Link>
-            ))}
+            {domains.map((d) => {
+              const label = navLabel(d.slug, d.name);
+              return (
+                <Link
+                  key={d.slug}
+                  href={`/${d.slug}`}
+                  className="rounded-full px-3 py-2 text-sm font-semibold whitespace-nowrap text-foreground/80 transition-colors hover:bg-muted hover:text-primary xl:px-3 xl:text-[15px]"
+                >
+                  <span className="xl:hidden">{label.short}</span>
+                  <span className="hidden xl:inline">{label.full}</span>
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Actions */}
@@ -75,10 +83,11 @@ export async function Header() {
             <ThemeToggle className="hidden border-transparent bg-transparent sm:inline-flex" />
             <a
               href={siteConfig.contact.whatsapp}
-              className="hidden items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover sm:inline-flex"
+              className="hidden items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold whitespace-nowrap text-primary-foreground transition-colors hover:bg-primary-hover sm:inline-flex xl:text-[15px]"
             >
               <MessageCircle className="size-4" />
-              Contact us
+              <span className="lg:hidden xl:inline">Contact us</span>
+              <span className="hidden lg:inline xl:hidden">Contact</span>
             </a>
           </div>
         </div>
