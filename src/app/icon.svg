@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="TOPX Nepal">
-<circle cx="100" cy="100" r="88" fill="#FFFFFF" stroke="#1D3FBF" stroke-width="14"/>
-<g transform="translate(100 100) scale(1.45) translate(-100 -100)">
-<path fill="none" stroke="#FF4D1A" stroke-width="8" stroke-linecap="square" d="M58 70V60h18M124 60h18v10M58 130v10h18M124 140h18v-40h-14"/>
-<path fill="#FF4D1A" d="M66 120V80h8l9 16 9-16h8v40h-8V94l-9 15-9-15v26z"/><path fill="#FF4D1A" d="M102 80h32v8h-12v32h-8V88h-12z"/>
-</g></svg>

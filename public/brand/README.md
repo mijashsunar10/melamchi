@@ -1,16 +1,13 @@
-# Brand assets: TOPX NEPAL / Melamchi Tech
-
-**Placeholders**: vector versions redrawn from `brand-board.jpeg`. Replace them with the CEO's official files and keep the same file names.
+# Brand assets — TOPX NEPAL / Melamchi Tech
 
 | File | Use |
 |---|---|
-| `logo-full.svg` / `logo-full-dark.svg` | MT mark + TOPX NEPAL lockup (light bg / navy bg) |
-| `logo-mt.svg` / `logo-mt-dark.svg` | Melamchi Tech round mark |
-| `logo-topx.svg` / `logo-topx-dark.svg` | TOPX NEPAL wordmark |
-| `icon-mark.svg` | Simplified mark for tiny sizes (favicon) |
-| `app-icon.svg`, `app-icon-512.png`, `app-icon-192.png` | PWA / app icon |
-| `brand-board.jpeg` | Original brand graphic (reference only) |
+| `topx-logo.png` | **Official TOPX Nepal logo** (transparent background) — header, footer |
+| `source/official-logo.jpeg` | Original logo file from the CEO |
+| `app-icon-512.png`, `app-icon-192.png` | App / PWA icon (red X monogram from the logo) |
+| `logo-mt.svg`, `logo-mt-dark.svg` | Melamchi Tech company mark (placeholder redraw) |
+| `brand-board.jpeg` | Original brand board (reference) |
 
-The app icons in `src/app/` (`favicon.ico`, `icon.svg`, `apple-icon.png`) are generated from these files.
+Browser icons live in `src/app/` (`favicon.ico`, `icon.png`, `apple-icon.png`).
 
-Colors: blue `#1D3FBF` · navy `#0A1640` · orange `#FF4D1A`
+If a vector (SVG/AI) or higher-resolution transparent PNG of the logo becomes available, replace `topx-logo.png` with it — same file name.
