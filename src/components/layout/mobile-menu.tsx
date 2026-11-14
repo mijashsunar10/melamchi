@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Menu, MessageCircle, UserRound } from "lucide-react";
+import { ChevronRight, House, Menu, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Icon } from "@/components/icon";
@@ -25,49 +25,38 @@ export function MobileMenu({ domains }: { domains: Domain[] }) {
       </button>
 
       <Dialog open={open} onClose={close} side="left" title="Menu">
-        <div className="flex flex-col gap-2">
-          <Link href="/login" onClick={close} className="mb-2 flex items-center gap-3 rounded-xl bg-primary p-3 font-semibold text-primary-foreground">
-            <span className="flex size-9 items-center justify-center rounded-full bg-white/15">
-              <UserRound className="size-5" />
+        <nav aria-label="Mobile" className="flex flex-col gap-1">
+          <Link href="/" onClick={close} className="flex items-center gap-3 rounded-xl p-3 font-semibold hover:bg-muted">
+            <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <House className="size-5" />
             </span>
-            Login / Register
+            <span className="flex-1">Home</span>
           </Link>
-
           {domains.map((d) => (
-            <details key={d.slug} name="mobile-domains" className="group rounded-xl border border-border">
-              <summary className="flex cursor-pointer list-none items-center gap-3 p-3 font-semibold [&::-webkit-details-marker]:hidden">
-                <span className={`flex size-9 items-center justify-center rounded-lg bg-gradient-to-br ${d.gradient} text-white`}>
-                  <Icon name={d.icon} className="size-5" />
-                </span>
-                <span className="flex-1">{d.name}</span>
-                <ChevronDown className="size-4 text-muted-foreground transition-transform group-open:rotate-180" />
-              </summary>
-              <div className="flex flex-col gap-0.5 px-3 pb-3">
-                <Link href={`/${d.slug}`} onClick={close} className="rounded-lg px-3 py-2 text-sm font-semibold text-primary hover:bg-muted">
-                  All {d.name}
-                </Link>
-                {d.categories.map((c) => (
-                  <Link
-                    key={c.slug}
-                    href={`/${d.slug}?category=${c.slug}`}
-                    onClick={close}
-                    className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm hover:bg-muted"
-                  >
-                    <Icon name={c.icon} className="size-4 text-muted-foreground" />
-                    {c.name}
-                  </Link>
-                ))}
-              </div>
-            </details>
+            <Link
+              key={d.slug}
+              href={`/${d.slug}`}
+              onClick={close}
+              className="flex items-center gap-3 rounded-xl p-3 font-semibold hover:bg-muted"
+            >
+              <span className={`flex size-9 items-center justify-center rounded-lg bg-gradient-to-br ${d.gradient} text-white`}>
+                <Icon name={d.icon} className="size-5" />
+              </span>
+              <span className="flex-1">{d.name}</span>
+              <ChevronRight className="size-4 text-muted-foreground" />
+            </Link>
           ))}
 
-          <div className="mt-3 flex items-center justify-between rounded-xl bg-muted p-3">
-            <a href={siteConfig.contact.whatsapp} className="flex items-center gap-2 text-sm font-semibold text-success">
-              <MessageCircle className="size-5" /> WhatsApp support
+          <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-muted p-3">
+            <a
+              href={siteConfig.contact.whatsapp}
+              className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+            >
+              <MessageCircle className="size-4" /> Contact us
             </a>
             <ThemeToggle />
           </div>
-        </div>
+        </nav>
       </Dialog>
     </>
   );

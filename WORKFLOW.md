@@ -189,7 +189,7 @@ public/brand/ public/products/ public/payments/
 - [ ] **5.5** Tabs: description, how to redeem/activate, FAQ, reviews
 - [ ] **5.6** Related products + "people also bought"
 
-### Phase 6: Cart, checkout, orders
+### Phase 6: Cart, checkout, orders — ⏸ ON HOLD (no login/cart for now, keeps backend light)
 - [ ] **6.1** Cart page + mini-cart drawer
 - [ ] **6.2** Checkout: contact info, payment methods (eSewa, Khalti, IME Pay, Fonepay QR, bank, wallet), summary
 - [ ] **6.3** Order success / status page (timeline, code/key reveal, download guide)
@@ -201,10 +201,10 @@ public/brand/ public/products/ public/payments/
 - [ ] **7.3** Submit ticket / setup service request form
 - [ ] **7.4** Contact page, reseller / business page
 
-### Phase 8: Auth (UI only)
+### Phase 8: Auth (UI only) — ⏸ ON HOLD (no login/cart for now, keeps backend light)
 - [ ] **8.1** Login, Register, Forgot password, OTP (phone/email), Google button
 
-### Phase 9: User dashboard
+### Phase 9: User dashboard — ⏸ ON HOLD (no login/cart for now, keeps backend light)
 - [ ] **9.1** Layout + overview (wallet, active subscriptions, recent orders)
 - [ ] **9.2** Orders + order detail
 - [ ] **9.3** My Keys & Codes (gift codes, licence keys)
@@ -258,3 +258,4 @@ Admin panel (domains, products, plans, stock/codes, banners, deals, orders, user
 | 2026-11-13 | 1.3 Fonts, metadata, dark mode | ✅ | Montserrat / Plus Jakarta Sans / Noto Sans Devanagari, SEO metadata + theme-color, no-flash dark mode toggle, `src/lib/site.ts` |
 | 2026-11-13 | 1.4 Types + mock data | ✅ | 47 sample products across 6 domains, 5 delivery types, deals, reviews, payment methods; async data layer in `src/lib/catalog.ts`; preview at `/styleguide/catalog` |
 | 2026-11-13 | 1.5 UI kit + header, footer, home page | ✅ | Real landing page with photos (Unsplash), brand-logo product covers, mega menus, mobile nav, dark mode |
+| 2026-11-14 | Simple header | ✅ | Removed mega-menu dropdowns, login and cart; added WhatsApp "Contact us". Login/cart/dashboard phases on hold |
