@@ -173,12 +173,12 @@ public/brand/ public/products/ public/payments/
 - [ ] **3.10** Blog/guides preview + FAQ + app download / reseller CTA
 
 ### Phase 4: Domain landing pages
-- [ ] **4.1** Shared domain page template (mini hero, sub-category chips, filters, grid, FAQ)
-- [ ] **4.2** AI Tools page
-- [ ] **4.3** Gaming page
-- [ ] **4.4** Gift Cards page
-- [ ] **4.5** Software & Apps page
-- [ ] **4.6** Digital Products page
+- [x] **4.1** Shared domain page template (mini hero, sub-category chips, filters, grid, FAQ)
+- [x] **4.2** AI Tools page
+- [x] **4.3** Gaming page
+- [x] **4.4** Gift Cards page
+- [x] **4.5** Software & Apps page
+- [x] **4.6** Digital Products page
 - [ ] **4.7** `/products` all-products page + `/deals`
 
 ### Phase 5: Product page (smart order flow)
@@ -259,3 +259,4 @@ Admin panel (domains, products, plans, stock/codes, banners, deals, orders, user
 | 2026-11-13 | 1.4 Types + mock data | ✅ | 47 sample products across 6 domains, 5 delivery types, deals, reviews, payment methods; async data layer in `src/lib/catalog.ts`; preview at `/styleguide/catalog` |
 | 2026-11-13 | 1.5 UI kit + header, footer, home page | ✅ | Real landing page with photos (Unsplash), brand-logo product covers, mega menus, mobile nav, dark mode |
 | 2026-11-14 | Simple header | ✅ | Removed mega-menu dropdowns, login and cart; added WhatsApp "Contact us". Login/cart/dashboard phases on hold |
+| 2026-11-14 | Section pages | ✅ | /ai-tools, /gaming, /gift-cards, /software, /digital-products — photo banner, category filter + sort, FAQ, help box, other categories; active nav highlight |

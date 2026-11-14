@@ -59,6 +59,8 @@ export interface Domain {
   icon: IconName;
   /** Tailwind gradient classes for tiles/banners */
   gradient: string;
+  /** 3 short selling points shown on the domain page */
+  highlights: string[];
   categories: Category[];
 }
 

@@ -5,6 +5,7 @@ import { getDomains } from "@/lib/catalog";
 import { siteConfig } from "@/lib/site";
 import { Logo } from "./logo";
 import { MobileMenu } from "./mobile-menu";
+import { NavLinks } from "./nav-links";
 
 function TopBar() {
   return (
@@ -48,28 +49,12 @@ export async function Header() {
           <MobileMenu domains={domains} />
           <Logo />
 
-          {/* Simple desktop navigation */}
-          <nav aria-label="Main" className="ml-4 hidden flex-1 items-center gap-0.5 lg:flex xl:ml-6">
-            <Link
-              href="/"
-              className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm xl:px-5 xl:text-[15px]"
-            >
-              Home
-            </Link>
-            {domains.map((d) => {
-              const label = navLabel(d.slug, d.name);
-              return (
-                <Link
-                  key={d.slug}
-                  href={`/${d.slug}`}
-                  className="rounded-full px-3 py-2 text-sm font-semibold whitespace-nowrap text-foreground/80 transition-colors hover:bg-muted hover:text-primary xl:px-3 xl:text-[15px]"
-                >
-                  <span className="xl:hidden">{label.short}</span>
-                  <span className="hidden xl:inline">{label.full}</span>
-                </Link>
-              );
-            })}
-          </nav>
+          <NavLinks
+            items={[
+              { href: "/", short: "Home", full: "Home" },
+              ...domains.map((d) => ({ href: `/${d.slug}`, ...navLabel(d.slug, d.name) })),
+            ]}
+          />
 
           {/* Actions */}
           <div className="ml-auto flex items-center gap-1.5 sm:gap-2">

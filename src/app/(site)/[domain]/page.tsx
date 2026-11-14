@@ -1,0 +1,105 @@
+import { ArrowRight, MessageCircle } from "lucide-react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { DomainCatalog } from "@/components/domain/domain-catalog";
+import { DomainHero } from "@/components/domain/domain-hero";
+import { DomainTiles } from "@/components/home/domain-tiles";
+import { SectionHeading } from "@/components/home/section-heading";
+import { Icon } from "@/components/icon";
+import { ProductCard } from "@/components/product/product-card";
+import { Accordion } from "@/components/ui/accordion";
+import { buttonClasses } from "@/components/ui/button";
+import { accountFaq, codeFaq, licenseFaq, topupFaq } from "@/data/fields";
+import { getDomain, getDomains, getProducts, startingPrice } from "@/lib/catalog";
+import { siteConfig } from "@/lib/site";
+import type { DomainSlug, FAQ } from "@/types/catalog";
+
+/** Section pages built here. Support has its own page. */
+const SHOP_DOMAINS = ["ai-tools", "gaming", "gift-cards", "software", "digital-products"] as const satisfies DomainSlug[];
+
+const domainFaq: Record<(typeof SHOP_DOMAINS)[number], FAQ[]> = {
+  "ai-tools": accountFaq,
+  gaming: topupFaq,
+  "gift-cards": codeFaq,
+  software: licenseFaq,
+  "digital-products": accountFaq,
+};
+
+const isShopDomain = (slug: string): slug is (typeof SHOP_DOMAINS)[number] =>
+  (SHOP_DOMAINS as readonly string[]).includes(slug);
+
+export function generateStaticParams() {
+  return SHOP_DOMAINS.map((domain) => ({ domain }));
+}
+
+export async function generateMetadata({ params }: PageProps<"/[domain]">): Promise<Metadata> {
+  const { domain: slug } = await params;
+  const domain = isShopDomain(slug) ? await getDomain(slug) : undefined;
+  if (!domain) return {};
+  return {
+    title: `${domain.name} in Nepal`,
+    description: domain.description,
+    openGraph: { title: `${domain.name} in Nepal · ${siteConfig.name}`, description: domain.description },
+  };
+}
+
+export default async function DomainPage({ params }: PageProps<"/[domain]">) {
+  const { domain: slug } = await params;
+  if (!isShopDomain(slug)) notFound();
+
+  const [domain, products, allDomains] = await Promise.all([getDomain(slug), getProducts({ domain: slug }), getDomains()]);
+  if (!domain) notFound();
+
+  const prices = products.map(startingPrice).filter((p): p is number => p !== null);
+  const fromPrice = prices.length ? Math.min(...prices) : null;
+  const others = allDomains.filter((d) => d.slug !== slug);
+
+  return (
+    <div className="flex flex-col gap-16 pb-20 sm:gap-24 sm:pb-28">
+      <DomainHero domain={domain} productCount={products.length} fromPrice={fromPrice} />
+
+      <section className="mx-auto -mt-8 w-full max-w-7xl px-4 sm:-mt-12 sm:px-6">
+        <SectionHeading eyebrow={domain.tagline} title={`All ${domain.name}`} className="mb-8" />
+        <DomainCatalog
+          categories={domain.categories.map((c) => ({ slug: c.slug, name: c.name, icon: <Icon name={c.icon} /> }))}
+          items={products.map((p) => ({
+            slug: p.slug,
+            category: p.category,
+            price: startingPrice(p),
+            rating: p.rating,
+            sold: p.sold,
+            card: <ProductCard product={p} />,
+          }))}
+        />
+      </section>
+
+      <section className="mx-auto grid w-full max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1.4fr_1fr]">
+        <div className="flex flex-col gap-8">
+          <SectionHeading eyebrow="FAQ" title={`${domain.shortName === "AI" ? "AI tools" : domain.name} — questions`} />
+          <Accordion items={domainFaq[slug]} name="domain-faq" />
+        </div>
+        <aside className="flex flex-col justify-between gap-6 self-start rounded-3xl bg-brand-navy p-7 text-white">
+          <div>
+            <span className="flex size-12 items-center justify-center rounded-2xl bg-white/10">
+              <MessageCircle className="size-6" />
+            </span>
+            <h3 className="mt-5 font-display text-2xl font-black italic">Not sure what to pick?</h3>
+            <p className="mt-2 text-sm leading-relaxed text-white/70">
+              Tell us what you need on WhatsApp and we&apos;ll recommend the right plan — usually within minutes.
+            </p>
+          </div>
+          <a href={siteConfig.contact.whatsapp} className={`${buttonClasses({ variant: "cta", pill: true })} self-start`}>
+            Ask on WhatsApp <ArrowRight />
+          </a>
+        </aside>
+      </section>
+
+      <div className="flex flex-col gap-8">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+          <SectionHeading eyebrow="Keep exploring" title="Other categories" />
+        </div>
+        <DomainTiles domains={others} overlap={false} />
+      </div>
+    </div>
+  );
+}

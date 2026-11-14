@@ -1,9 +1,12 @@
+"use client";
+
 import { Flame, House, LayoutGrid, MessageCircle, Search } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { siteConfig } from "@/lib/site";
 
 const items = [
-  { href: "/", label: "Home", icon: House, active: true },
+  { href: "/", label: "Home", icon: House },
   { href: "/#categories", label: "Explore", icon: LayoutGrid },
   { href: "/products", label: "Search", icon: Search },
   { href: "/#deals", label: "Deals", icon: Flame },
@@ -12,13 +15,15 @@ const items = [
 
 /** Phone-only bottom tab bar */
 export function BottomNav() {
+  const pathname = usePathname();
   return (
     <nav
       aria-label="Quick"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden"
     >
       <div className="mx-auto grid h-16 max-w-md grid-cols-5">
-        {items.map(({ href, label, icon: I, active, external }) => {
+        {items.map(({ href, label, icon: I, external }) => {
+          const active = href === "/" ? pathname === "/" : !external && !href.startsWith("/#") && pathname.startsWith(href);
           const cls = `flex flex-col items-center justify-center gap-1 text-[11px] font-semibold ${active ? "text-primary" : "text-muted-foreground"}`;
           const inner = (
             <>

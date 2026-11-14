@@ -10,6 +10,7 @@ export const domains: Domain[] = [
       "ChatGPT, Claude, Gemini, Midjourney and more — activated on your own account with local payment.",
     icon: "Cpu",
     gradient: "from-violet-500 to-brand-blue-600",
+    highlights: ["Activated on your own account", "Pay with eSewa, Khalti or bank", "Ready in 5–30 minutes"],
     categories: [
       { slug: "chat-assistants", name: "Chat Assistants", icon: "Bot" },
       { slug: "image-video", name: "Image & Video", icon: "Image" },
@@ -27,6 +28,7 @@ export const domains: Domain[] = [
       "Instant top-ups for PUBG, Free Fire, Mobile Legends, Valorant and live-stream apps — just enter your Player ID.",
     icon: "Gamepad2",
     gradient: "from-brand-orange-500 to-rose-600",
+    highlights: ["Delivered to your Player ID", "No password needed", "Most top-ups in under a minute"],
     categories: [
       { slug: "mobile-games", name: "Mobile Games", icon: "Smartphone" },
       { slug: "pc-console", name: "PC & Console", icon: "Monitor" },
@@ -42,6 +44,7 @@ export const domains: Domain[] = [
       "Google Play, Apple, Steam, PlayStation, Xbox, Amazon and more — the code arrives instantly after payment.",
     icon: "Gift",
     gradient: "from-amber-400 to-brand-orange-500",
+    highlights: ["Code shown right after payment", "US & global regions", "Works with any account"],
     categories: [
       { slug: "app-stores", name: "App Stores", icon: "Smartphone" },
       { slug: "gaming-cards", name: "Gaming Cards", icon: "Gamepad2" },
@@ -57,6 +60,7 @@ export const domains: Domain[] = [
       "Windows, Office, antivirus, VPN, Adobe and creative apps — genuine keys with step-by-step activation help.",
     icon: "AppWindow",
     gradient: "from-sky-500 to-brand-blue-600",
+    highlights: ["Genuine retail licences", "Step-by-step activation guide", "Free setup help"],
     categories: [
       { slug: "windows-office", name: "Windows & Office", icon: "AppWindow" },
       { slug: "security-vpn", name: "Security & VPN", icon: "ShieldCheck" },
@@ -70,9 +74,10 @@ export const domains: Domain[] = [
     shortName: "Digital",
     tagline: "Streaming, learning & cloud",
     description:
-      "Netflix, Spotify, YouTube Premium, online courses, cloud storage and more — all in one cart.",
+      "Netflix, Spotify, YouTube Premium, online courses, cloud storage and more — all in one place.",
     icon: "ShoppingBag",
     gradient: "from-fuchsia-500 to-brand-orange-500",
+    highlights: ["On your own account", "Renewal reminders", "Cancel any time"],
     categories: [
       { slug: "streaming", name: "Streaming", icon: "Tv" },
       { slug: "learning", name: "Learning", icon: "GraduationCap" },
@@ -89,6 +94,7 @@ export const domains: Domain[] = [
       "Order help, installation & setup, remote assistance and business orders — we're here around the clock.",
     icon: "Headset",
     gradient: "from-emerald-500 to-brand-blue-600",
+    highlights: ["Real people, 24/7", "WhatsApp, phone & remote", "Most replies in minutes"],
     categories: [
       { slug: "setup", name: "Setup & Installation", icon: "Wrench" },
       { slug: "remote-help", name: "Remote Assistance", icon: "LifeBuoy" },

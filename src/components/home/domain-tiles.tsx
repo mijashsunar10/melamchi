@@ -5,10 +5,13 @@ import { Icon } from "@/components/icon";
 import { domainImages } from "@/lib/images";
 import type { Domain } from "@/types/catalog";
 
-export function DomainTiles({ domains }: { domains: Domain[] }) {
+export function DomainTiles({ domains, overlap = true }: { domains: Domain[]; overlap?: boolean }) {
   return (
-    <section id="categories" className="relative z-10 mx-auto -mt-24 max-w-7xl scroll-mt-32 px-4 sm:-mt-32 sm:px-6">
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-6">
+    <section
+      id={overlap ? "categories" : undefined}
+      className={`relative z-10 mx-auto w-full max-w-7xl scroll-mt-32 px-4 sm:px-6 ${overlap ? "-mt-24 sm:-mt-32" : ""}`}
+    >
+      <div className={`grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 ${domains.length >= 6 ? "xl:grid-cols-6" : "xl:grid-cols-5"}`}>
         {domains.map((d) => (
           <Link
             key={d.slug}
