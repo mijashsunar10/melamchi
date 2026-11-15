@@ -32,3 +32,22 @@ export interface LegalPage {
   updated: string; // ISO date
   sections: LegalSection[];
 }
+
+/** A block of article content (kept simple so an admin editor / CMS can produce it). */
+export type BlogBlock =
+  | { type: "p"; text: string }
+  | { type: "h2"; text: string }
+  | { type: "steps"; items: string[] }
+  | { type: "tip"; text: string };
+
+export interface BlogPost {
+  slug: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  date: string; // ISO
+  readMinutes: number;
+  /** product shown as "Buy it here"; its cover photo is used as the article image */
+  productSlug: string;
+  body: BlogBlock[];
+}

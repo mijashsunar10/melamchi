@@ -2,13 +2,14 @@
 // components never import from src/data directly — swap these bodies for
 // API / database calls when the backend is ready.
 
+import { blogPosts } from "@/data/blog";
 import { homeFaq } from "@/data/faq";
 import { accountFaq, codeFaq, licenseFaq, topupFaq } from "@/data/fields";
 import { legalPages } from "@/data/legal";
 import { siteStats } from "@/data/site-stats";
 import { supportTopics } from "@/data/support";
 import type { DomainSlug, FAQ } from "@/types/catalog";
-import type { LegalPage, SiteStats, SupportTopic } from "@/types/content";
+import type { BlogPost, LegalPage, SiteStats, SupportTopic } from "@/types/content";
 
 export async function getSiteStats(): Promise<SiteStats> {
   return siteStats;
@@ -42,4 +43,13 @@ export async function getDomainFaq(slug: DomainSlug): Promise<FAQ[]> {
     "digital-products": accountFaq,
   };
   return bySlug[slug] ?? [];
+}
+
+/** Blog posts, newest first. */
+export async function getBlogPosts(): Promise<BlogPost[]> {
+  return [...blogPosts].sort((a, b) => b.date.localeCompare(a.date));
+}
+
+export async function getBlogPost(slug: string): Promise<BlogPost | undefined> {
+  return blogPosts.find((p) => p.slug === slug);
 }
