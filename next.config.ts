@@ -1,15 +1,34 @@
 import type { NextConfig } from "next";
 
+/**
+ * DEPLOY_TARGET=static → plain HTML/CSS/JS export for shared hosting (cPanel).
+ * Built with `npm run build:cpanel` (see DEPLOY.md). Normal dev/build are unchanged.
+ */
+const isStaticExport = process.env.DEPLOY_TARGET === "static";
+
+/** Image widths Next.js may request — keep in sync with WIDTHS in scripts/build-cpanel.mjs. */
+const deviceSizes = [640, 828, 1080, 1280, 1920];
+const imageSizes = [64, 128, 256, 384];
+
 const nextConfig: NextConfig = {
-  cacheComponents: true,
+  // Cache Components / partial prerendering needs a Node server; a static export prebuilds every page fully instead
+  cacheComponents: !isStaticExport,
   images: {
-    // AVIF first (smallest), WebP fallback for older browsers
-    formats: ["image/avif", "image/webp"],
-    // Fewer candidate widths = shorter srcset on every image (lighter HTML)
-    deviceSizes: [640, 828, 1080, 1280, 1920],
-    imageSizes: [64, 128, 256, 384],
+    deviceSizes,
+    imageSizes,
+    ...(isStaticExport
+      ? // no image server on shared hosting: a loader points to pre-generated WebP files
+        { loader: "custom", loaderFile: "./src/lib/static-image-loader.ts" }
+      : // AVIF first (smallest), WebP fallback for older browsers
+        { formats: ["image/avif", "image/webp"] }),
   },
-  partialPrefetching: true,
+  ...(isStaticExport
+    ? {
+        output: "export",
+        // /about → /about/index.html, which Apache (cPanel) serves without any rewrite rules
+        trailingSlash: true,
+      }
+    : { partialPrefetching: true }),
   turbopack: {
     rules: {
       "*.css": {

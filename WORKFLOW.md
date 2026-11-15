@@ -273,3 +273,4 @@ Admin panel (domains, products, plans, stock/codes, banners, deals, orders, user
 | 2026-11-15 | Track order + order refs | ✅ | Orders get a TX-XXXXXX ref; /track validates the ref and asks on WhatsApp until trackOrder() is connected; status timeline ready for the backend |
 | 2026-11-15 | Blog / guides | ✅ | /blog + 5 guides (/blog/[slug]) with steps, tips and a product card; content via getBlogPosts() |
 | 2026-11-15 | **All linked pages built** | ✅ | No more "page not found" links in header, footer or buttons |
+| 2026-11-15 | cPanel deploy | ✅ | npm run build:cpanel → dist/topx-nepal-cpanel.zip (static export, pre-made WebP images, .htaccess); guide in DEPLOY.md |
