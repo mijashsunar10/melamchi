@@ -301,6 +301,13 @@
     outline: 2px solid var(--ring);
     outline-offset: 2px;
   }
+  /* Native dropdown lists: always dark text on white, in light AND dark mode
+     (browsers otherwise show white-on-white options in dark mode) */
+  select option,
+  select optgroup {
+    background-color: #ffffff;
+    color: #0e1426;
+  }
   ::selection {
     background: var(--color-brand-orange-500);
     color: #fff;
