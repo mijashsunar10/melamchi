@@ -16,3 +16,19 @@ export interface SupportTopic {
   icon: IconName;
   faqs: FAQ[];
 }
+
+/** Refund / Privacy / Terms pages. */
+export interface LegalSection {
+  id: string;
+  heading: string;
+  paragraphs?: string[];
+  bullets?: string[];
+}
+
+export interface LegalPage {
+  slug: "refund-policy" | "privacy-policy" | "terms";
+  title: string;
+  description: string;
+  updated: string; // ISO date
+  sections: LegalSection[];
+}

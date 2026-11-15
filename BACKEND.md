@@ -39,7 +39,9 @@ Pages / components  ──►  src/lib/*.ts (async functions)  ──►  src/da
 | `searchProducts(query)` | `src/lib/catalog.ts` | `Product[]` ranked by relevance | (available for an API / quick search) |
 | `getSiteStats()` | `src/lib/content.ts` | `SiteStats` | hero, stats band, reviews |
 | `getHomeFaq()` | `src/lib/content.ts` | `FAQ[]` | home FAQ |
-| `getSupportTopics()` | `src/lib/content.ts` | `SupportTopic[]` (`slug`, `name`, `icon`, `faqs[]`) | Support page help center |
+| `getSupportTopics()` | `src/lib/content.ts` | `SupportTopic[]` (`slug`, `name`, `icon`, `faqs[]`) | Support page help center, contact form topics |
+| `getDomainFaq(slug)` | `src/lib/content.ts` | `FAQ[]` | section page FAQ |
+| `getLegalPage(slug)` / `getLegalPages()` | `src/lib/content.ts` | `LegalPage` (`title`, `description`, `updated`, `sections[]`) | `/refund-policy`, `/privacy-policy`, `/terms` |
 | `getProducts({ domain: "support" })` | `src/lib/catalog.ts` | `Product[]` (SERVICE type) | Support page "expert services" |
 
 Sample data for all of these is in `src/data/` — use it as seed data for the database.
@@ -117,6 +119,7 @@ Full definitions: `src/types/catalog.ts`, `src/types/content.ts`.
 | **PaymentMethod** | `id`, `name`, `description`, `color` | eSewa, Khalti, IME Pay, Fonepay, bank, wallet |
 | **SiteStats** | `ordersDelivered`, `avgDeliverySeconds`, `rating`, `reviewCount` | calculate from real orders & reviews |
 | **FAQ** | `q`, `a` | |
+| **LegalPage** | `slug`, `title`, `description`, `updated`, `sections[]` (`id`, `heading`, `paragraphs?`, `bullets?`) | **draft text — review before launch** |
 
 ### Suggested database tables
 

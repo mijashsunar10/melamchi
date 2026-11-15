@@ -9,22 +9,14 @@ import { Icon } from "@/components/icon";
 import { ProductCard } from "@/components/product/product-card";
 import { Accordion } from "@/components/ui/accordion";
 import { buttonClasses } from "@/components/ui/button";
-import { accountFaq, codeFaq, licenseFaq, topupFaq } from "@/data/fields";
 import { getDomain, getDomains, getProducts, startingPrice } from "@/lib/catalog";
+import { getDomainFaq } from "@/lib/content";
 import { formatNPR } from "@/lib/format";
 import { siteConfig } from "@/lib/site";
-import type { DomainSlug, FAQ } from "@/types/catalog";
+import type { DomainSlug } from "@/types/catalog";
 
 /** Section pages built here. Support has its own page. */
 const SHOP_DOMAINS = ["ai-tools", "gaming", "gift-cards", "software", "digital-products"] as const satisfies DomainSlug[];
-
-const domainFaq: Record<(typeof SHOP_DOMAINS)[number], FAQ[]> = {
-  "ai-tools": accountFaq,
-  gaming: topupFaq,
-  "gift-cards": codeFaq,
-  software: licenseFaq,
-  "digital-products": accountFaq,
-};
 
 const isShopDomain = (slug: string): slug is (typeof SHOP_DOMAINS)[number] =>
   (SHOP_DOMAINS as readonly string[]).includes(slug);
@@ -48,7 +40,12 @@ export default async function DomainPage({ params }: PageProps<"/[domain]">) {
   const { domain: slug } = await params;
   if (!isShopDomain(slug)) notFound();
 
-  const [domain, products, allDomains] = await Promise.all([getDomain(slug), getProducts({ domain: slug }), getDomains()]);
+  const [domain, products, allDomains, faq] = await Promise.all([
+    getDomain(slug),
+    getProducts({ domain: slug }),
+    getDomains(),
+    getDomainFaq(slug),
+  ]);
   if (!domain) notFound();
 
   const prices = products.map(startingPrice).filter((p): p is number => p !== null);
@@ -103,7 +100,7 @@ export default async function DomainPage({ params }: PageProps<"/[domain]">) {
       <section className="mx-auto grid w-full max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1.4fr_1fr]">
         <div className="flex flex-col gap-8">
           <SectionHeading eyebrow="FAQ" title={`${domain.shortName === "AI" ? "AI tools" : domain.name} — questions`} />
-          <Accordion items={domainFaq[slug]} name="domain-faq" />
+          <Accordion items={faq} name="domain-faq" />
         </div>
         <aside className="flex flex-col justify-between gap-6 self-start rounded-3xl border border-border bg-surface p-7 shadow-card dark:border-transparent dark:bg-brand-navy dark:text-white">
           <div>

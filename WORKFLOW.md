@@ -269,3 +269,4 @@ Admin panel (domains, products, plans, stock/codes, banners, deals, orders, user
 | 2026-11-15 | Contact page | ✅ | /contact — WhatsApp, phone, email, office + directions, hours, socials, message form (same submitSupportRequest) |
 | 2026-11-15 | About page | ✅ | /about — intro (Melamchi Tech), live stats, values, six categories; story text is a draft for the CEO |
 | 2026-11-15 | Business & reseller page | ✅ | /reseller — benefits, who it is for, 4 steps, application form → WhatsApp (src/lib/reseller.ts) |
+| 2026-11-15 | Refund, Privacy, Terms pages | ✅ | Shared legal layout with table of contents; DRAFT text in src/data/legal.ts — needs CEO/lawyer review |
