@@ -79,7 +79,7 @@ function HeroVisual({ stats }: { stats: SiteStats }) {
           src={images.heroGamer}
           alt="Gamer playing at a neon-lit gaming setup"
           placeholder="blur"
-          priority
+          loading="eager"
           sizes="300px"
           className="size-full scale-110 object-cover object-[38%_45%]"
         />

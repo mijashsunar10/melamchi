@@ -38,6 +38,8 @@ Pages / components  ──►  src/lib/*.ts (async functions)  ──►  src/da
 | `searchProducts(query)` | `src/lib/catalog.ts` | `Product[]` | search (page coming) |
 | `getSiteStats()` | `src/lib/content.ts` | `SiteStats` | hero, stats band, reviews |
 | `getHomeFaq()` | `src/lib/content.ts` | `FAQ[]` | home FAQ |
+| `getSupportTopics()` | `src/lib/content.ts` | `SupportTopic[]` (`slug`, `name`, `icon`, `faqs[]`) | Support page help center |
+| `getProducts({ domain: "support" })` | `src/lib/catalog.ts` | `Product[]` (SERVICE type) | Support page "expert services" |
 
 Sample data for all of these is in `src/data/` — use it as seed data for the database.
 
@@ -51,6 +53,15 @@ All in **`src/lib/orders.ts`**:
 | `lookupPlayerName(productSlug, playerId)` | returns a demo name | `GET /api/player-name?product=…&id=…` → `{ name }` or 404 (supplier API) |
 | `validateOrder(product, request)` | runs in the browser | **also run it on the server** before saving an order (same function, no changes) |
 | `priceOrder(product, planId, qty)` | runs in the browser | **always recalculate the price on the server** — never trust the price from the browser |
+
+Support form — **`src/lib/support.ts`**:
+
+| Function | Today | Backend should |
+|---|---|---|
+| `submitSupportRequest(request)` | opens WhatsApp with the message | `POST /api/support` → create a ticket, return `{ ticketId }` (and notify staff) |
+| `validateSupportRequest(request)` | runs in the browser | also run on the server |
+
+`SupportRequest`: `{ name, phone, topic, orderNumber?, message }`
 
 `OrderRequest` (what the order form sends):
 
@@ -87,7 +98,7 @@ Full definitions: `src/types/catalog.ts`, `src/types/content.ts`.
 ### Suggested database tables
 
 `domains`, `categories`, `products`, `plans`, `order_fields` (or a JSON column on products),
-`deals`, `reviews`, `orders`, `order_items`, `payments`, `faqs`, `settings`.
+`deals`, `reviews`, `orders`, `order_items`, `payments`, `faqs`, `support_topics`, `support_tickets`, `settings`.
 
 An **order** should store: id, product, plan, quantity, details (JSON), player name, unit price, total,
 status (`pending → paid → processing → delivered / failed / refunded`), payment method, payment reference,
@@ -119,5 +130,6 @@ With the site running:
 
 ```bash
 node scripts/check-order.mjs http://localhost:3000     # end-to-end order form test
+node scripts/check-support.mjs http://localhost:3000   # help center search + support form test
 node scripts/screenshot.mjs http://localhost:3000/ out.png 1440 light   # screenshot + console errors
 ```

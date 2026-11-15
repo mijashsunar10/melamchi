@@ -42,7 +42,7 @@ export async function Footer() {
       <div className="pointer-events-none absolute -top-40 right-0 size-[500px] rounded-full bg-brand-blue-500/10 blur-3xl dark:bg-brand-blue-600/20" />
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pt-16 pb-10 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div className="flex flex-col gap-5">
-          <Logo priority={false} className="[&_img]:h-16 sm:[&_img]:h-[72px]" />
+          <Logo eager={false} className="[&_img]:h-16 sm:[&_img]:h-[72px]" />
           <p className="max-w-xs text-sm leading-relaxed">
             <span className="font-semibold text-foreground dark:text-white">{siteConfig.tagline}</span> {siteConfig.positioning} — AI tools,
             game top-ups, gift cards, software and digital subscriptions with local payment and 24/7 support.

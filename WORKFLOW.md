@@ -262,3 +262,4 @@ Admin panel (domains, products, plans, stock/codes, banners, deals, orders, user
 | 2026-11-14 | Section pages | ✅ | /ai-tools, /gaming, /gift-cards, /software, /digital-products — photo banner, category filter + sort, FAQ, help box, other categories; active nav highlight |
 | 2026-11-14 | Product pages | ✅ | /product/[slug] for all 47 products — package picker, smart order form (Player ID + name check, email, etc.), quantity + total, Order on WhatsApp (sends full order details), tabs (About / How to / FAQ / Reviews), related products, mobile sticky order bar |
 | 2026-11-15 | Section pages: no banner | ✅ | Removed the big top banner; compact breadcrumb + title, products start immediately |
+| 2026-11-15 | Support page | ✅ | /support — WhatsApp/call/email, searchable help center by topic, expert services, message form → WhatsApp (src/lib/support.ts) |

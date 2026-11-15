@@ -42,7 +42,8 @@ export type IconName =
   | "FileText"
   | "LifeBuoy"
   | "Building2"
-  | "Package";
+  | "Package"
+  | "RotateCcw";
 
 export interface Category {
   slug: string;

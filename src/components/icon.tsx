@@ -1,14 +1,14 @@
 import {
   AppWindow, Bot, Building2, Cloud, Code, Cpu, CreditCard, FileText, Gamepad2, GraduationCap, Headset,
   Image as ImageIcon, LifeBuoy, type LucideProps, Mic, Monitor, Package, Palette, PenLine, Radio,
-  ShieldCheck, ShoppingBag, Smartphone, Tv, Wrench, Gift,
+  ShieldCheck, ShoppingBag, Smartphone, Tv, Wrench, Gift, RotateCcw,
 } from "lucide-react";
 import type { IconName } from "@/types/catalog";
 
 const icons = {
   AppWindow, Bot, Building2, Cloud, Code, Cpu, CreditCard, FileText, Gamepad2, GraduationCap, Headset,
   Image: ImageIcon, LifeBuoy, Mic, Monitor, Package, Palette, PenLine, Radio, ShieldCheck, ShoppingBag,
-  Smartphone, Tv, Wrench, Gift,
+  Smartphone, Tv, Wrench, Gift, RotateCcw,
 } satisfies Record<IconName, unknown>;
 
 export function Icon({ name, ...props }: LucideProps & { name: IconName }) {
