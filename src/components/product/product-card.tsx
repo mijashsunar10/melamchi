@@ -6,7 +6,8 @@ import { formatCompact, formatNPR } from "@/lib/format";
 import type { Product } from "@/types/catalog";
 import { Cover } from "./cover";
 
-export function ProductCard({ product }: { product: Product }) {
+/** `eager`: load the image immediately — set for cards in the first visible row. */
+export function ProductCard({ product, eager = false }: { product: Product; eager?: boolean }) {
   const from = startingPrice(product);
   const tag = product.tags[0];
   const instant = product.deliveryTime === "Instant";
@@ -17,7 +18,7 @@ export function ProductCard({ product }: { product: Product }) {
       className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-card-hover"
     >
       <div className="relative overflow-hidden">
-        <Cover product={product} className="aspect-[4/3] w-full transition-transform duration-500 group-hover:scale-105" />
+        <Cover product={product} eager={eager} className="aspect-[4/3] w-full transition-transform duration-500 group-hover:scale-105" />
         {tag && (
           <Badge className="absolute top-3 left-3 bg-white/95 text-brand-navy shadow-sm">
             {tagBadge[tag].label}

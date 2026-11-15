@@ -85,11 +85,14 @@ export function Cover({
   className,
   size = "md",
   showCaption = true,
+  eager = false,
 }: {
   product: Pick<Product, "slug" | "name" | "image" | "color">;
   className?: string;
   size?: "sm" | "md" | "lg";
   showCaption?: boolean;
+  /** load immediately (use for images visible on first screen) */
+  eager?: boolean;
 }) {
   if (product.image) {
     return (
@@ -118,6 +121,7 @@ export function Cover({
           <Image
             src={photo}
             alt=""
+            loading={eager ? "eager" : "lazy"}
             sizes={size === "sm" ? "48px" : "(min-width: 1024px) 300px, 50vw"}
             className="absolute inset-0 -z-20 size-full object-cover transition-transform duration-700 group-hover:scale-110"
           />

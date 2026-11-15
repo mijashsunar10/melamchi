@@ -54,6 +54,8 @@ export default async function DomainPage({ params }: PageProps<"/[domain]">) {
   const prices = products.map(startingPrice).filter((p): p is number => p !== null);
   const fromPrice = prices.length ? Math.min(...prices) : null;
   const others = allDomains.filter((d) => d.slug !== slug);
+  // default sort is "most popular" → those 4 are the first row; load their images immediately
+  const firstRow = new Set([...products].sort((a, b) => b.sold - a.sold).slice(0, 4).map((p) => p.slug));
 
   return (
     <div className="flex flex-col gap-16 pb-20 sm:gap-20 sm:pb-28">
@@ -93,7 +95,7 @@ export default async function DomainPage({ params }: PageProps<"/[domain]">) {
             price: startingPrice(p),
             rating: p.rating,
             sold: p.sold,
-            card: <ProductCard product={p} />,
+            card: <ProductCard product={p} eager={firstRow.has(p.slug)} />,
           }))}
         />
       </section>

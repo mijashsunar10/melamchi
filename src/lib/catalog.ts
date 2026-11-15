@@ -7,6 +7,7 @@ import { domains } from "@/data/domains";
 import { paymentMethods } from "@/data/payments";
 import { products } from "@/data/products";
 import { reviews } from "@/data/reviews";
+import { scoreEntry, toSearchEntry } from "@/lib/search";
 import type { Deal, Domain, DomainSlug, Plan, Product } from "@/types/catalog";
 
 export async function getDomains(): Promise<Domain[]> {
@@ -46,12 +47,21 @@ export async function getBestSellers(limit = 8): Promise<Product[]> {
   return [...products].filter((p) => p.domain !== "support").sort((a, b) => b.sold - a.sold).slice(0, limit);
 }
 
+/** Ranked search (same scoring as the search page). BACKEND: may call GET /api/search?q=… instead. */
 export async function searchProducts(query: string, limit = 10): Promise<Product[]> {
-  const q = query.trim().toLowerCase();
-  if (!q) return [];
+  if (!query.trim()) return [];
   return products
-    .filter((p) => [p.name, p.brand, p.category, p.domain, p.shortDescription].join(" ").toLowerCase().includes(q))
-    .slice(0, limit);
+    .map((p) => ({
+      p,
+      score: scoreEntry(
+        toSearchEntry(p, domains.find((d) => d.slug === p.domain), startingPrice(p)),
+        query,
+      ),
+    }))
+    .filter((r) => r.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((r) => r.p);
 }
 
 export interface DealWithProduct extends Deal {

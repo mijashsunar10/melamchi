@@ -35,13 +35,25 @@ Pages / components  ──►  src/lib/*.ts (async functions)  ──►  src/da
 | `getDeals()` | `src/lib/catalog.ts` | `DealWithProduct[]` | home flash deals |
 | `getReviews(productSlug?)` | `src/lib/catalog.ts` | `Review[]` | home, product page |
 | `getPaymentMethods()` | `src/lib/catalog.ts` | `PaymentMethod[]` | footer |
-| `searchProducts(query)` | `src/lib/catalog.ts` | `Product[]` | search (page coming) |
+| `searchProducts(query)` | `src/lib/catalog.ts` | `Product[]` ranked by relevance | (available for an API / quick search) |
 | `getSiteStats()` | `src/lib/content.ts` | `SiteStats` | hero, stats band, reviews |
 | `getHomeFaq()` | `src/lib/content.ts` | `FAQ[]` | home FAQ |
 | `getSupportTopics()` | `src/lib/content.ts` | `SupportTopic[]` (`slug`, `name`, `icon`, `faqs[]`) | Support page help center |
 | `getProducts({ domain: "support" })` | `src/lib/catalog.ts` | `Product[]` (SERVICE type) | Support page "expert services" |
 
 Sample data for all of these is in `src/data/` — use it as seed data for the database.
+
+### Search (`/products`)
+
+The search page gets the full product list from `getProducts()` and searches **in the browser**
+(instant, no server round-trip) using `src/lib/search.ts`:
+
+- `toSearchEntry(product, domain, price)` — builds the searchable text (name, brand, section, category, packages, description)
+- `scoreEntry(entry, query)` — relevance score; all typed words must match
+- `ALIASES` — short forms people type (`ff` → Free Fire, `uc` → PUBG, `mlbb`, `gpt`, `yt`…). Add more here.
+
+With hundreds of products later, keep the same functions but move them behind `GET /api/search?q=…`
+(`searchProducts()` in `catalog.ts` already uses the same scoring).
 
 ## 3. Actions (things the customer does)
 
@@ -131,6 +143,7 @@ With the site running:
 ```bash
 node scripts/check-order.mjs http://localhost:3000     # end-to-end order form test
 node scripts/check-support.mjs http://localhost:3000   # help center search + support form test
+node scripts/check-search.mjs http://localhost:3000    # search page: aliases, ranking, filters, URL
 node scripts/perf.mjs http://localhost:3000            # page weight per page (run on a production build)
 node scripts/nav-speed.mjs http://localhost:3000       # click-to-page switch time
 node scripts/screenshot.mjs http://localhost:3000/ out.png 1440 light   # screenshot + console errors
