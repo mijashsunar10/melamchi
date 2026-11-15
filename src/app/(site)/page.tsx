@@ -1,4 +1,3 @@
-import { TrendingUp } from "lucide-react";
 import { DomainTiles } from "@/components/home/domain-tiles";
 import { FaqCta } from "@/components/home/faq-cta";
 import { FlashDeals } from "@/components/home/flash-deals";
@@ -35,18 +34,9 @@ export default async function HomePage() {
     getHomeFaq(),
   ]);
 
-  const tabs = [
-    { value: "trending", label: "Trending", icon: <TrendingUp />, href: "/products", content: <Grid products={bestSellers} /> },
-    ...domains
-      .filter((d) => d.slug !== "support")
-      .map((d) => ({
-        value: d.slug,
-        label: d.name,
-        icon: <Icon name={d.icon} />,
-        href: `/${d.slug}`,
-        content: <Grid products={products.filter((p) => p.domain === d.slug).slice(0, 8)} />,
-      })),
-  ];
+  const links = domains
+    .filter((d) => d.slug !== "support")
+    .map((d) => ({ href: `/${d.slug}`, label: d.name, icon: <Icon name={d.icon} /> }));
 
   return (
     <div className="flex flex-col gap-20 pb-20 sm:gap-28 sm:pb-28">
@@ -63,7 +53,9 @@ export default async function HomePage() {
           title="Popular right now"
           className="mb-8"
         />
-        <ProductShowcase tabs={tabs} />
+        <ProductShowcase links={links}>
+          <Grid products={bestSellers} />
+        </ProductShowcase>
       </section>
 
       <HowItWorks />

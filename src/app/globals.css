@@ -97,7 +97,7 @@
   --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-heading), var(--font-body), ui-sans-serif,
     system-ui, sans-serif;
-  --font-nepali: var(--font-devanagari), var(--font-body), sans-serif;
+  --font-nepali: "Noto Sans Devanagari", "Nirmala UI", "Kohinoor Devanagari", "Devanagari Sangam MN", Mangal, var(--font-body), sans-serif;
 }
 
 @theme {

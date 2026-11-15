@@ -1,31 +1,24 @@
 import type { Metadata, Viewport } from "next";
-import { Montserrat, Noto_Sans_Devanagari, Plus_Jakarta_Sans } from "next/font/google";
+import { Montserrat, Plus_Jakarta_Sans } from "next/font/google";
 import { ThemeScript } from "@/components/theme/theme-script";
 import { ToastProvider } from "@/components/ui/toast";
 import { siteConfig } from "@/lib/site";
 import "./globals.css";
 
-// Headings: heavy italic, matching the TOPX wordmark
+// Headings & prices: Montserrat variable font — one file per style covers every weight
 const heading = Montserrat({
   variable: "--font-heading",
   subsets: ["latin"],
-  weight: ["600", "700", "800", "900"],
   style: ["normal", "italic"],
 });
 
-// Body text
+// Body text (variable font, single file)
 const body = Plus_Jakarta_Sans({
   variable: "--font-body",
   subsets: ["latin"],
 });
 
-// Nepali (Devanagari) text — only loaded when used
-const devanagari = Noto_Sans_Devanagari({
-  variable: "--font-devanagari",
-  subsets: ["devanagari"],
-  weight: ["400", "600", "700"],
-  preload: false,
-});
+// Nepali (Devanagari) uses the device's built-in font — no download needed.
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -66,7 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${heading.variable} ${body.variable} ${devanagari.variable} h-full antialiased`}
+      className={`${heading.variable} ${body.variable} h-full antialiased`}
     >
       <head>
         <ThemeScript />

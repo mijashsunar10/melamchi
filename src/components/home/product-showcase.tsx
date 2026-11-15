@@ -1,61 +1,44 @@
-"use client";
-
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import { type ReactNode, useState } from "react";
-import { cn } from "@/lib/cn";
+import type { ReactNode } from "react";
 
-export interface ShowcaseTab {
-  value: string;
+export interface ShowcaseLink {
+  href: string;
   label: string;
   icon: ReactNode;
-  href: string;
-  /** pre-rendered product cards (server components) */
-  content: ReactNode;
 }
 
-/** Category chips that switch the product grid below them. */
-export function ProductShowcase({ tabs }: { tabs: ShowcaseTab[] }) {
-  const [active, setActive] = useState(tabs[0]?.value);
-  const current = tabs.find((t) => t.value === active) ?? tabs[0];
-
+/**
+ * "Popular right now": the Trending grid plus chips that jump to each section page.
+ * Only one grid is rendered (instead of a hidden grid per tab) to keep the home page light.
+ */
+export function ProductShowcase({ links, children }: { links: ShowcaseLink[]; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-6">
-      <div role="tablist" className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-        {tabs.map((t) => {
-          const selected = t.value === current.value;
-          return (
-            <button
-              key={t.value}
-              role="tab"
-              type="button"
-              aria-selected={selected}
-              onClick={() => setActive(t.value)}
-              className={cn(
-                "flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all [&_svg]:size-4",
-                selected
-                  ? "bg-primary text-primary-foreground shadow-[0_8px_20px_-6px_rgba(29,63,191,0.6)]"
-                  : "bg-surface text-muted-foreground ring-1 ring-border hover:text-foreground hover:ring-primary/30",
-              )}
-            >
-              {t.icon}
-              {t.label}
-            </button>
-          );
-        })}
-      </div>
+      <nav aria-label="Browse categories" className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+        <span className="flex shrink-0 items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-[0_8px_20px_-6px_rgba(29,63,191,0.6)] [&_svg]:size-4">
+          <TrendingUp /> Trending
+        </span>
+        {links.map((l) => (
+          <Link
+            key={l.href}
+            href={l.href}
+            className="group flex shrink-0 items-center gap-2 rounded-full bg-surface px-4 py-2.5 text-sm font-semibold text-muted-foreground ring-1 ring-border transition-all hover:text-primary hover:ring-primary/30 [&_svg]:size-4"
+          >
+            {l.icon}
+            {l.label}
+            <ArrowUpRight className="opacity-50 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
+          </Link>
+        ))}
+      </nav>
 
-      {tabs.map((t) => (
-        <div key={t.value} role="tabpanel" hidden={t.value !== current.value} className="animate-fade-up">
-          {t.content}
-        </div>
-      ))}
+      <div className="animate-fade-up">{children}</div>
 
       <Link
-        href={current.href}
+        href="/products"
         className="mx-auto flex items-center gap-2 rounded-full border border-border bg-surface px-5 py-2.5 text-sm font-bold text-primary shadow-card transition-all hover:border-primary/40 hover:shadow-card-hover"
       >
-        See all {current.label} <ArrowRight className="size-4" />
+        See all products <ArrowRight className="size-4" />
       </Link>
     </div>
   );

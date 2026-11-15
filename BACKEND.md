@@ -131,5 +131,7 @@ With the site running:
 ```bash
 node scripts/check-order.mjs http://localhost:3000     # end-to-end order form test
 node scripts/check-support.mjs http://localhost:3000   # help center search + support form test
+node scripts/perf.mjs http://localhost:3000            # page weight per page (run on a production build)
+node scripts/nav-speed.mjs http://localhost:3000       # click-to-page switch time
 node scripts/screenshot.mjs http://localhost:3000/ out.png 1440 light   # screenshot + console errors
 ```

@@ -114,10 +114,10 @@ export function Cover({
       {photo ? (
         <>
           {/* real photo, tinted with the brand colour */}
+          {/* no blur placeholder: the brand colour behind it already fills the card while loading */}
           <Image
             src={photo}
             alt=""
-            placeholder="blur"
             sizes={size === "sm" ? "48px" : "(min-width: 1024px) 300px, 50vw"}
             className="absolute inset-0 -z-20 size-full object-cover transition-transform duration-700 group-hover:scale-110"
           />

@@ -80,7 +80,7 @@ function HeroVisual({ stats }: { stats: SiteStats }) {
           alt="Gamer playing at a neon-lit gaming setup"
           placeholder="blur"
           loading="eager"
-          sizes="300px"
+          sizes="360px"
           className="size-full scale-110 object-cover object-[38%_45%]"
         />
         <div className="absolute inset-0 bg-gradient-to-tr from-brand-navy-deep/60 via-transparent to-brand-blue-500/25" />
