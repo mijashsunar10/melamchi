@@ -1,8 +1,8 @@
-import { ArrowRight, MessageCircle } from "lucide-react";
+import { ArrowRight, ChevronRight, MessageCircle } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DomainCatalog } from "@/components/domain/domain-catalog";
-import { DomainHero } from "@/components/domain/domain-hero";
 import { DomainTiles } from "@/components/home/domain-tiles";
 import { SectionHeading } from "@/components/home/section-heading";
 import { Icon } from "@/components/icon";
@@ -11,6 +11,7 @@ import { Accordion } from "@/components/ui/accordion";
 import { buttonClasses } from "@/components/ui/button";
 import { accountFaq, codeFaq, licenseFaq, topupFaq } from "@/data/fields";
 import { getDomain, getDomains, getProducts, startingPrice } from "@/lib/catalog";
+import { formatNPR } from "@/lib/format";
 import { siteConfig } from "@/lib/site";
 import type { DomainSlug, FAQ } from "@/types/catalog";
 
@@ -55,11 +56,35 @@ export default async function DomainPage({ params }: PageProps<"/[domain]">) {
   const others = allDomains.filter((d) => d.slug !== slug);
 
   return (
-    <div className="flex flex-col gap-16 pb-20 sm:gap-24 sm:pb-28">
-      <DomainHero domain={domain} productCount={products.length} fromPrice={fromPrice} />
-
-      <section className="mx-auto -mt-8 w-full max-w-7xl px-4 sm:-mt-12 sm:px-6">
-        <SectionHeading eyebrow={domain.tagline} title={`All ${domain.name}`} className="mb-8" />
+    <div className="flex flex-col gap-16 pb-20 sm:gap-20 sm:pb-28">
+      <section className="mx-auto w-full max-w-7xl px-4 pt-6 sm:px-6 sm:pt-8">
+        {/* Compact page header — products start right away */}
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Link href="/" className="transition-colors hover:text-foreground">
+            Home
+          </Link>
+          <ChevronRight className="size-4" />
+          <span className="text-foreground" aria-current="page">
+            {domain.name}
+          </span>
+        </nav>
+        <div className="mt-4 mb-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${domain.gradient} text-white shadow-md`}>
+            <Icon name={domain.icon} className="size-6" />
+          </span>
+          <div className="min-w-0">
+            <h1 className="font-display text-3xl leading-tight font-black italic sm:text-4xl">{domain.name}</h1>
+            <p className="text-sm text-muted-foreground">
+              {products.length} products
+              {fromPrice !== null && (
+                <>
+                  {" "}· from <span className="font-semibold text-accent">{formatNPR(fromPrice)}</span>
+                </>
+              )}
+              {" "}· {domain.tagline}
+            </p>
+          </div>
+        </div>
         <DomainCatalog
           categories={domain.categories.map((c) => ({ slug: c.slug, name: c.name, icon: <Icon name={c.icon} /> }))}
           items={products.map((p) => ({
