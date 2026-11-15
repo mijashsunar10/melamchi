@@ -37,6 +37,10 @@ export const siteConfig = {
     whatsappNumber,
     whatsapp: `https://wa.me/${whatsappNumber}`,
     address: process.env.NEXT_PUBLIC_ADDRESS || "Kathmandu, Nepal",
+    /** Google Maps link for "Get directions" */
+    mapUrl: process.env.NEXT_PUBLIC_MAP_URL || "https://maps.google.com/?q=Kathmandu,Nepal",
+    /** Office hours (online support is 24/7) */
+    officeHours: process.env.NEXT_PUBLIC_OFFICE_HOURS || "Sun–Fri, 10:00 AM – 6:00 PM",
   },
   social: {
     facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || "#",

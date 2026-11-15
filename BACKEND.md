@@ -67,7 +67,7 @@ All in **`src/lib/orders.ts`**:
 | `validateOrder(product, request)` | runs in the browser | **also run it on the server** before saving an order (same function, no changes) |
 | `priceOrder(product, planId, qty, deal?)` | runs in the browser; applies the deal discount to the deal's package | **always recalculate the price on the server** (with the active deal) — never trust the price from the browser |
 
-Support form — **`src/lib/support.ts`**:
+Support / contact form — **`src/lib/support.ts`** (used on `/support` and `/contact`):
 
 | Function | Today | Backend should |
 |---|---|---|
@@ -127,7 +127,8 @@ Copy `.env.example` → `.env.local`. Contact details are read in `src/lib/site.
 |---|---|
 | `NEXT_PUBLIC_SITE_URL` | SEO / share links |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | every "Contact" and "Order on WhatsApp" button (digits only, e.g. `9779812345678`) |
-| `NEXT_PUBLIC_SUPPORT_EMAIL`, `NEXT_PUBLIC_SUPPORT_PHONE`, `NEXT_PUBLIC_ADDRESS` | header, footer |
+| `NEXT_PUBLIC_SUPPORT_EMAIL`, `NEXT_PUBLIC_SUPPORT_PHONE`, `NEXT_PUBLIC_ADDRESS` | header, footer, contact page |
+| `NEXT_PUBLIC_MAP_URL`, `NEXT_PUBLIC_OFFICE_HOURS` | contact page ("Get directions", office hours) |
 | `NEXT_PUBLIC_FACEBOOK_URL` … `NEXT_PUBLIC_YOUTUBE_URL` | footer social icons |
 
 ---
