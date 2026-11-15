@@ -76,6 +76,16 @@ Support / contact form — **`src/lib/support.ts`** (used on `/support` and `/co
 
 `SupportRequest`: `{ name, phone, topic, orderNumber?, message }`
 
+Reseller / business applications — **`src/lib/reseller.ts`** (used on `/reseller`):
+
+| Function | Today | Backend should |
+|---|---|---|
+| `submitResellerApplication(app)` | opens WhatsApp with the application | `POST /api/reseller-applications` → `{ applicationId }`, notify the business team |
+| `validateResellerApplication(app)` | runs in the browser | also run on the server |
+
+`ResellerApplication`: `{ businessName, contactName, phone, city, businessType, monthlyVolume, interests[], message? }`
+(`BUSINESS_TYPES` and `MONTHLY_VOLUMES` lists are in the same file).
+
 `OrderRequest` (what the order form sends):
 
 ```ts
@@ -111,7 +121,8 @@ Full definitions: `src/types/catalog.ts`, `src/types/content.ts`.
 ### Suggested database tables
 
 `domains`, `categories`, `products`, `plans`, `order_fields` (or a JSON column on products),
-`deals`, `reviews`, `orders`, `order_items`, `payments`, `faqs`, `support_topics`, `support_tickets`, `settings`.
+`deals`, `reviews`, `orders`, `order_items`, `payments`, `faqs`, `support_topics`, `support_tickets`,
+`reseller_applications`, `settings`.
 
 An **order** should store: id, product, plan, quantity, details (JSON), player name, unit price, total,
 status (`pending → paid → processing → delivered / failed / refunded`), payment method, payment reference,
