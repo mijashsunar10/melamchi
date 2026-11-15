@@ -1,4 +1,13 @@
-// Central brand + contact config. Values marked TODO are waiting on the CEO.
+// Central brand + contact config.
+// Contact details come from environment variables (see .env.example) so they can
+// be changed per environment without touching code. Defaults are placeholders.
+
+// NOTE: each variable must be written out literally (process.env.NEXT_PUBLIC_…)
+// so Next.js can inline it into browser code.
+
+/** WhatsApp number in international format, digits only, e.g. 9779812345678 */
+const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "97798XXXXXXXX";
+
 export const siteConfig = {
   name: "TOPX NEPAL",
   company: "Melamchi Tech",
@@ -23,17 +32,21 @@ export const siteConfig = {
     "digital products Nepal",
   ],
   contact: {
-    // TODO: real contact details from the CEO
-    email: "support@topxnepal.com",
-    phone: "+977 98XXXXXXXX",
-    whatsapp: "https://wa.me/97798XXXXXXXX",
-    address: "Kathmandu, Nepal",
+    email: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@topxnepal.com",
+    phone: process.env.NEXT_PUBLIC_SUPPORT_PHONE || "+977 98XXXXXXXX",
+    whatsappNumber,
+    whatsapp: `https://wa.me/${whatsappNumber}`,
+    address: process.env.NEXT_PUBLIC_ADDRESS || "Kathmandu, Nepal",
   },
   social: {
-    // TODO: real social links
-    facebook: "#",
-    instagram: "#",
-    tiktok: "#",
-    youtube: "#",
+    facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || "#",
+    instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "#",
+    tiktok: process.env.NEXT_PUBLIC_TIKTOK_URL || "#",
+    youtube: process.env.NEXT_PUBLIC_YOUTUBE_URL || "#",
   },
 } as const;
+
+/** WhatsApp chat link, optionally with a pre-filled message. */
+export function whatsappLink(message?: string) {
+  return message ? `${siteConfig.contact.whatsapp}?text=${encodeURIComponent(message)}` : siteConfig.contact.whatsapp;
+}

@@ -1,5 +1,7 @@
 import { BadgeCheck, Quote, Star } from "lucide-react";
+import { formatCountPlus } from "@/lib/format";
 import type { Product, Review } from "@/types/catalog";
+import type { SiteStats } from "@/types/content";
 import { SectionHeading } from "./section-heading";
 
 function ReviewCard({ review, productName }: { review: Review; productName?: string }) {
@@ -32,7 +34,7 @@ function ReviewCard({ review, productName }: { review: Review; productName?: str
   );
 }
 
-export function Reviews({ reviews, products }: { reviews: Review[]; products: Product[] }) {
+export function Reviews({ reviews, products, stats }: { reviews: Review[]; products: Product[]; stats: SiteStats }) {
   const name = (slug: string) => products.find((p) => p.slug === slug)?.name;
   const loop = [...reviews, ...reviews];
 
@@ -44,14 +46,14 @@ export function Reviews({ reviews, products }: { reviews: Review[]; products: Pr
           title="Loved by gamers & creators"
           extra={
             <div className="flex items-center gap-3 rounded-2xl bg-surface px-4 py-3 shadow-card ring-1 ring-border">
-              <span className="font-display text-3xl font-black italic">4.9</span>
+              <span className="font-display text-3xl font-black italic">{stats.rating.toFixed(1)}</span>
               <div>
                 <div className="flex">
                   {[0, 1, 2, 3, 4].map((i) => (
                     <Star key={i} className="size-4 fill-amber-400 text-amber-400" />
                   ))}
                 </div>
-                <p className="text-xs text-muted-foreground">from 5,000+ verified orders</p>
+                <p className="text-xs text-muted-foreground">from {formatCountPlus(stats.reviewCount)} verified orders</p>
               </div>
             </div>
           }

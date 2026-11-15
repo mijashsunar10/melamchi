@@ -14,3 +14,8 @@ export function discountPercent(price: number, originalPrice?: number): number |
   if (!originalPrice || originalPrice <= price) return null;
   return Math.round(((originalPrice - price) / originalPrice) * 100);
 }
+
+/** 50000 → "50,000+", 5200 → "5,200+" */
+export function formatCountPlus(n: number): string {
+  return `${npr.format(n)}+`;
+}

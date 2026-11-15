@@ -2,7 +2,9 @@ import { ArrowRight, BadgeCheck, CheckCircle2, Flame, Headset, Lock, Search, Shi
 import Image from "next/image";
 import Link from "next/link";
 import { buttonClasses } from "@/components/ui/button";
+import { formatCountPlus } from "@/lib/format";
 import { images } from "@/lib/images";
+import type { SiteStats } from "@/types/content";
 import { type SimpleIcon, siClaude, siNetflix, siPlaystation, siPubg, siSpotify, siSteam, siYoutube } from "simple-icons";
 
 const trust = [
@@ -57,7 +59,7 @@ function LogoTile({ icon, pos, delay }: { icon: SimpleIcon; pos: string; delay: 
   );
 }
 
-function HeroVisual() {
+function HeroVisual({ stats }: { stats: SiteStats }) {
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[540px]">
       {/* glow */}
@@ -91,14 +93,14 @@ function HeroVisual() {
 
       {/* rating chip */}
       <div className="absolute top-[24%] right-[16%] z-30 flex items-center gap-2 rounded-xl border border-border bg-white/95 px-3 py-2 text-brand-navy shadow-lg backdrop-blur-xl dark:border-white/15 dark:bg-brand-navy/75 dark:text-white dark:shadow-none">
-        <span className="text-lg font-bold">4.9</span>
+        <span className="text-lg font-bold">{stats.rating.toFixed(1)}</span>
         <span className="leading-tight">
           <span className="flex">
             {[0, 1, 2, 3, 4].map((i) => (
               <Star key={i} className="size-3 fill-amber-400 text-amber-400" />
             ))}
           </span>
-          <span className="text-[10px] text-muted-foreground dark:text-white/60">5,000+ reviews</span>
+          <span className="text-[10px] text-muted-foreground dark:text-white/60">{formatCountPlus(stats.reviewCount)} reviews</span>
         </span>
       </div>
 
@@ -129,7 +131,7 @@ function HeroVisual() {
         </div>
         <div className="mt-3 flex items-center justify-between border-t border-border pt-3 text-[11px] text-muted-foreground dark:border-white/10 dark:text-white/65">
           <span className="flex items-center gap-1">
-            <Zap className="size-3.5 fill-amber-300 text-amber-300" /> Delivered in 12 sec
+            <Zap className="size-3.5 fill-amber-300 text-amber-300" /> Delivered in {stats.avgDeliverySeconds} sec
           </span>
           <span className="flex items-center gap-1">
             <Lock className="size-3" /> eSewa
@@ -140,7 +142,7 @@ function HeroVisual() {
   );
 }
 
-export function Hero() {
+export function Hero({ stats }: { stats: SiteStats }) {
   return (
     <section className="bg-hero-light relative isolate overflow-hidden text-brand-navy dark:bg-hero dark:text-white">
       {/* subtle grid texture */}
@@ -202,7 +204,7 @@ export function Hero() {
         </div>
 
         <div className="hidden lg:block">
-          <HeroVisual />
+          <HeroVisual stats={stats} />
         </div>
       </div>
 

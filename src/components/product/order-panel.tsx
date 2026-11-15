@@ -6,19 +6,11 @@ import { Field, Input, Select, Textarea } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
 import { discountPercent, formatNPR } from "@/lib/format";
+import { allowsQuantity, lookupPlayerName, MAX_QUANTITY, type OrderRequest, priceOrder, submitOrder, validateOrder } from "@/lib/orders";
 import type { OrderField, Plan, Product } from "@/types/catalog";
-
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function defaultPlan(plans: Plan[]) {
   return (plans.find((p) => p.popular && p.inStock) ?? plans.find((p) => p.inStock) ?? plans[0]).id;
-}
-
-/** Demo name lookup — replaced by the real game API when the backend is ready. */
-function mockPlayerName(id: string) {
-  const names = ["NepaliGamer", "HimalayanAce", "KTMSniper", "PokharaPro", "EverestKing"];
-  const n = [...id].reduce((a, c) => a + c.charCodeAt(0), 0);
-  return `${names[n % names.length]}${n % 100}`;
 }
 
 function StepTitle({ n, children }: { n: number; children: React.ReactNode }) {
@@ -30,7 +22,8 @@ function StepTitle({ n, children }: { n: number; children: React.ReactNode }) {
   );
 }
 
-export function OrderPanel({ product, whatsapp }: { product: Product; whatsapp: string }) {
+/** Product order form. All order logic lives in src/lib/orders.ts (backend swap point). */
+export function OrderPanel({ product }: { product: Product }) {
   const toast = useToast();
   const formId = useId();
   const [planId, setPlanId] = useState(() => defaultPlan(product.plans));
@@ -38,12 +31,19 @@ export function OrderPanel({ product, whatsapp }: { product: Product; whatsapp: 
   const [values, setValues] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [checking, setChecking] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [playerName, setPlayerName] = useState<string | null>(null);
 
-  const plan = product.plans.find((p) => p.id === planId) ?? product.plans[0];
-  const isQuote = plan.price === 0;
-  const allowQty = product.deliveryType === "TOPUP" || product.deliveryType === "CODE";
-  const total = plan.price * qty;
+  const { plan, total, isQuote } = priceOrder(product, planId, qty);
+  const allowQty = allowsQuantity(product);
+
+  const request = (): OrderRequest => ({
+    productSlug: product.slug,
+    planId,
+    quantity: qty,
+    details: values,
+    playerName: playerName ?? undefined,
+  });
 
   const setValue = (name: string, v: string) => {
     setValues((s) => ({ ...s, [name]: v }));
@@ -51,54 +51,33 @@ export function OrderPanel({ product, whatsapp }: { product: Product; whatsapp: 
     if (name === "playerId") setPlayerName(null);
   };
 
-  function checkName(field: OrderField) {
-    const id = values[field.name]?.trim() ?? "";
-    if (!/^\d{5,15}$/.test(id)) {
-      setErrors((e) => ({ ...e, [field.name]: "Enter a valid numeric ID first." }));
-      return;
-    }
+  async function checkName(field: OrderField) {
     setChecking(true);
-    setTimeout(() => {
-      setPlayerName(mockPlayerName(id));
-      setChecking(false);
-    }, 900);
+    const name = await lookupPlayerName(product.slug, values[field.name]?.trim() ?? "");
+    setChecking(false);
+    if (name) setPlayerName(name);
+    else setErrors((e) => ({ ...e, [field.name]: "Player not found — check the ID and try again." }));
   }
 
-  function validate() {
-    const next: Record<string, string> = {};
-    for (const f of product.fields) {
-      const v = values[f.name]?.trim() ?? "";
-      if (f.required && !v) next[f.name] = `${f.label} is required.`;
-      else if (f.type === "email" && v && !EMAIL.test(v)) next[f.name] = "Enter a valid email address.";
-    }
-    setErrors(next);
-    return Object.keys(next).length === 0;
-  }
-
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!plan.inStock) {
-      toast({ type: "error", title: "Out of stock", description: "Please choose another package." });
+    const found = validateOrder(product, request());
+    setErrors(found);
+    if (Object.keys(found).length) {
+      toast({
+        type: "error",
+        title: found._plan ? found._plan : "Please fill in the required details",
+      });
       return;
     }
-    if (!validate()) {
-      toast({ type: "error", title: "Please fill in the required details" });
+    setSubmitting(true);
+    const result = await submitOrder(product, request());
+    setSubmitting(false);
+    if (!result.ok) {
+      toast({ type: "error", title: result.error });
       return;
     }
-    const lines = [
-      "Hi TOPX Nepal! I'd like to order:",
-      "",
-      `• Product: ${product.name}`,
-      `• Package: ${plan.name}`,
-      ...(allowQty ? [`• Quantity: ${qty}`] : []),
-      ...product.fields
-        .filter((f) => values[f.name]?.trim())
-        .map((f) => `• ${f.label}: ${values[f.name].trim()}`),
-      ...(playerName ? [`• Player name: ${playerName}`] : []),
-      `• Total: ${isQuote ? "Please send a quote" : formatNPR(total)}`,
-    ];
-    const url = `${whatsapp}?text=${encodeURIComponent(lines.join("\n"))}`;
-    window.open(url, "_blank", "noopener,noreferrer");
+    window.open(result.redirectUrl, "_blank", "noopener,noreferrer");
     toast({ type: "success", title: "Opening WhatsApp…", description: "Send the message and we'll confirm your order." });
   }
 
@@ -255,9 +234,9 @@ export function OrderPanel({ product, whatsapp }: { product: Product; whatsapp: 
                 <button
                   type="button"
                   aria-label="Increase quantity"
-                  onClick={() => setQty((q) => Math.min(10, q + 1))}
+                  onClick={() => setQty((q) => Math.min(MAX_QUANTITY, q + 1))}
                   className="flex size-9 items-center justify-center rounded-full hover:bg-muted disabled:opacity-40"
-                  disabled={qty >= 10}
+                  disabled={qty >= MAX_QUANTITY}
                 >
                   <Plus className="size-4" />
                 </button>
@@ -272,6 +251,7 @@ export function OrderPanel({ product, whatsapp }: { product: Product; whatsapp: 
 
         <button
           type="submit"
+          disabled={submitting}
           className="inline-flex h-13 items-center justify-center gap-2.5 rounded-xl bg-[#25D366] px-6 text-base font-bold text-white shadow-[0_12px_30px_-10px_rgba(37,211,102,0.7)] transition-all hover:-translate-y-0.5 hover:bg-[#1fb857]"
         >
           <svg viewBox="0 0 24 24" className="size-5 fill-white" aria-hidden>

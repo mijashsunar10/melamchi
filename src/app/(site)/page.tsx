@@ -11,6 +11,7 @@ import { StatsBand } from "@/components/home/stats-band";
 import { Icon } from "@/components/icon";
 import { ProductCard } from "@/components/product/product-card";
 import { getBestSellers, getDeals, getDomains, getProducts, getReviews } from "@/lib/catalog";
+import { getHomeFaq, getSiteStats } from "@/lib/content";
 import type { Product } from "@/types/catalog";
 
 function Grid({ products }: { products: Product[] }) {
@@ -24,12 +25,14 @@ function Grid({ products }: { products: Product[] }) {
 }
 
 export default async function HomePage() {
-  const [domains, products, bestSellers, deals, reviews] = await Promise.all([
+  const [domains, products, bestSellers, deals, reviews, stats, faqs] = await Promise.all([
     getDomains(),
     getProducts(),
     getBestSellers(8),
     getDeals(),
     getReviews(),
+    getSiteStats(),
+    getHomeFaq(),
   ]);
 
   const tabs = [
@@ -48,7 +51,7 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col gap-20 pb-20 sm:gap-28 sm:pb-28">
       <div>
-        <Hero />
+        <Hero stats={stats} />
         <DomainTiles domains={domains} />
       </div>
 
@@ -64,9 +67,9 @@ export default async function HomePage() {
       </section>
 
       <HowItWorks />
-      <StatsBand />
-      <Reviews reviews={reviews} products={products} />
-      <FaqCta />
+      <StatsBand stats={stats} />
+      <Reviews reviews={reviews} products={products} stats={stats} />
+      <FaqCta faqs={faqs} />
     </div>
   );
 }

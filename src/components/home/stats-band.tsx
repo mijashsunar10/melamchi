@@ -1,14 +1,15 @@
 import Image from "next/image";
+import { formatCountPlus } from "@/lib/format";
 import { images } from "@/lib/images";
+import type { SiteStats } from "@/types/content";
 
-const stats = [
-  { value: "50,000+", label: "Orders delivered" },
-  { value: "12 sec", label: "Average top-up" },
-  { value: "4.9 / 5", label: "Customer rating" },
-  { value: "24/7", label: "Human support" },
-];
-
-export function StatsBand() {
+export function StatsBand({ stats: s }: { stats: SiteStats }) {
+  const stats = [
+    { value: formatCountPlus(s.ordersDelivered), label: "Orders delivered" },
+    { value: `${s.avgDeliverySeconds} sec`, label: "Average top-up" },
+    { value: `${s.rating.toFixed(1)} / 5`, label: "Customer rating" },
+    { value: "24/7", label: "Human support" },
+  ];
   return (
     <section className="mx-auto w-full max-w-7xl px-4 sm:px-6">
       <div className="relative isolate overflow-hidden rounded-3xl px-6 py-14 text-foreground ring-1 ring-border sm:px-12 sm:py-20 dark:text-white dark:ring-0">

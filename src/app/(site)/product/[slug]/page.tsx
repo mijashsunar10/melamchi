@@ -166,7 +166,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
               <p className="max-w-xl text-[15px] leading-relaxed text-muted-foreground">{product.shortDescription}</p>
             </div>
 
-            <OrderPanel product={product} whatsapp={siteConfig.contact.whatsapp} />
+            <OrderPanel product={product} />
           </div>
         </div>
       </div>

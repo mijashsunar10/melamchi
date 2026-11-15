@@ -1,0 +1,123 @@
+# TOPX NEPAL — Backend hand-off guide
+
+The frontend is built so the backend can be plugged in **without changing any page or component**.
+This file lists every place the backend connects, and the data shapes it must return.
+
+> Keep this file updated whenever a new page adds data or an action.
+
+---
+
+## 1. The rule
+
+```
+Pages / components  ──►  src/lib/*.ts (async functions)  ──►  src/data/*.ts (sample data today)
+                                                         ──►  API / database (backend later)
+```
+
+- **Components never import `src/data/` directly.** They call functions in `src/lib/`.
+- Every function in `src/lib/catalog.ts` and `src/lib/content.ts` is already `async`.
+  To go live, replace the function **body** with a database query or API call. The return type stays the same.
+- All user actions (ordering, name check) go through **`src/lib/orders.ts`** only.
+- All TypeScript types the backend must match live in **`src/types/`**.
+
+---
+
+## 2. Read functions (data the pages show)
+
+| Function | File | Returns | Used on |
+|---|---|---|---|
+| `getDomains()` | `src/lib/catalog.ts` | `Domain[]` | header, home, section pages, footer |
+| `getDomain(slug)` | `src/lib/catalog.ts` | `Domain \| undefined` | section page, product page |
+| `getProducts({ domain?, category?, tag? })` | `src/lib/catalog.ts` | `Product[]` | home, section pages |
+| `getProduct(slug)` | `src/lib/catalog.ts` | `Product \| undefined` | product page |
+| `getRelatedProducts(product, limit)` | `src/lib/catalog.ts` | `Product[]` | product page |
+| `getBestSellers(limit)` | `src/lib/catalog.ts` | `Product[]` (sorted by `sold`) | home "Trending" |
+| `getDeals()` | `src/lib/catalog.ts` | `DealWithProduct[]` | home flash deals |
+| `getReviews(productSlug?)` | `src/lib/catalog.ts` | `Review[]` | home, product page |
+| `getPaymentMethods()` | `src/lib/catalog.ts` | `PaymentMethod[]` | footer |
+| `searchProducts(query)` | `src/lib/catalog.ts` | `Product[]` | search (page coming) |
+| `getSiteStats()` | `src/lib/content.ts` | `SiteStats` | hero, stats band, reviews |
+| `getHomeFaq()` | `src/lib/content.ts` | `FAQ[]` | home FAQ |
+
+Sample data for all of these is in `src/data/` — use it as seed data for the database.
+
+## 3. Actions (things the customer does)
+
+All in **`src/lib/orders.ts`**:
+
+| Function | Today | Backend should |
+|---|---|---|
+| `submitOrder(product, request)` | builds a WhatsApp message and returns its link | `POST /api/orders` → create order, return `{ orderId, paymentUrl }`; function returns `{ ok: true, orderId, redirectUrl: paymentUrl }` |
+| `lookupPlayerName(productSlug, playerId)` | returns a demo name | `GET /api/player-name?product=…&id=…` → `{ name }` or 404 (supplier API) |
+| `validateOrder(product, request)` | runs in the browser | **also run it on the server** before saving an order (same function, no changes) |
+| `priceOrder(product, planId, qty)` | runs in the browser | **always recalculate the price on the server** — never trust the price from the browser |
+
+`OrderRequest` (what the order form sends):
+
+```ts
+{
+  productSlug: string;
+  planId: string;
+  quantity: number;               // 1–10, only for TOPUP and CODE products
+  details: Record<string, string>; // e.g. { playerId: "5123456789", zoneId: "2101" } — keys = product.fields[].name
+  playerName?: string;
+}
+```
+
+---
+
+## 4. Data models
+
+Full definitions: `src/types/catalog.ts`, `src/types/content.ts`.
+
+| Model | Key fields | Notes |
+|---|---|---|
+| **Domain** | `slug`, `name`, `tagline`, `description`, `icon`, `gradient`, `highlights[]`, `categories[]` | The 6 sections. `slug` is fixed: `ai-tools`, `gaming`, `gift-cards`, `software`, `digital-products`, `support` |
+| **Category** | `slug`, `name`, `icon` | belongs to a Domain |
+| **Product** | `slug`, `name`, `brand`, `domain`, `category`, `deliveryType`, `image`, `color`, `shortDescription`, `description`, `region`, `deliveryTime`, `rating`, `reviewCount`, `sold`, `tags[]`, `plans[]`, `fields[]`, `howTo[]`, `faq[]` | `image: null` → the site shows a branded cover with a stock photo |
+| **Plan** (package) | `id`, `name`, `price` (NPR), `originalPrice?`, `bonus?`, `validity?`, `inStock`, `popular?` | `price: 0` = "get a quote" |
+| **OrderField** | `name`, `label`, `type` (`text/email/tel/number/select/textarea`), `required`, `placeholder?`, `help?`, `options?`, `verifiable?` | Drives the order form. `verifiable: true` shows the "Check name" button |
+| **DeliveryType** | `TOPUP` · `CODE` · `ACCOUNT` · `LICENSE` · `SERVICE` | How the order is fulfilled |
+| **Deal** | `productSlug`, `planId`, `discountPercent`, `endsAt` (ISO), `label?` | |
+| **Review** | `id`, `productSlug`, `name`, `city`, `rating`, `comment`, `date`, `verified` | only show reviews from real orders |
+| **PaymentMethod** | `id`, `name`, `description`, `color` | eSewa, Khalti, IME Pay, Fonepay, bank, wallet |
+| **SiteStats** | `ordersDelivered`, `avgDeliverySeconds`, `rating`, `reviewCount` | calculate from real orders & reviews |
+| **FAQ** | `q`, `a` | |
+
+### Suggested database tables
+
+`domains`, `categories`, `products`, `plans`, `order_fields` (or a JSON column on products),
+`deals`, `reviews`, `orders`, `order_items`, `payments`, `faqs`, `settings`.
+
+An **order** should store: id, product, plan, quantity, details (JSON), player name, unit price, total,
+status (`pending → paid → processing → delivered / failed / refunded`), payment method, payment reference,
+delivered code/key (encrypted), customer contact, timestamps.
+
+---
+
+## 5. Settings / environment variables
+
+Copy `.env.example` → `.env.local`. Contact details are read in `src/lib/site.ts`.
+
+| Variable | Used for |
+|---|---|
+| `NEXT_PUBLIC_SITE_URL` | SEO / share links |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | every "Contact" and "Order on WhatsApp" button (digits only, e.g. `9779812345678`) |
+| `NEXT_PUBLIC_SUPPORT_EMAIL`, `NEXT_PUBLIC_SUPPORT_PHONE`, `NEXT_PUBLIC_ADDRESS` | header, footer |
+| `NEXT_PUBLIC_FACEBOOK_URL` … `NEXT_PUBLIC_YOUTUBE_URL` | footer social icons |
+
+---
+
+## 6. Things deliberately left out (on hold)
+
+Login, cart, checkout, user dashboard — see `WORKFLOW.md`. Ordering works through WhatsApp until
+online payment is added. When it is, only `submitOrder()` changes.
+
+## 7. Checking that nothing broke
+
+With the site running:
+
+```bash
+node scripts/check-order.mjs http://localhost:3000     # end-to-end order form test
+node scripts/screenshot.mjs http://localhost:3000/ out.png 1440 light   # screenshot + console errors
+```
