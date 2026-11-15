@@ -61,11 +61,12 @@ export function validateOrder(product: Product, req: OrderRequest): Record<strin
 }
 
 /** Human-readable order summary (used for the WhatsApp message, and later order notes). */
-export function orderSummary(product: Product, req: OrderRequest, deal?: Deal | null): string {
+export function orderSummary(product: Product, req: OrderRequest, deal?: Deal | null, orderId?: string): string {
   const { plan, quantity, total, isQuote, onDeal } = priceOrder(product, req.planId, req.quantity, deal);
   return [
     "Hi TOPX Nepal! I'd like to order:",
     "",
+    ...(orderId ? [`• Order ref: ${orderId}`] : []),
     `• Product: ${product.name}`,
     `• Package: ${plan.name}${onDeal && deal ? ` (deal -${deal.discountPercent}%)` : ""}`,
     ...(allowsQuantity(product) ? [`• Quantity: ${quantity}`] : []),
@@ -86,7 +87,46 @@ export function orderSummary(product: Product, req: OrderRequest, deal?: Deal | 
 export async function submitOrder(product: Product, req: OrderRequest, deal?: Deal | null): Promise<SubmitResult> {
   const errors = validateOrder(product, req);
   if (Object.keys(errors).length) return { ok: false, error: Object.values(errors)[0] };
-  return { ok: true, redirectUrl: whatsappLink(orderSummary(product, req, deal)) };
+  const orderId = newOrderRef();
+  return { ok: true, orderId, redirectUrl: whatsappLink(orderSummary(product, req, deal, orderId)) };
+}
+
+/** Short, readable order reference, e.g. "TX-8K2F9Q" (the backend will issue real order IDs). */
+export function newOrderRef(): string {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I to avoid confusion
+  const bytes = crypto.getRandomValues(new Uint8Array(6));
+  return `TX-${[...bytes].map((b) => alphabet[b % alphabet.length]).join("")}`;
+}
+
+/** Order references look like TX-XXXXXX. */
+export const ORDER_REF = /^TX-[A-Z0-9]{4,12}$/;
+
+export type OrderStatus = "received" | "paid" | "processing" | "delivered" | "failed" | "refunded";
+
+export interface OrderTracking {
+  orderId: string;
+  status: OrderStatus;
+  productName: string;
+  packageName: string;
+  total: number;
+  /** status changes, oldest first */
+  history: { status: OrderStatus; at: string }[];
+}
+
+export type TrackResult =
+  | { found: true; order: OrderTracking }
+  | { found: false; reason: "not-found" }
+  /** no backend yet — the page falls back to asking on WhatsApp */
+  | { found: false; reason: "offline" };
+
+/**
+ * Look up an order's status.
+ * NOW: no order database → returns "offline". BACKEND: GET /api/orders/{orderId}?phone=… → OrderTracking | 404.
+ */
+export async function trackOrder(orderId: string, phone?: string): Promise<TrackResult> {
+  void orderId;
+  void phone;
+  return { found: false, reason: "offline" };
 }
 
 /**

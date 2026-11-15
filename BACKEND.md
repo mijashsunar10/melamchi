@@ -65,6 +65,8 @@ All in **`src/lib/orders.ts`**:
 | Function | Today | Backend should |
 |---|---|---|
 | `submitOrder(product, request)` | builds a WhatsApp message and returns its link | `POST /api/orders` → create order, return `{ orderId, paymentUrl }`; function returns `{ ok: true, orderId, redirectUrl: paymentUrl }` |
+| `newOrderRef()` | makes a ref like `TX-8K2F9Q`, added to the WhatsApp message and shown to the customer | replace with the real order ID from `POST /api/orders` |
+| `trackOrder(orderId, phone?)` | returns `{ found: false, reason: "offline" }` → `/track` asks on WhatsApp | `GET /api/orders/{orderId}?phone=…` → `{ found: true, order: OrderTracking }` (or `reason: "not-found"`). The `/track` page already renders the status timeline |
 | `lookupPlayerName(productSlug, playerId)` | returns a demo name | `GET /api/player-name?product=…&id=…` → `{ name }` or 404 (supplier API) |
 | `validateOrder(product, request)` | runs in the browser | **also run it on the server** before saving an order (same function, no changes) |
 | `priceOrder(product, planId, qty, deal?)` | runs in the browser; applies the deal discount to the deal's package | **always recalculate the price on the server** (with the active deal) — never trust the price from the browser |
@@ -127,8 +129,8 @@ Full definitions: `src/types/catalog.ts`, `src/types/content.ts`.
 `deals`, `reviews`, `orders`, `order_items`, `payments`, `faqs`, `support_topics`, `support_tickets`,
 `reseller_applications`, `settings`.
 
-An **order** should store: id, product, plan, quantity, details (JSON), player name, unit price, total,
-status (`pending → paid → processing → delivered / failed / refunded`), payment method, payment reference,
+An **order** should store: id (format `TX-XXXXXX` so customers can track it), product, plan, quantity, details (JSON), player name, unit price, total,
+status (`received → paid → processing → delivered / failed / refunded` — type `OrderStatus` in `src/lib/orders.ts`), payment method, payment reference,
 delivered code/key (encrypted), customer contact, timestamps.
 
 ---

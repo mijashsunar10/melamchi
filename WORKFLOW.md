@@ -270,3 +270,4 @@ Admin panel (domains, products, plans, stock/codes, banners, deals, orders, user
 | 2026-11-15 | About page | ✅ | /about — intro (Melamchi Tech), live stats, values, six categories; story text is a draft for the CEO |
 | 2026-11-15 | Business & reseller page | ✅ | /reseller — benefits, who it is for, 4 steps, application form → WhatsApp (src/lib/reseller.ts) |
 | 2026-11-15 | Refund, Privacy, Terms pages | ✅ | Shared legal layout with table of contents; DRAFT text in src/data/legal.ts — needs CEO/lawyer review |
+| 2026-11-15 | Track order + order refs | ✅ | Orders get a TX-XXXXXX ref; /track validates the ref and asks on WhatsApp until trackOrder() is connected; status timeline ready for the backend |

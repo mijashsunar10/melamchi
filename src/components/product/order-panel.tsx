@@ -79,7 +79,12 @@ export function OrderPanel({ product, deal = null }: { product: Product; deal?: 
       return;
     }
     window.open(result.redirectUrl, "_blank", "noopener,noreferrer");
-    toast({ type: "success", title: "Opening WhatsApp…", description: "Send the message and we'll confirm your order." });
+    toast({
+      type: "success",
+      title: `Order ref ${result.orderId ?? ""} — opening WhatsApp…`,
+      description: "Send the message and we'll confirm your order. Keep the ref to track it.",
+      duration: 8000,
+    });
   }
 
   return (
