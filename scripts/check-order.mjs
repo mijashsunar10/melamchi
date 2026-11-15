@@ -10,6 +10,12 @@ const click = (sel, text) => b.evaluate(`[...document.querySelectorAll(${JSON.st
 const fails = [];
 const expect = (name, ok, got) => { console.log(`${ok ? "✓" : "✗"} ${name}${ok ? "" : ` — got: ${got}`}`); if (!ok) fails.push(name); };
 
+// Deal: the deal package is pre-selected and uses the deal price
+const selected = await b.evaluate(`document.querySelector("[role=radio][aria-checked=true]")?.textContent ?? ""`);
+expect("deal package pre-selected", selected.includes("610 Diamonds") && selected.includes("Deal"), selected);
+const dealTotal = await b.evaluate(`[...document.querySelectorAll("span")].find(s => s.textContent==="Total")?.nextElementSibling?.textContent`);
+expect("deal price in total (Rs 669)", dealTotal === "Rs 669", dealTotal);
+
 await click("button", "Order on WhatsApp"); await b.sleep(400);
 const req = await b.evaluate(`[...document.querySelectorAll("p")].some(p => p.textContent.includes("Player ID is required"))`);
 expect("empty order is blocked", req, req);

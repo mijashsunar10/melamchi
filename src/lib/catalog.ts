@@ -7,6 +7,7 @@ import { domains } from "@/data/domains";
 import { paymentMethods } from "@/data/payments";
 import { products } from "@/data/products";
 import { reviews } from "@/data/reviews";
+import { dealPrice } from "@/lib/orders";
 import { scoreEntry, toSearchEntry } from "@/lib/search";
 import type { Deal, Domain, DomainSlug, Plan, Product } from "@/types/catalog";
 
@@ -75,9 +76,13 @@ export async function getDeals(): Promise<DealWithProduct[]> {
     const product = products.find((p) => p.slug === deal.productSlug);
     const plan = product?.plans.find((pl) => pl.id === deal.planId);
     if (!product || !plan) return [];
-    const dealPrice = Math.round(plan.price * (1 - deal.discountPercent / 100));
-    return [{ ...deal, product, plan, dealPrice }];
+    return [{ ...deal, product, plan, dealPrice: dealPrice(plan.price, deal.discountPercent) }];
   });
+}
+
+/** Active deal for a product, if any (backend: only return deals whose endsAt is in the future). */
+export async function getProductDeal(productSlug: string): Promise<Deal | null> {
+  return deals.find((d) => d.productSlug === productSlug) ?? null;
 }
 
 export async function getReviews(productSlug?: string) {

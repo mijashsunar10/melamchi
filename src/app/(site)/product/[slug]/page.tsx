@@ -8,7 +8,7 @@ import { OrderPanel } from "@/components/product/order-panel";
 import { ProductCard } from "@/components/product/product-card";
 import { Accordion } from "@/components/ui/accordion";
 import { Tabs } from "@/components/ui/tabs";
-import { getDomain, getProduct, getProducts, getRelatedProducts, getReviews } from "@/lib/catalog";
+import { getDomain, getProduct, getProductDeal, getProducts, getRelatedProducts, getReviews } from "@/lib/catalog";
 import { formatCompact } from "@/lib/format";
 import { siteConfig } from "@/lib/site";
 
@@ -41,10 +41,11 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
   const product = await getProduct(slug);
   if (!product) notFound();
 
-  const [domain, related, reviews] = await Promise.all([
+  const [domain, related, reviews, deal] = await Promise.all([
     getDomain(product.domain),
     getRelatedProducts(product, 4),
     getReviews(product.slug),
+    getProductDeal(product.slug),
   ]);
 
   const facts = [
@@ -166,7 +167,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
               <p className="max-w-xl text-[15px] leading-relaxed text-muted-foreground">{product.shortDescription}</p>
             </div>
 
-            <OrderPanel product={product} />
+            <OrderPanel product={product} deal={deal} />
           </div>
         </div>
       </div>

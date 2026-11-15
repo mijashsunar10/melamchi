@@ -265,3 +265,4 @@ Admin panel (domains, products, plans, stock/codes, banners, deals, orders, user
 | 2026-11-15 | Support page | ✅ | /support — WhatsApp/call/email, searchable help center by topic, expert services, message form → WhatsApp (src/lib/support.ts) |
 | 2026-11-15 | Speed & images | ✅ | Fonts 241→98KB (variable Montserrat, system Devanagari), AVIF images, photos 3.4→1.7MB, home HTML 1MB→509KB, page switches ~100ms |
 | 2026-11-15 | Search page | ✅ | /products — instant ranked search with aliases (ff, uc, mlbb, gpt…), section filter, sort, ?q= links, empty state with WhatsApp; first visible row loads eagerly |
+| 2026-11-15 | Deals page + deal pricing | ✅ | /deals with countdowns and savings; product pages pre-select the deal package and charge the deal price (priceOrder) |

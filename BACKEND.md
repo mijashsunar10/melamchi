@@ -32,7 +32,8 @@ Pages / components  ──►  src/lib/*.ts (async functions)  ──►  src/da
 | `getProduct(slug)` | `src/lib/catalog.ts` | `Product \| undefined` | product page |
 | `getRelatedProducts(product, limit)` | `src/lib/catalog.ts` | `Product[]` | product page |
 | `getBestSellers(limit)` | `src/lib/catalog.ts` | `Product[]` (sorted by `sold`) | home "Trending" |
-| `getDeals()` | `src/lib/catalog.ts` | `DealWithProduct[]` | home flash deals |
+| `getDeals()` | `src/lib/catalog.ts` | `DealWithProduct[]` — **only active deals** (`endsAt` in the future) | home flash deals, `/deals` |
+| `getProductDeal(slug)` | `src/lib/catalog.ts` | `Deal \| null` — active deal for one product | product page (pre-selects the deal package) |
 | `getReviews(productSlug?)` | `src/lib/catalog.ts` | `Review[]` | home, product page |
 | `getPaymentMethods()` | `src/lib/catalog.ts` | `PaymentMethod[]` | footer |
 | `searchProducts(query)` | `src/lib/catalog.ts` | `Product[]` ranked by relevance | (available for an API / quick search) |
@@ -64,7 +65,7 @@ All in **`src/lib/orders.ts`**:
 | `submitOrder(product, request)` | builds a WhatsApp message and returns its link | `POST /api/orders` → create order, return `{ orderId, paymentUrl }`; function returns `{ ok: true, orderId, redirectUrl: paymentUrl }` |
 | `lookupPlayerName(productSlug, playerId)` | returns a demo name | `GET /api/player-name?product=…&id=…` → `{ name }` or 404 (supplier API) |
 | `validateOrder(product, request)` | runs in the browser | **also run it on the server** before saving an order (same function, no changes) |
-| `priceOrder(product, planId, qty)` | runs in the browser | **always recalculate the price on the server** — never trust the price from the browser |
+| `priceOrder(product, planId, qty, deal?)` | runs in the browser; applies the deal discount to the deal's package | **always recalculate the price on the server** (with the active deal) — never trust the price from the browser |
 
 Support form — **`src/lib/support.ts`**:
 

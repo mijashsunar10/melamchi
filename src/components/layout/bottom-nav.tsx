@@ -9,7 +9,7 @@ const items = [
   { href: "/", label: "Home", icon: House },
   { href: "/#categories", label: "Explore", icon: LayoutGrid },
   { href: "/products", label: "Search", icon: Search },
-  { href: "/#deals", label: "Deals", icon: Flame },
+  { href: "/deals", label: "Deals", icon: Flame },
   { href: siteConfig.contact.whatsapp, label: "Contact", icon: MessageCircle, external: true },
 ];
 

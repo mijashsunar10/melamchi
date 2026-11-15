@@ -7,7 +7,7 @@
 
 import { formatNPR } from "@/lib/format";
 import { whatsappLink } from "@/lib/site";
-import type { Plan, Product } from "@/types/catalog";
+import type { Deal, Plan, Product } from "@/types/catalog";
 
 /** What the customer submits from a product page. */
 export interface OrderRequest {
@@ -30,11 +30,20 @@ export const MAX_QUANTITY = 10;
 /** Quantity is only allowed for top-ups and codes. */
 export const allowsQuantity = (product: Product) => product.deliveryType === "TOPUP" || product.deliveryType === "CODE";
 
-/** Price for a plan × quantity. `isQuote` = price on request. */
-export function priceOrder(product: Product, planId: string, quantity: number) {
+/** Deal price for a plan (rounded to whole rupees). */
+export const dealPrice = (price: number, discountPercent: number) => Math.round(price * (1 - discountPercent / 100));
+
+/**
+ * Price for a plan × quantity, applying an active deal on that plan.
+ * `isQuote` = price on request. The server must call this too — never trust a browser price.
+ */
+export function priceOrder(product: Product, planId: string, quantity: number, deal?: Deal | null) {
   const plan: Plan = product.plans.find((p) => p.id === planId) ?? product.plans[0];
   const qty = allowsQuantity(product) ? Math.min(Math.max(1, quantity), MAX_QUANTITY) : 1;
-  return { plan, quantity: qty, total: plan.price * qty, isQuote: plan.price === 0 };
+  // `deal` must be an active deal — expired deals are filtered out by getDeals()/getProductDeal()
+  const onDeal = !!deal && deal.planId === plan.id;
+  const unitPrice = onDeal ? dealPrice(plan.price, deal.discountPercent) : plan.price;
+  return { plan, quantity: qty, unitPrice, onDeal, total: unitPrice * qty, isQuote: plan.price === 0 };
 }
 
 /** Field errors keyed by field name. Empty object = valid. Runs on client AND (later) server. */
@@ -52,13 +61,13 @@ export function validateOrder(product: Product, req: OrderRequest): Record<strin
 }
 
 /** Human-readable order summary (used for the WhatsApp message, and later order notes). */
-export function orderSummary(product: Product, req: OrderRequest): string {
-  const { plan, quantity, total, isQuote } = priceOrder(product, req.planId, req.quantity);
+export function orderSummary(product: Product, req: OrderRequest, deal?: Deal | null): string {
+  const { plan, quantity, total, isQuote, onDeal } = priceOrder(product, req.planId, req.quantity, deal);
   return [
     "Hi TOPX Nepal! I'd like to order:",
     "",
     `• Product: ${product.name}`,
-    `• Package: ${plan.name}`,
+    `• Package: ${plan.name}${onDeal && deal ? ` (deal -${deal.discountPercent}%)` : ""}`,
     ...(allowsQuantity(product) ? [`• Quantity: ${quantity}`] : []),
     ...product.fields
       .filter((f) => req.details[f.name]?.trim())
@@ -74,10 +83,10 @@ export function orderSummary(product: Product, req: OrderRequest): string {
  * BACKEND: POST /api/orders with `req` → { orderId, paymentUrl } and return
  *          { ok: true, orderId, redirectUrl: paymentUrl }.
  */
-export async function submitOrder(product: Product, req: OrderRequest): Promise<SubmitResult> {
+export async function submitOrder(product: Product, req: OrderRequest, deal?: Deal | null): Promise<SubmitResult> {
   const errors = validateOrder(product, req);
   if (Object.keys(errors).length) return { ok: false, error: Object.values(errors)[0] };
-  return { ok: true, redirectUrl: whatsappLink(orderSummary(product, req)) };
+  return { ok: true, redirectUrl: whatsappLink(orderSummary(product, req, deal)) };
 }
 
 /**

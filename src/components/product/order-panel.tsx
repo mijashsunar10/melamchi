@@ -6,8 +6,8 @@ import { Field, Input, Select, Textarea } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
 import { discountPercent, formatNPR } from "@/lib/format";
-import { allowsQuantity, lookupPlayerName, MAX_QUANTITY, type OrderRequest, priceOrder, submitOrder, validateOrder } from "@/lib/orders";
-import type { OrderField, Plan, Product } from "@/types/catalog";
+import { allowsQuantity, dealPrice, lookupPlayerName, MAX_QUANTITY, type OrderRequest, priceOrder, submitOrder, validateOrder } from "@/lib/orders";
+import type { Deal, OrderField, Plan, Product } from "@/types/catalog";
 
 function defaultPlan(plans: Plan[]) {
   return (plans.find((p) => p.popular && p.inStock) ?? plans.find((p) => p.inStock) ?? plans[0]).id;
@@ -23,10 +23,11 @@ function StepTitle({ n, children }: { n: number; children: React.ReactNode }) {
 }
 
 /** Product order form. All order logic lives in src/lib/orders.ts (backend swap point). */
-export function OrderPanel({ product }: { product: Product }) {
+export function OrderPanel({ product, deal = null }: { product: Product; deal?: Deal | null }) {
   const toast = useToast();
   const formId = useId();
-  const [planId, setPlanId] = useState(() => defaultPlan(product.plans));
+  // a deal pre-selects its package
+  const [planId, setPlanId] = useState(() => deal?.planId ?? defaultPlan(product.plans));
   const [qty, setQty] = useState(1);
   const [values, setValues] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -34,7 +35,7 @@ export function OrderPanel({ product }: { product: Product }) {
   const [submitting, setSubmitting] = useState(false);
   const [playerName, setPlayerName] = useState<string | null>(null);
 
-  const { plan, total, isQuote } = priceOrder(product, planId, qty);
+  const { plan, unitPrice, onDeal, total, isQuote } = priceOrder(product, planId, qty, deal);
   const allowQty = allowsQuantity(product);
 
   const request = (): OrderRequest => ({
@@ -71,7 +72,7 @@ export function OrderPanel({ product }: { product: Product }) {
       return;
     }
     setSubmitting(true);
-    const result = await submitOrder(product, request());
+    const result = await submitOrder(product, request(), deal);
     setSubmitting(false);
     if (!result.ok) {
       toast({ type: "error", title: result.error });
@@ -89,7 +90,10 @@ export function OrderPanel({ product }: { product: Product }) {
         <div role="radiogroup" aria-label="Packages" className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
           {product.plans.map((p) => {
             const selected = p.id === planId;
-            const off = discountPercent(p.price, p.originalPrice);
+            const isDeal = deal?.planId === p.id;
+            const shownPrice = isDeal ? dealPrice(p.price, deal.discountPercent) : p.price;
+            const was = isDeal ? p.price : p.originalPrice;
+            const off = discountPercent(shownPrice, was);
             return (
               <button
                 key={p.id}
@@ -106,18 +110,25 @@ export function OrderPanel({ product }: { product: Product }) {
                   !p.inStock && "cursor-not-allowed opacity-50",
                 )}
               >
-                {p.popular && p.inStock && (
+                {isDeal ? (
                   <span className="absolute -top-2.5 right-2 rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-white">
-                    Popular
+                    Deal -{deal.discountPercent}%
                   </span>
+                ) : (
+                  p.popular &&
+                  p.inStock && (
+                    <span className="absolute -top-2.5 right-2 rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-white">
+                      Popular
+                    </span>
+                  )
                 )}
                 <span className="text-sm leading-tight font-semibold">{p.name}</span>
                 {p.bonus && <span className="text-[11px] font-semibold text-success">{p.bonus}</span>}
                 <span className="mt-auto flex flex-wrap items-baseline gap-x-1.5 pt-1">
                   <span className="font-display text-base font-extrabold text-accent">
-                    {p.price === 0 ? "Quote" : formatNPR(p.price)}
+                    {p.price === 0 ? "Quote" : formatNPR(shownPrice)}
                   </span>
-                  {p.originalPrice && <span className="text-[11px] text-muted-foreground line-through">{formatNPR(p.originalPrice)}</span>}
+                  {was && <span className="text-[11px] text-muted-foreground line-through">{formatNPR(was)}</span>}
                   {off && <span className="text-[10px] font-bold text-success">-{off}%</span>}
                 </span>
                 {!p.inStock && <span className="text-[11px] font-semibold text-danger">Out of stock</span>}
@@ -215,7 +226,16 @@ export function OrderPanel({ product }: { product: Product }) {
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
               <p className="truncate font-semibold">{plan.name}</p>
-              <p className="text-sm text-muted-foreground">{isQuote ? "Price on request" : `${formatNPR(plan.price)} each`}</p>
+              <p className="text-sm text-muted-foreground">
+                {isQuote ? (
+                  "Price on request"
+                ) : (
+                  <>
+                    {formatNPR(unitPrice)} each
+                    {onDeal && <span className="ml-2 font-semibold text-accent">deal price</span>}
+                  </>
+                )}
+              </p>
             </div>
             {allowQty && (
               <div className="flex items-center rounded-full border border-border bg-surface">
