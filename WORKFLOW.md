@@ -267,3 +267,4 @@ Admin panel (domains, products, plans, stock/codes, banners, deals, orders, user
 | 2026-11-15 | Search page | ✅ | /products — instant ranked search with aliases (ff, uc, mlbb, gpt…), section filter, sort, ?q= links, empty state with WhatsApp; first visible row loads eagerly |
 | 2026-11-15 | Deals page + deal pricing | ✅ | /deals with countdowns and savings; product pages pre-select the deal package and charge the deal price (priceOrder) |
 | 2026-11-15 | Contact page | ✅ | /contact — WhatsApp, phone, email, office + directions, hours, socials, message form (same submitSupportRequest) |
+| 2026-11-15 | About page | ✅ | /about — intro (Melamchi Tech), live stats, values, six categories; story text is a draft for the CEO |
