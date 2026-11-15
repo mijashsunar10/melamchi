@@ -19,12 +19,12 @@ export function MobileMenu({ domains }: { domains: Domain[] }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open menu"
-        className="-ml-1 inline-flex size-10 items-center justify-center rounded-full transition-colors hover:bg-muted lg:hidden"
+        className="-mr-1 inline-flex size-10 items-center justify-center rounded-full transition-colors hover:bg-muted lg:hidden"
       >
         <Menu className="size-6" />
       </button>
 
-      <Dialog open={open} onClose={close} side="left" title="Menu">
+      <Dialog open={open} onClose={close} side="right" title="Menu">
         <nav aria-label="Mobile" className="flex flex-col gap-1">
           <Link href="/" onClick={close} className="flex items-center gap-3 rounded-xl p-3 font-semibold hover:bg-muted">
             <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">

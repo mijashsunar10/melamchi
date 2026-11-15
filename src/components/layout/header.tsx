@@ -46,7 +46,6 @@ export async function Header() {
       <TopBar />
       <div className="border-b border-border bg-surface/85 backdrop-blur-xl supports-[backdrop-filter]:bg-surface/75">
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:h-[72px] sm:px-6">
-          <MobileMenu domains={domains} />
           <Logo />
 
           <NavLinks
@@ -74,6 +73,8 @@ export async function Header() {
               <span className="lg:hidden xl:inline">Contact us</span>
               <span className="hidden lg:inline xl:hidden">Contact</span>
             </a>
+            {/* phones & tablets: menu button on the right */}
+            <MobileMenu domains={domains} />
           </div>
         </div>
       </div>
