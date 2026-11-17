@@ -21,13 +21,21 @@
 | Part | Where |
 |---|---|
 | Tables | `domains` (6 sections, slug = page URL), `categories`, `products` (order fields / FAQ / how-to as JSON), `plans` (packages; `slug` is the id deals & orders use) |
-| Import starter catalog | `npm run db:seed` — loads `src/data` into the DB; safe to re-run (updates by slug, never deletes) |
+| Import starter catalog | `npm run db:seed` — adds whatever is missing from `src/data`, never changes or deletes existing rows. `npm run db:seed -- --force` resets sections/categories/products to the starter data (**undoes admin edits**) |
 | How the store reads it | `src/server/catalog/source.ts` → `loadCatalog()` (`"use cache"`, tag `catalog`, life `hours`) → used by every getter in `src/lib/catalog.ts` |
 | After an admin edit | call `updateTag(CATALOG_TAG)` in the server action → store shows the change immediately |
 | Hidden products | `products.is_active = false` → not shown anywhere in the store |
 | cPanel static build | `npm run build:cpanel` saves a JSON snapshot of the DB catalog first (`scripts/export-catalog.ts`); the static pages are built from it |
 
 Deals, reviews, FAQ and other content still come from `src/data` until B5.
+
+**Admin: Sections & categories (B4.2)** — `/admin/categories` (admin only). Queries `src/server/admin/catalog.ts`,
+actions `src/server/admin/catalog-actions.ts` (`updateSectionAction`, `create/update/delete/moveCategoryAction`).
+Section slugs are fixed (they are page URLs). Deleting a category keeps its products in the section (category → empty).
+
+**Important (Next.js 16):** any Client Component that reads the URL (`usePathname`, `useSearchParams`) must be inside
+`<Suspense>` — otherwise pages can't be regenerated after an admin edit and render blank. The header links, bottom bar
+and WhatsApp button follow this pattern (`*View` fallback components).
 
 Roles: `admin` (everything, incl. team), `staff` (dashboard, own account; orders & support in B6), `customer` (later).
 
@@ -216,6 +224,7 @@ node scripts/check-support.mjs http://localhost:3000   # help center search + su
 node scripts/check-search.mjs http://localhost:3000    # search page: aliases, ranking, filters, URL
 AUTH_EMAIL=… AUTH_PASSWORD=… node scripts/check-auth.mjs http://localhost:3000   # admin login, sessions, logout, forged cookie, rate limit (use a TEST account)
 AUTH_EMAIL=… AUTH_PASSWORD=… node scripts/check-admin.mjs http://localhost:3000  # dashboard, team management, staff limits, own password (TEST admin)
+AUTH_EMAIL=… AUTH_PASSWORD=… node scripts/check-categories.mjs http://localhost:3000  # sections & categories; checks the store updates immediately
 node scripts/perf.mjs http://localhost:3000            # page weight per page (run on a production build)
 node scripts/nav-speed.mjs http://localhost:3000       # click-to-page switch time
 node scripts/screenshot.mjs http://localhost:3000/ out.png 1440 light   # screenshot + console errors

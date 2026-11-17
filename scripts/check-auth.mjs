@@ -1,6 +1,7 @@
 // End-to-end check of admin authentication (dev or production server must be running).
 // Usage: AUTH_EMAIL=… AUTH_PASSWORD=… node scripts/check-auth.mjs [baseUrl]
-// Use a TEST account — the last check deliberately triggers the login rate limit for it.
+// Use a TEST account — the last check deliberately triggers the login rate limit for it
+// (that account is then locked for 15 minutes; run other admin tests with a different account).
 import { openBrowser } from "./cdp.mjs";
 
 const base = process.argv[2] ?? "http://localhost:3000";
@@ -36,7 +37,8 @@ expect("wrong password shows generic error", (await text()).includes("Incorrect 
 // 3. Correct login → dashboard
 await login(email, password);
 expect("correct login opens /admin", (await path()) === "/admin", await path());
-expect("dashboard greets the user", (await text()).includes("Welcome,"), (await text()).slice(0, 200));
+await b.sleep(1500);
+expect("dashboard greets the user", (await text()).includes("Namaste"), (await text()).slice(0, 200));
 
 // 4. Session cookie is httpOnly (not readable by page JavaScript)
 const jsCookies = await b.evaluate("document.cookie");
@@ -49,7 +51,7 @@ await b.goto(`${base}/admin/login`, 4000);
 expect("login page redirects signed-in user to /admin", (await path()) === "/admin", await path());
 
 // 6. Sign out
-await b.evaluate(`[...document.querySelectorAll("button")].find(x => x.textContent.includes("Sign out")).click()`);
+await b.evaluate(`document.querySelector('button[aria-label="Sign out"]').click()`);
 await b.sleep(2500);
 expect("sign out returns to login", (await path()).startsWith("/admin/login"), await path());
 await b.goto(`${base}/admin`, 4000);

@@ -1,11 +1,12 @@
 import { Mail, MessageCircle, Search, Zap } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { getDomains } from "@/lib/catalog";
 import { siteConfig } from "@/lib/site";
 import { Logo } from "./logo";
 import { MobileMenu } from "./mobile-menu";
-import { NavLinks } from "./nav-links";
+import { NavLinks, NavLinksView } from "./nav-links";
 
 function TopBar() {
   return (
@@ -40,6 +41,10 @@ const navLabel = (slug: string, name: string) => {
 
 export async function Header() {
   const domains = await getDomains();
+  const navItems = [
+    { href: "/", short: "Home", full: "Home" },
+    ...domains.map((d) => ({ href: `/${d.slug}`, ...navLabel(d.slug, d.name) })),
+  ];
 
   return (
     <header className="sticky top-0 z-50">
@@ -48,12 +53,10 @@ export async function Header() {
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:h-[72px] sm:px-6">
           <Logo />
 
-          <NavLinks
-            items={[
-              { href: "/", short: "Home", full: "Home" },
-              ...domains.map((d) => ({ href: `/${d.slug}`, ...navLabel(d.slug, d.name) })),
-            ]}
-          />
+          {/* reads the URL for the active highlight → must sit inside Suspense (Next 16 / Cache Components) */}
+          <Suspense fallback={<NavLinksView items={navItems} pathname="" />}>
+            <NavLinks items={navItems} />
+          </Suspense>
 
           {/* Actions */}
           <div className="ml-auto flex items-center gap-1.5 sm:gap-2">

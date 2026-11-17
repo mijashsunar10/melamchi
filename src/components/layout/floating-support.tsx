@@ -4,8 +4,13 @@ import { usePathname } from "next/navigation";
 import { siteConfig } from "@/lib/site";
 
 export function FloatingSupport() {
+  return <FloatingSupportView pathname={usePathname()} />;
+}
+
+/** Without reading the URL — the Suspense fallback / prerendered version. */
+export function FloatingSupportView({ pathname }: { pathname: string }) {
   // Product pages have their own sticky WhatsApp order bar on phones
-  const onProduct = usePathname().startsWith("/product/");
+  const onProduct = pathname.startsWith("/product/");
   return (
     <a
       href={siteConfig.contact.whatsapp}

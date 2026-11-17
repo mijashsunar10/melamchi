@@ -10,9 +10,13 @@ export interface NavItem {
   full: string;
 }
 
-/** Desktop header links — highlights the current section. */
+/** Desktop header links — highlights the current section (reads the URL; wrap in <Suspense>). */
 export function NavLinks({ items }: { items: NavItem[] }) {
-  const pathname = usePathname();
+  return <NavLinksView items={items} pathname={usePathname()} />;
+}
+
+/** Same links without reading the URL — the Suspense fallback / prerendered version. */
+export function NavLinksView({ items, pathname }: { items: NavItem[]; pathname: string }) {
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (

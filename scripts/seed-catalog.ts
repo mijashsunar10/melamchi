@@ -2,8 +2,10 @@
 //
 //   npm run db:seed
 //
-// Safe to run again: existing rows are updated by slug, nothing is deleted.
-// After launch, manage the catalog in the admin panel instead.
+// Safe to run again: by default it only ADDS what's missing — anything already in the
+// database (and possibly edited in the admin panel) is left untouched.
+//   npm run db:seed -- --force   → also overwrite existing sections/categories/products/packages
+//                                   with the starter data (undoes admin edits!)
 
 import { and, eq } from "drizzle-orm";
 
@@ -14,6 +16,8 @@ for (const file of [".env.local", ".env"]) {
     // missing — fine
   }
 }
+
+const force = process.argv.includes("--force");
 
 async function main() {
   const { db, schema } = await import("../src/server/db");
@@ -34,22 +38,31 @@ async function main() {
       sortOrder: i,
       updatedAt: new Date(),
     };
-    await db.insert(schema.domains).values({ slug: d.slug, ...values }).onConflictDoUpdate({ target: schema.domains.slug, set: values });
+    const insertDomain = db.insert(schema.domains).values({ slug: d.slug, ...values });
+    await (force ? insertDomain.onConflictDoUpdate({ target: schema.domains.slug, set: values }) : insertDomain.onConflictDoNothing());
 
     for (const [j, c] of d.categories.entries()) {
-      const [row] = await db
-        .insert(schema.categories)
-        .values({ domainSlug: d.slug, slug: c.slug, name: c.name, icon: c.icon, sortOrder: j })
-        .onConflictDoUpdate({
+      const insertCat = db.insert(schema.categories).values({ domainSlug: d.slug, slug: c.slug, name: c.name, icon: c.icon, sortOrder: j });
+      if (force) {
+        await insertCat.onConflictDoUpdate({
           target: [schema.categories.domainSlug, schema.categories.slug],
           set: { name: c.name, icon: c.icon, sortOrder: j },
-        })
-        .returning({ id: schema.categories.id });
-      categoryIds.set(`${d.slug}/${c.slug}`, row.id);
+        });
+      } else {
+        await insertCat.onConflictDoNothing();
+      }
+      const [row] = await db
+        .select({ id: schema.categories.id })
+        .from(schema.categories)
+        .where(and(eq(schema.categories.domainSlug, d.slug), eq(schema.categories.slug, c.slug)))
+        .limit(1);
+      if (row) categoryIds.set(`${d.slug}/${c.slug}`, row.id);
     }
   }
 
   // Products + packages
+  let added = 0;
+  let skipped = 0;
   for (const [i, p] of products.entries()) {
     const values = {
       name: p.name,
@@ -74,11 +87,17 @@ async function main() {
       sortOrder: i,
       updatedAt: new Date(),
     };
+    const [existingProduct] = await db.select({ id: schema.products.id }).from(schema.products).where(eq(schema.products.slug, p.slug)).limit(1);
+    if (existingProduct && !force) {
+      skipped++;
+      continue; // already in the database — leave admin edits alone
+    }
     const [row] = await db
       .insert(schema.products)
       .values({ slug: p.slug, ...values })
       .onConflictDoUpdate({ target: schema.products.slug, set: values })
       .returning({ id: schema.products.id });
+    added++;
 
     for (const [j, pl] of p.plans.entries()) {
       const planValues = {
@@ -101,7 +120,11 @@ async function main() {
     }
   }
 
-  console.log(`✓ Catalog loaded: ${domains.length} sections, ${categoryIds.size} categories, ${products.length} products, ${products.reduce((n, p) => n + p.plans.length, 0)} packages`);
+  console.log(
+    force
+      ? `✓ Catalog reset to starter data: ${domains.length} sections, ${categoryIds.size} categories, ${added} products`
+      : `✓ Catalog seeded: ${added} product(s) added, ${skipped} already existed (left unchanged). Use --force to overwrite.`,
+  );
   process.exit(0);
 }
 

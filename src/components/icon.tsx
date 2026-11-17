@@ -11,6 +11,9 @@ const icons = {
   Smartphone, Tv, Wrench, Gift, RotateCcw,
 } satisfies Record<IconName, unknown>;
 
+/** Every icon name the admin can pick for sections & categories. */
+export const ICON_NAMES = Object.keys(icons) as IconName[];
+
 export function Icon({ name, ...props }: LucideProps & { name: IconName }) {
   const C = icons[name];
   return <C {...props} />;

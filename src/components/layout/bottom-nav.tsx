@@ -15,7 +15,11 @@ const items = [
 
 /** Phone-only bottom tab bar */
 export function BottomNav() {
-  const pathname = usePathname();
+  return <BottomNavView pathname={usePathname()} />;
+}
+
+/** Without reading the URL — the Suspense fallback / prerendered version. */
+export function BottomNavView({ pathname }: { pathname: string }) {
   return (
     <nav
       aria-label="Quick"
