@@ -7,26 +7,37 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "build:cpanel": "node scripts/build-cpanel.mjs"
+    "build:cpanel": "node scripts/build-cpanel.mjs",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "admin:create": "tsx --conditions=react-server scripts/create-admin.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",
+    "drizzle-orm": "^0.45.4",
     "lucide-react": "^1.72.0",
     "next": "16.4.5",
+    "pg": "^8.23.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "server-only": "^0.0.1",
     "simple-icons": "^16.37.0",
-    "tailwind-merge": "^3.7.0"
+    "tailwind-merge": "^3.7.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.11",
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
     "sharp": "^0.35.5",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

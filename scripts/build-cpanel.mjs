@@ -5,7 +5,7 @@
 // Output: dist/topx-nepal-cpanel.zip → upload to public_html and Extract (see DEPLOY.md).
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import sharp from "sharp";
 
@@ -26,9 +26,31 @@ const run = (cmd, args, opts = {}) => {
 };
 
 // 1. Static export
-step("Building static site (next build, output: export)…");
+// The admin panel and proxy need a Node.js server, so they are set aside during the static build.
+const serverOnly = [join(root, "src", "app", "admin"), join(root, "src", "proxy.ts")];
+const parked = join(root, ".cpanel-parked");
+const park = () => {
+  mkdirSync(parked, { recursive: true });
+  serverOnly.forEach((p, i) => existsSync(p) && renameSync(p, join(parked, String(i))));
+};
+const unpark = () => {
+  serverOnly.forEach((p, i) => existsSync(join(parked, String(i))) && renameSync(join(parked, String(i)), p));
+  rmSync(parked, { recursive: true, force: true });
+};
+for (const sig of ["SIGINT", "SIGTERM"]) process.on(sig, () => { unpark(); process.exit(1); });
+
+step("Building static site (next build, output: export) — public pages only…");
 rmSync(out, { recursive: true, force: true });
-run("npx", ["next", "build"], { env: { ...process.env, DEPLOY_TARGET: "static" } });
+park();
+try {
+  const r = spawnSync("npx", ["next", "build"], { stdio: "inherit", cwd: root, env: { ...process.env, DEPLOY_TARGET: "static" } });
+  if (r.status !== 0) throw new Error("next build failed");
+} catch (e) {
+  unpark();
+  console.error(`✗ ${e instanceof Error ? e.message : e}`);
+  process.exit(1);
+}
+unpark();
 if (!existsSync(join(out, "index.html"))) {
   console.error("✗ out/index.html missing — export failed");
   process.exit(1);

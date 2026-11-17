@@ -1,4 +1,27 @@
-# TOPX NEPAL — Backend hand-off guide
+# TOPX NEPAL — Backend guide
+
+## 0. Backend setup (B1–B2, built)
+
+| Part | Where |
+|---|---|
+| Database connection (PostgreSQL, lazy pool) | `src/server/db/index.ts` (`DATABASE_URL` in `.env.local`) |
+| Schema (tables) | `src/server/db/schema.ts` — `users`, `sessions` |
+| Migrations | `drizzle/` — `npm run db:generate` after editing the schema, `npm run db:migrate` to apply |
+| Browse data | pgAdmin, or `npm run db:studio` |
+| Password hashing | `src/server/auth/password.ts` (scrypt, Node built-in) |
+| Sessions | `src/server/auth/session.ts` — random token in an httpOnly cookie `topx_session`, only its SHA-256 hash in the DB, 7 days, auto-extended |
+| "Who is logged in" | `src/server/auth/dal.ts` — `getCurrentUser()`, `requireStaff()`, `requireRole([...])` — **every admin page/action must call one of these** |
+| Login / logout | `src/server/auth/actions.ts` (server actions) — generic error message, 5 attempts / 15 min per IP+email |
+| Fast cookie check for `/admin/*` | `src/proxy.ts` |
+| Create / reset an admin | `npm run admin:create -- --email you@x.com --name "Name" [--role admin\|staff]` |
+
+Roles: `admin` (everything), `staff` (orders & support — limits added in B3+), `customer` (later).
+
+The static cPanel build (`npm run build:cpanel`) skips the admin panel automatically — the admin
+needs a Node.js server.
+
+---
+
 
 The frontend is built so the backend can be plugged in **without changing any page or component**.
 This file lists every place the backend connects, and the data shapes it must return.
