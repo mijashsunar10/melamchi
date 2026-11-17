@@ -1,10 +1,12 @@
 import { defineConfig } from "drizzle-kit";
 
-// Loads DATABASE_URL from .env.local (Node 20.12+ / 22 built-in env file loader)
-try {
-  process.loadEnvFile(".env.local");
-} catch {
-  // fall back to the environment
+// Load DATABASE_URL from .env.local, then .env (same files Next.js reads)
+for (const file of [".env.local", ".env"]) {
+  try {
+    process.loadEnvFile(file);
+  } catch {
+    // file missing — fine
+  }
 }
 
 export default defineConfig({

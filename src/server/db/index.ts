@@ -13,7 +13,7 @@ function getDb(): Database {
   if (globalForDb.topxDb) return globalForDb.topxDb;
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
-    throw new Error("DATABASE_URL is not set. Add it to .env.local (see .env.example).");
+    throw new Error("DATABASE_URL is not set. Add it to .env (see .env.example).");
   }
   const instance = drizzle(new Pool({ connectionString, max: 10 }), { schema });
   globalForDb.topxDb = instance;

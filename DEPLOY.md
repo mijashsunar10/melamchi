@@ -7,7 +7,7 @@ It runs on any cPanel / shared hosting — no Node.js app needed.
 
 ## 1. Set the real details (before building)
 
-Copy `.env.example` to `.env.local` and fill in:
+Copy `.env.example` to `.env` and fill in:
 
 ```env
 NEXT_PUBLIC_SITE_URL=https://yourdomain.com

@@ -4,7 +4,7 @@
 
 | Part | Where |
 |---|---|
-| Database connection (PostgreSQL, lazy pool) | `src/server/db/index.ts` (`DATABASE_URL` in `.env.local`) |
+| Database connection (PostgreSQL, lazy pool) | `src/server/db/index.ts` (`DATABASE_URL` in `.env`) |
 | Schema (tables) | `src/server/db/schema.ts` — `users`, `sessions` |
 | Migrations | `drizzle/` — `npm run db:generate` after editing the schema, `npm run db:migrate` to apply |
 | Browse data | pgAdmin, or `npm run db:studio` |
@@ -162,7 +162,7 @@ delivered code/key (encrypted), customer contact, timestamps.
 
 ## 5. Settings / environment variables
 
-Copy `.env.example` → `.env.local`. Contact details are read in `src/lib/site.ts`.
+Copy `.env.example` → `.env`. Contact details are read in `src/lib/site.ts`.
 
 | Variable | Used for |
 |---|---|

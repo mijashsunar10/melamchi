@@ -8,10 +8,13 @@ import { stdin, stdout } from "node:process";
 import { createInterface } from "node:readline";
 import { eq } from "drizzle-orm";
 
-try {
-  process.loadEnvFile(".env.local");
-} catch {
-  // use the environment
+// Load DATABASE_URL from .env.local, then .env (same files Next.js reads)
+for (const file of [".env.local", ".env"]) {
+  try {
+    process.loadEnvFile(file);
+  } catch {
+    // file missing — fine
+  }
 }
 
 const args = process.argv.slice(2);
