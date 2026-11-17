@@ -25,7 +25,7 @@ alt text
 - [ ] `logo-mt.svg`: the Melamchi Tech "MT" round mark (orange + blue ring)
 - [ ] `logo-topx.svg`: the "TOPX NEPAL" wordmark (blue, orange X swoosh)
 - [ ] `logo-full.svg` (light) and `logo-full-dark.svg` (on navy)
-- [ ] `app-icon.png` (512×512) for the PWA and favicon
+- [x] `app-icon.png` (512×512) for the PWA and favicon
 
 ### Colors (taken from the board; confirm with the final logo files)
 | Token | Hex | Use |
@@ -156,7 +156,7 @@ public/brand/ public/products/ public/payments/
 - [x] **2.1** Top bar (rotating notices, EN/NP toggle, WhatsApp number)
 - [x] **2.2** Header: logo, Home pill, **6 domain mega-menus**, search, cart (count), account
 - [x] **2.3** Mobile: hamburger drawer + **bottom tab bar** (Home, Explore, Search, Cart, Account)
-- [ ] **2.4** Search dialog (Ctrl+K) across all domains
+- [x] **2.4** Search → full `/products` search page (instead of a Ctrl+K dialog)
 - [x] **2.5** Footer: domains, links, contact, payments, socials, Melamchi Tech credit
 - [x] **2.6** Floating support (WhatsApp / Messenger / call)
 
@@ -169,8 +169,8 @@ public/brand/ public/products/ public/payments/
 - [x] **3.6** How it works (Choose → Details → Pay → Instant delivery)
 - [x] **3.7** "Nepal's Digital Powerhouse" stats band (orders, customers, avg delivery, rating) with Himalaya art
 - [x] **3.8** Reviews (verified)
-- [ ] **3.9** Payment partners + live orders ticker
-- [ ] **3.10** Blog/guides preview + FAQ + app download / reseller CTA
+- [x] **3.9** Payment partners *(in footer; live orders ticker skipped — needs real orders)*
+- [x] **3.10** FAQ + reseller CTA *(blog preview / app download not on home)*
 
 ### Phase 4: Domain landing pages
 - [x] **4.1** Shared domain page template (mini hero, sub-category chips, filters, grid, FAQ)
@@ -179,7 +179,7 @@ public/brand/ public/products/ public/payments/
 - [x] **4.4** Gift Cards page
 - [x] **4.5** Software & Apps page
 - [x] **4.6** Digital Products page
-- [ ] **4.7** `/products` all-products page + `/deals`
+- [x] **4.7** `/products` all-products page + `/deals`
 
 ### Phase 5: Product page (smart order flow)
 - [x] **5.1** Product hero (image, badges: instant / official / region / delivery time, rating, favorite, share)
@@ -192,14 +192,14 @@ public/brand/ public/products/ public/payments/
 ### Phase 6: Cart, checkout, orders — ⏸ ON HOLD (no login/cart for now, keeps backend light)
 - [ ] **6.1** Cart page + mini-cart drawer
 - [ ] **6.2** Checkout: contact info, payment methods (eSewa, Khalti, IME Pay, Fonepay QR, bank, wallet), summary
-- [ ] **6.3** Order success / status page (timeline, code/key reveal, download guide)
-- [ ] **6.4** Guest order tracking `/track`
+- [ ] **6.3** *(on hold)* Order success / status page (timeline, code/key reveal, download guide)
+- [x] **6.4** Guest order tracking `/track`
 
 ### Phase 7: Support domain
-- [ ] **7.1** Support hub (search help, categories, popular articles, contact options)
-- [ ] **7.2** Help article page
-- [ ] **7.3** Submit ticket / setup service request form
-- [ ] **7.4** Contact page, reseller / business page
+- [x] **7.1** Support hub (search help, categories, popular articles, contact options)
+- [x] **7.2** Help article page
+- [x] **7.3** Submit ticket / setup service request form
+- [x] **7.4** Contact page, reseller / business page
 
 ### Phase 8: Auth (UI only) — ⏸ ON HOLD (no login/cart for now, keeps backend light)
 - [ ] **8.1** Login, Register, Forgot password, OTP (phone/email), Google button
@@ -213,13 +213,13 @@ public/brand/ public/products/ public/payments/
 - [ ] **9.6** Tickets, favorites, KYC, profile, referrals
 
 ### Phase 10: Content + polish
-- [ ] **10.1** Blog list + post; About; Privacy / Terms / Refund / KYC
+- [x] **10.1** Blog list + post; About; Privacy / Terms / Refund / KYC
 - [ ] **10.2** EN/NP translations
 - [ ] **10.3** PWA (manifest, icons, install prompt)
 - [ ] **10.4** SEO: metadata per page, OG images, sitemap, robots, JSON-LD (Organization, Product)
 - [ ] **10.5** Loading, error, and 404 pages (branded)
 - [ ] **10.6** Accessibility + Lighthouse 90+, full responsive and dark-mode QA
-- [ ] **10.7** Backend hand-off doc (every data model + API the UI needs)
+- [x] **10.7** Backend hand-off doc (every data model + API the UI needs)
 
 ---
 
@@ -231,7 +231,7 @@ Admin panel (domains, products, plans, stock/codes, banners, deals, orders, user
 
 ## 8. Need from the CEO
 
-- [ ] Logo files (SVG/PNG): MT mark, TOPX wordmark, full lockup light + dark
+- [x] Logo files (SVG/PNG): MT mark, TOPX wordmark, full lockup light + dark *(official logo received as JPEG — a high-res PNG/SVG would be better)*
 - [ ] Domain name (e.g. topxnepal.com?)
 - [ ] Contacts: phone, WhatsApp, email, office address
 - [ ] Social links
