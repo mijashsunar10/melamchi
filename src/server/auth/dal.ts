@@ -19,7 +19,10 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
 export async function requireRole(roles: UserRole[] = ["admin"]): Promise<SessionUser> {
   const user = await getCurrentUser();
   if (!user) redirect("/admin/login");
-  if (!roles.includes(user.role)) redirect("/admin/login?error=forbidden");
+  if (!roles.includes(user.role)) {
+    // staff opening an admin-only page → back to the dashboard; anyone else → login
+    redirect(user.role === "staff" ? "/admin" : "/admin/login?error=forbidden");
+  }
   return user;
 }
 

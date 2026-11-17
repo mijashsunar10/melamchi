@@ -15,7 +15,20 @@
 | Fast cookie check for `/admin/*` | `src/proxy.ts` |
 | Create / reset an admin | `npm run admin:create -- --email you@x.com --name "Name" [--role admin\|staff]` |
 
-Roles: `admin` (everything), `staff` (orders & support — limits added in B3+), `customer` (later).
+Roles: `admin` (everything, incl. team), `staff` (dashboard, own account; orders & support in B6), `customer` (later).
+
+### Admin dashboard (B3)
+
+| Page | File | Who |
+|---|---|---|
+| `/admin` overview | `src/app/admin/(panel)/page.tsx` | admin, staff |
+| `/admin/users` team management | `src/app/admin/(panel)/users/` | admin only |
+| `/admin/account` password & devices | `src/app/admin/(panel)/account/` | admin, staff |
+
+Layout & navigation: `src/components/admin/` (sections for later steps show as “Soon”).
+Queries: `src/server/admin/users.ts` · actions: `src/server/admin/user-actions.ts` — every action calls
+`requireRole()` first; rules: can't change your own account from the team page, at least one active admin
+must remain, deactivating / resetting a password signs that person out everywhere.
 
 The static cPanel build (`npm run build:cpanel`) skips the admin panel automatically — the admin
 needs a Node.js server.
@@ -188,6 +201,7 @@ node scripts/check-order.mjs http://localhost:3000     # end-to-end order form t
 node scripts/check-support.mjs http://localhost:3000   # help center search + support form test
 node scripts/check-search.mjs http://localhost:3000    # search page: aliases, ranking, filters, URL
 AUTH_EMAIL=… AUTH_PASSWORD=… node scripts/check-auth.mjs http://localhost:3000   # admin login, sessions, logout, forged cookie, rate limit (use a TEST account)
+AUTH_EMAIL=… AUTH_PASSWORD=… node scripts/check-admin.mjs http://localhost:3000  # dashboard, team management, staff limits, own password (TEST admin)
 node scripts/perf.mjs http://localhost:3000            # page weight per page (run on a production build)
 node scripts/nav-speed.mjs http://localhost:3000       # click-to-page switch time
 node scripts/screenshot.mjs http://localhost:3000/ out.png 1440 light   # screenshot + console errors

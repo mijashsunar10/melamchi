@@ -14,7 +14,7 @@ const DAY = 24 * 60 * 60 * 1000;
 const SESSION_DAYS = 7;
 const RENEW_WHEN_LESS_THAN_DAYS = 3.5;
 
-const hashToken = (token: string) => createHash("sha256").update(token).digest("hex");
+export const hashToken = (token: string) => createHash("sha256").update(token).digest("hex");
 
 export type SessionUser = Pick<User, "id" | "email" | "name" | "role">;
 

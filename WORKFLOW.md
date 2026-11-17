@@ -283,7 +283,7 @@ Stack: Next.js server (server actions + route handlers) · PostgreSQL · Drizzle
 
 - [x] **B1** Database setup — Drizzle + `pg`, schema in `src/server/db/schema.ts`, migrations in `drizzle/`, `npm run db:migrate`
 - [x] **B2** Authentication — admin/staff login at `/admin/login`, DB sessions, rate-limited login, `proxy.ts` guard, `requireStaff()`, `npm run admin:create`
-- [ ] **B3** Admin dashboard shell — sidebar, top bar, overview stats, users & staff management
+- [x] **B3** Admin dashboard — sidebar + mobile menu, top bar, overview stats & recent sign-ins, Staff & users (create, (de)activate, role, reset password, delete — admin only), My account (change password, sign out other devices)
 - [ ] **B4** Products — sections, categories, products, packages, order fields, images (CRUD) → public site reads from DB
 - [ ] **B5** Deals, reviews, content (FAQ, blog, legal, site stats/settings)
 - [ ] **B6** Orders — save orders from the site, order list/detail, status updates, tracking API
