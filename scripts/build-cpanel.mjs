@@ -39,6 +39,9 @@ const unpark = () => {
 };
 for (const sig of ["SIGINT", "SIGTERM"]) process.on(sig, () => { unpark(); process.exit(1); });
 
+step("Saving catalog snapshot from the database…");
+run("npx", ["tsx", "--conditions=react-server", "scripts/export-catalog.ts"]);
+
 step("Building static site (next build, output: export) — public pages only…");
 rmSync(out, { recursive: true, force: true });
 park();

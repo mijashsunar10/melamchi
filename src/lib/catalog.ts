@@ -1,22 +1,21 @@
-// Data-access layer. Pages and components get catalog data ONLY through
-// these functions. They are async so the backend can later replace the
-// mock imports with real API/database calls without touching the UI.
+// Data-access layer. Pages and components get catalog data ONLY through these functions.
+// Sections, categories, products and packages come from PostgreSQL (cached — see
+// src/server/catalog/source.ts). Deals, reviews and payments still use src/data until B5.
 
 import { deals } from "@/data/deals";
-import { domains } from "@/data/domains";
 import { paymentMethods } from "@/data/payments";
-import { products } from "@/data/products";
 import { reviews } from "@/data/reviews";
+import { loadCatalog } from "@/server/catalog/source";
 import { dealPrice } from "@/lib/orders";
 import { scoreEntry, toSearchEntry } from "@/lib/search";
 import type { Deal, Domain, DomainSlug, Plan, Product } from "@/types/catalog";
 
 export async function getDomains(): Promise<Domain[]> {
-  return domains;
+  return (await loadCatalog()).domains;
 }
 
 export async function getDomain(slug: string): Promise<Domain | undefined> {
-  return domains.find((d) => d.slug === slug);
+  return (await loadCatalog()).domains.find((d) => d.slug === slug);
 }
 
 export async function getProducts(filter?: {
@@ -24,6 +23,7 @@ export async function getProducts(filter?: {
   category?: string;
   tag?: Product["tags"][number];
 }): Promise<Product[]> {
+  const { products } = await loadCatalog();
   return products.filter(
     (p) =>
       (!filter?.domain || p.domain === filter.domain) &&
@@ -33,10 +33,11 @@ export async function getProducts(filter?: {
 }
 
 export async function getProduct(slug: string): Promise<Product | undefined> {
-  return products.find((p) => p.slug === slug);
+  return (await loadCatalog()).products.find((p) => p.slug === slug);
 }
 
 export async function getRelatedProducts(product: Product, limit = 4): Promise<Product[]> {
+  const { products } = await loadCatalog();
   const sameCategory = products.filter((p) => p.slug !== product.slug && p.category === product.category);
   const sameDomain = products.filter(
     (p) => p.slug !== product.slug && p.domain === product.domain && p.category !== product.category,
@@ -45,12 +46,14 @@ export async function getRelatedProducts(product: Product, limit = 4): Promise<P
 }
 
 export async function getBestSellers(limit = 8): Promise<Product[]> {
+  const { products } = await loadCatalog();
   return [...products].filter((p) => p.domain !== "support").sort((a, b) => b.sold - a.sold).slice(0, limit);
 }
 
 /** Ranked search (same scoring as the search page). BACKEND: may call GET /api/search?q=… instead. */
 export async function searchProducts(query: string, limit = 10): Promise<Product[]> {
   if (!query.trim()) return [];
+  const { products, domains } = await loadCatalog();
   return products
     .map((p) => ({
       p,
@@ -72,6 +75,7 @@ export interface DealWithProduct extends Deal {
 }
 
 export async function getDeals(): Promise<DealWithProduct[]> {
+  const { products } = await loadCatalog();
   return deals.flatMap((deal) => {
     const product = products.find((p) => p.slug === deal.productSlug);
     const plan = product?.plans.find((pl) => pl.id === deal.planId);
@@ -82,7 +86,9 @@ export async function getDeals(): Promise<DealWithProduct[]> {
 
 /** Active deal for a product, if any (backend: only return deals whose endsAt is in the future). */
 export async function getProductDeal(productSlug: string): Promise<Deal | null> {
-  return deals.find((d) => d.productSlug === productSlug) ?? null;
+  // only a deal whose product and package still exist in the catalog; plain Deal fields only
+  const d = (await getDeals()).find((x) => x.productSlug === productSlug);
+  return d ? { productSlug: d.productSlug, planId: d.planId, discountPercent: d.discountPercent, endsAt: d.endsAt, label: d.label } : null;
 }
 
 export async function getReviews(productSlug?: string) {

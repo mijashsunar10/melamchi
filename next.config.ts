@@ -30,6 +30,10 @@ const nextConfig: NextConfig = {
       }
     : { partialPrefetching: true }),
   turbopack: {
+    // Static build: read the catalog from a JSON snapshot instead of the (cached) database
+    ...(isStaticExport && {
+      resolveAlias: { "@/server/catalog/source": "./src/server/catalog/static-source.ts" },
+    }),
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],

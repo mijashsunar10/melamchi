@@ -8,12 +8,26 @@
 | Schema (tables) | `src/server/db/schema.ts` — `users`, `sessions` |
 | Migrations | `drizzle/` — `npm run db:generate` after editing the schema, `npm run db:migrate` to apply |
 | Browse data | pgAdmin, or `npm run db:studio` |
+| Starter data | `npm run db:seed` (catalog) |
 | Password hashing | `src/server/auth/password.ts` (scrypt, Node built-in) |
 | Sessions | `src/server/auth/session.ts` — random token in an httpOnly cookie `topx_session`, only its SHA-256 hash in the DB, 7 days, auto-extended |
 | "Who is logged in" | `src/server/auth/dal.ts` — `getCurrentUser()`, `requireStaff()`, `requireRole([...])` — **every admin page/action must call one of these** |
 | Login / logout | `src/server/auth/actions.ts` (server actions) — generic error message, 5 attempts / 15 min per IP+email |
 | Fast cookie check for `/admin/*` | `src/proxy.ts` |
 | Create / reset an admin | `npm run admin:create -- --email you@x.com --name "Name" [--role admin\|staff]` |
+
+### Catalog in the database (B4.1)
+
+| Part | Where |
+|---|---|
+| Tables | `domains` (6 sections, slug = page URL), `categories`, `products` (order fields / FAQ / how-to as JSON), `plans` (packages; `slug` is the id deals & orders use) |
+| Import starter catalog | `npm run db:seed` — loads `src/data` into the DB; safe to re-run (updates by slug, never deletes) |
+| How the store reads it | `src/server/catalog/source.ts` → `loadCatalog()` (`"use cache"`, tag `catalog`, life `hours`) → used by every getter in `src/lib/catalog.ts` |
+| After an admin edit | call `updateTag(CATALOG_TAG)` in the server action → store shows the change immediately |
+| Hidden products | `products.is_active = false` → not shown anywhere in the store |
+| cPanel static build | `npm run build:cpanel` saves a JSON snapshot of the DB catalog first (`scripts/export-catalog.ts`); the static pages are built from it |
+
+Deals, reviews, FAQ and other content still come from `src/data` until B5.
 
 Roles: `admin` (everything, incl. team), `staff` (dashboard, own account; orders & support in B6), `customer` (later).
 

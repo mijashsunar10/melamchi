@@ -284,7 +284,11 @@ Stack: Next.js server (server actions + route handlers) · PostgreSQL · Drizzle
 - [x] **B1** Database setup — Drizzle + `pg`, schema in `src/server/db/schema.ts`, migrations in `drizzle/`, `npm run db:migrate`
 - [x] **B2** Authentication — admin/staff login at `/admin/login`, DB sessions, rate-limited login, `proxy.ts` guard, `requireStaff()`, `npm run admin:create`
 - [x] **B3** Admin dashboard — sidebar + mobile menu, top bar, overview stats & recent sign-ins, Staff & users (create, (de)activate, role, reset password, delete — admin only), My account (change password, sign out other devices)
-- [ ] **B4** Products — sections, categories, products, packages, order fields, images (CRUD) → public site reads from DB
+- [ ] **B4** Products
+  - [x] **B4.1** Catalog in PostgreSQL (`domains`, `categories`, `products`, `plans`), `npm run db:seed` imports the starter catalog, store reads from the DB (cached), cPanel build uses a DB snapshot
+  - [ ] **B4.2** Admin: sections & categories
+  - [ ] **B4.3** Admin: products (details, packages & prices, order fields, FAQ/how-to, show/hide, delete)
+  - [ ] **B4.4** Product image upload
 - [ ] **B5** Deals, reviews, content (FAQ, blog, legal, site stats/settings)
 - [ ] **B6** Orders — save orders from the site, order list/detail, status updates, tracking API
 - [ ] **B7** Payments — eSewa / Khalti / Fonepay
