@@ -42,6 +42,22 @@ is renamed**, so shared links don't break. Deleting a category keeps its product
 `<Suspense>` — otherwise pages can't be regenerated after an admin edit and render blank. The header links, bottom bar
 and WhatsApp button follow this pattern (`*View` fallback components).
 
+**Admin: Products (B4.3)** — `/admin/products` (admin + staff; only admins can delete):
+list with search, section filter and On website / Hidden / Out of stock tabs; one-click **show/hide**, **Make a copy**
+(copy starts hidden), **Delete** (friendly confirm). `/admin/products/new` and `/admin/products/[id]` are one editor page:
+basic details (name, brand, region, section → category, "How is it delivered?" cards), descriptions, **Packages & prices**
+(name, price, "was" price → discount, bonus, validity, in stock, popular, ↑↓ order), **What we ask the customer**
+(order-form questions with quick-add presets: Player ID, Zone ID, email, WhatsApp…), **How it works** steps,
+**Questions & answers**, look (card colour, short label, live preview card), badges and delivery time.
+A sticky Save bar shows "unsaved changes"; leaving the page with unsaved changes asks first.
+Choosing a delivery type on a *new* product fills sensible default questions / steps / FAQ.
+Queries `src/server/admin/products.ts`, actions `src/server/admin/product-actions.ts`
+(`saveProductAction`, `setProductVisibleAction`, `duplicateProductAction`, `deleteProductAction`), shared shapes
+`src/server/admin/product-types.ts`. Rules: the product web address (slug) is fixed after creation; package ids (`plans.slug`)
+and question keys (`fields[].name`) are kept when renamed, so deals and saved orders keep pointing at the right package.
+Prices are whole rupees and are re-checked on the server; the "was" price must be higher than the price.
+Note (Next.js 16): the previous page stays mounted but hidden, so the "Add product" form resets itself after a product is created.
+
 Roles: `admin` (everything, incl. team), `staff` (dashboard, own account; orders & support in B6), `customer` (later).
 
 ### Admin dashboard (B3)
@@ -230,6 +246,7 @@ node scripts/check-search.mjs http://localhost:3000    # search page: aliases, r
 AUTH_EMAIL=… AUTH_PASSWORD=… node scripts/check-auth.mjs http://localhost:3000   # admin login, sessions, logout, forged cookie, rate limit (use a TEST account)
 AUTH_EMAIL=… AUTH_PASSWORD=… node scripts/check-admin.mjs http://localhost:3000  # dashboard, team management, staff limits, own password (TEST admin)
 AUTH_EMAIL=… AUTH_PASSWORD=… node scripts/check-categories.mjs http://localhost:3000  # sections & categories; checks the store updates immediately
+AUTH_EMAIL=… AUTH_PASSWORD=… node scripts/check-products.mjs http://localhost:3000    # products: add, edit packages/prices, hide, copy, delete; store updates immediately
 node scripts/perf.mjs http://localhost:3000            # page weight per page (run on a production build)
 node scripts/nav-speed.mjs http://localhost:3000       # click-to-page switch time
 node scripts/screenshot.mjs http://localhost:3000/ out.png 1440 light   # screenshot + console errors
