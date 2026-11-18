@@ -5,7 +5,7 @@ import { buttonClasses } from "@/components/ui/button";
 import { formatCountPlus } from "@/lib/format";
 import { images } from "@/lib/images";
 import type { SiteStats } from "@/types/content";
-import { type SimpleIcon, siActivision, siGoogleplay, siPlaystation, siPubg, siRazer, siSteam, siValorant } from "simple-icons";
+import type { Product } from "@/types/catalog";
 
 const trust = [
   { icon: ShieldCheck, label: "Secure payment" },
@@ -34,32 +34,36 @@ function Mountains() {
   );
 }
 
-/** Game & gaming-store logos orbiting the hero photo */
+/** Spots for the round game pictures orbiting the big one */
 const orbit = [
-  { icon: siPubg, pos: "left-[47%] top-[-1%]", delay: "0s" },
-  { icon: siPlaystation, pos: "right-[7%] top-[10%]", delay: "1.4s" },
-  { icon: siValorant, pos: "right-[-2%] top-[44%]", delay: "0.7s" },
-  { icon: siSteam, pos: "right-[10%] bottom-[16%]", delay: "2.1s" },
-  { icon: siRazer, pos: "left-[3%] top-[12%]", delay: "1s" },
-  { icon: siActivision, pos: "left-[-3%] top-[44%]", delay: "2.6s" },
-  { icon: siGoogleplay, pos: "left-[8%] bottom-[16%]", delay: "1.8s" },
+  { pos: "left-[45%] top-[-2%]", delay: "0s" },
+  { pos: "right-[5%] top-[9%]", delay: "1.4s" },
+  { pos: "right-[-4%] top-[42%]", delay: "0.7s" },
+  { pos: "right-[8%] bottom-[15%]", delay: "2.1s" },
+  { pos: "left-[1%] top-[10%]", delay: "1s" },
+  { pos: "left-[-5%] top-[42%]", delay: "2.6s" },
+  { pos: "left-[6%] bottom-[15%]", delay: "1.8s" },
 ];
 
-function LogoTile({ icon, pos, delay }: { icon: SimpleIcon; pos: string; delay: string }) {
+const isMedia = (src: string) => src.startsWith("/media/");
+
+/** A round game picture that links to its top-up page */
+function GameBubble({ game, pos, delay }: { game: Product; pos: string; delay: string }) {
   return (
-    <div
-      className={`absolute z-20 flex size-14 animate-float items-center justify-center rounded-2xl border border-border bg-white shadow-[0_14px_30px_-12px_rgba(16,24,64,0.25)] dark:border-white/60 dark:bg-white/95 dark:shadow-[0_14px_30px_-10px_rgba(0,0,0,0.55)] xl:size-[60px] ${pos}`}
+    <Link
+      href={`/product/${game.slug}`}
+      title={game.name}
+      className={`absolute z-20 block size-16 animate-float overflow-hidden rounded-full shadow-[0_14px_30px_-10px_rgba(16,24,64,0.45)] ring-4 ring-white transition-transform hover:scale-110 xl:size-[76px] dark:shadow-[0_14px_30px_-10px_rgba(0,0,0,0.7)] dark:ring-white/90 ${pos}`}
       style={{ animationDelay: delay }}
-      title={icon.title}
     >
-      <svg viewBox="0 0 24 24" className="size-7" aria-hidden>
-        <path d={icon.path} fill={`#${icon.hex === "000000" ? "171a21" : icon.hex}`} />
-      </svg>
-    </div>
+      <Image src={game.image!} alt={game.name} fill sizes="80px" unoptimized={isMedia(game.image!)} className="object-cover" />
+    </Link>
   );
 }
 
-function HeroVisual({ stats }: { stats: SiteStats }) {
+function HeroVisual({ stats, games }: { stats: SiteStats; games: Product[] }) {
+  const [main, ...others] = games;
+  const freeFire = games.find((g) => g.slug === "free-fire-diamonds");
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[540px]">
       {/* glow */}
@@ -75,20 +79,16 @@ function HeroVisual({ stats }: { stats: SiteStats }) {
 
       {/* photo inside the circle */}
       <div className="absolute inset-[18%] overflow-hidden rounded-full shadow-[0_30px_70px_-25px_rgba(16,24,64,0.45)] ring-[6px] ring-white dark:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] dark:ring-white/[0.08]">
-        <Image
-          src={images.heroGamer}
-          alt="Gamer playing at a neon-lit gaming setup"
-          placeholder="blur"
-          loading="eager"
-          sizes="360px"
-          className="size-full scale-110 object-cover object-[38%_45%]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-tr from-brand-navy-deep/60 via-transparent to-brand-blue-500/25" />
+        {main ? (
+          <Image src={main.image!} alt={main.name} fill loading="eager" sizes="380px" unoptimized={isMedia(main.image!)} className="object-cover" />
+        ) : (
+          <Image src={images.heroGamer} alt="Gamer playing at a neon-lit gaming setup" placeholder="blur" loading="eager" sizes="360px" className="size-full scale-110 object-cover object-[38%_45%]" />
+        )}
       </div>
 
-      {/* brand logos */}
-      {orbit.map((o) => (
-        <LogoTile key={o.icon.slug} {...o} />
+      {/* game pictures */}
+      {others.slice(0, orbit.length).map((g, i) => (
+        <GameBubble key={g.slug} game={g} {...orbit[i]} />
       ))}
 
       {/* rating chip */}
@@ -118,11 +118,17 @@ function HeroVisual({ stats }: { stats: SiteStats }) {
           </span>
         </div>
         <div className="mt-3 flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-[#FF6B00] text-center text-[8px] leading-[1.05] font-extrabold text-white">
-            FREE
-            <br />
-            FIRE
-          </div>
+          {freeFire ? (
+            <span className="relative size-10 shrink-0 overflow-hidden rounded-xl">
+              <Image src={freeFire.image!} alt="" fill sizes="40px" unoptimized={isMedia(freeFire.image!)} className="object-cover" />
+            </span>
+          ) : (
+            <div className="flex size-10 items-center justify-center rounded-xl bg-[#FF6B00] text-center text-[8px] leading-[1.05] font-extrabold text-white">
+              FREE
+              <br />
+              FIRE
+            </div>
+          )}
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold">610 Diamonds</p>
             <p className="text-xs text-muted-foreground dark:text-white/55">Player · NepaliGamer99</p>
@@ -142,7 +148,8 @@ function HeroVisual({ stats }: { stats: SiteStats }) {
   );
 }
 
-export function Hero({ stats }: { stats: SiteStats }) {
+/** `games`: gaming products — the first with a picture fills the big circle, the next 7 orbit it. */
+export function Hero({ stats, games = [] }: { stats: SiteStats; games?: Product[] }) {
   return (
     <section className="bg-hero-light relative isolate overflow-hidden text-brand-navy dark:bg-hero dark:text-white">
       {/* subtle grid texture */}
@@ -204,7 +211,7 @@ export function Hero({ stats }: { stats: SiteStats }) {
         </div>
 
         <div className="hidden lg:block">
-          <HeroVisual stats={stats} />
+          <HeroVisual stats={stats} games={games.filter((g) => g.image)} />
         </div>
       </div>
 

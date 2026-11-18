@@ -26,6 +26,8 @@ export default async function HomePage() {
     getHomeFaq(),
   ]);
 
+  // big circle: PUBG; around it: the other best-selling games (only ones with a picture are used)
+  const heroGames = games.filter((g) => g.category !== "live-apps").sort((a, b) => Number(b.slug === "pubg-mobile-uc") - Number(a.slug === "pubg-mobile-uc"));
   const deals = allDeals.filter((d) => isGamingProduct(d.product));
   const gamingSlugs = new Set(games.map((g) => g.slug));
   const gamingReviews = allReviews.filter((r) => gamingSlugs.has(r.productSlug));
@@ -41,7 +43,7 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col gap-20 pb-20 sm:gap-28 sm:pb-28">
       <div>
-        <Hero stats={stats} />
+        <Hero stats={stats} games={heroGames} />
         <GameTiles games={games.slice(0, 6)} />
       </div>
 
