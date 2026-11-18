@@ -25,7 +25,7 @@ const slugify = (s: string) =>
 
 function refresh() {
   updateTag(CATALOG_TAG); // store pages show the change on the next request
-  revalidatePath("/admin/categories");
+  revalidatePath("/admin/categories", "layout"); // overview + every section page
 }
 
 // ---------- sections ----------
@@ -80,7 +80,7 @@ export async function createCategoryAction(_prev: ActionState, formData: FormDat
     .from(categories)
     .where(and(eq(categories.domainSlug, domainSlug), eq(categories.slug, slug)))
     .limit(1);
-  if (dup) return { error: `A category with the link name “${slug}” already exists in this section.` };
+  if (dup) return { error: `There is already a category called “${name}” in this section.` };
 
   const [{ last }] = await db.select({ last: max(categories.sortOrder) }).from(categories).where(eq(categories.domainSlug, domainSlug));
   await db.insert(categories).values({
@@ -101,16 +101,23 @@ export async function updateCategoryAction(_prev: ActionState, formData: FormDat
   const parsed = updateCategorySchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) return { error: parsed.error.issues[0]?.message };
   const { id, name } = parsed.data;
-  const slug = slugify(parsed.data.slug || name);
 
   const [current] = await db.select().from(categories).where(eq(categories.id, id)).limit(1);
   if (!current) return { error: "Category not found." };
+  // Renaming keeps the existing link (so shared links don't break) unless a new link name is given
+  const slug = parsed.data.slug ? slugify(parsed.data.slug) : current.slug;
+  const [dupName] = await db
+    .select({ id: categories.id })
+    .from(categories)
+    .where(and(eq(categories.domainSlug, current.domainSlug), eq(categories.name, name), ne(categories.id, id)))
+    .limit(1);
+  if (dupName) return { error: `There is already a category called “${name}” in this section.` };
   const [dup] = await db
     .select({ id: categories.id })
     .from(categories)
     .where(and(eq(categories.domainSlug, current.domainSlug), eq(categories.slug, slug), ne(categories.id, id)))
     .limit(1);
-  if (dup) return { error: `Another category already uses “${slug}”.` };
+  if (dup) return { error: `Another category already uses that link name.` };
 
   await db.update(categories).set({ name, slug, icon: parsed.data.icon as (typeof ICON_NAMES)[number] }).where(eq(categories.id, id));
   refresh();

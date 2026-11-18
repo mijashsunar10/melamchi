@@ -27,6 +27,11 @@ export async function listSectionsWithCategories(): Promise<AdminSection[]> {
   }));
 }
 
+/** One section with its categories (for the section page). */
+export async function getSectionWithCategories(slug: string): Promise<AdminSection | undefined> {
+  return (await listSectionsWithCategories()).find((s) => s.slug === slug);
+}
+
 export async function countProductsInCategory(categoryId: string) {
   const [row] = await db.select({ n: count() }).from(products).where(eq(products.categoryId, categoryId));
   return row.n;

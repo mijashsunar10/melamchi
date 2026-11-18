@@ -286,7 +286,7 @@ Stack: Next.js server (server actions + route handlers) · PostgreSQL · Drizzle
 - [x] **B3** Admin dashboard — sidebar + mobile menu, top bar, overview stats & recent sign-ins, Staff & users (create, (de)activate, role, reset password, delete — admin only), My account (change password, sign out other devices)
 - [ ] **B4** Products
   - [x] **B4.1** Catalog in PostgreSQL (`domains`, `categories`, `products`, `plans`), `npm run db:seed` imports the starter catalog, store reads from the DB (cached), cPanel build uses a DB snapshot
-  - [x] **B4.2** Admin: sections & categories — edit section texts/highlights/icon, add/rename/reorder/delete categories; store updates immediately
+  - [x] **B4.2** Admin: sections & categories — edit section texts/highlights/icon, add/rename/reorder/delete categories; store updates immediately. Simplified for non-technical staff: section cards → one page per section, labeled buttons, picture icon picker, plain-language messages
   - [ ] **B4.3** Admin: products (details, packages & prices, order fields, FAQ/how-to, show/hide, delete)
   - [ ] **B4.4** Product image upload
 - [ ] **B5** Deals, reviews, content (FAQ, blog, legal, site stats/settings)

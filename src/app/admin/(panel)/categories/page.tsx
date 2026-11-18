@@ -1,62 +1,42 @@
-import { ExternalLink } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Icon } from "@/components/icon";
 import { AdminPageHeader } from "@/components/admin/page-header";
 import { requireRole } from "@/server/auth/dal";
 import { listSectionsWithCategories } from "@/server/admin/catalog";
-import { AddCategoryForm, CategoryRow, EditSectionButton } from "./category-editors";
 
 export const metadata = { title: "Sections & categories" };
 
-async function Sections() {
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+
+async function SectionCards() {
   await requireRole(["admin"]);
   const sections = await listSectionsWithCategories();
 
   return (
-    <div className="grid gap-6 xl:grid-cols-2">
+    <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {sections.map((s) => (
-        <section key={s.slug} className="flex flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
-          <header className="flex flex-wrap items-start gap-4 border-b border-border p-4 sm:p-5">
-            <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${s.gradient} text-white`}>
-              <Icon name={s.icon} className="size-5" />
+        <li key={s.slug}>
+          <Link
+            href={`/admin/categories/${s.slug}`}
+            className="group flex h-full items-center gap-4 rounded-2xl border border-border bg-surface p-5 shadow-card transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg"
+          >
+            <span className={`flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${s.gradient} text-white shadow-md`}>
+              <Icon name={s.icon} className="size-6" />
             </span>
-            <div className="min-w-0 flex-1">
-              <h2 className="font-bold">{s.name}</h2>
-              <p className="text-sm text-muted-foreground">{s.tagline}</p>
-              <Link href={`/${s.slug}`} target="_blank" className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
-                /{s.slug} · {s.productCount} products <ExternalLink className="size-3" />
-              </Link>
-            </div>
-            <EditSectionButton
-              section={{
-                slug: s.slug,
-                name: s.name,
-                shortName: s.shortName,
-                tagline: s.tagline,
-                description: s.description,
-                icon: s.icon,
-                highlights: s.highlights,
-              }}
-            />
-          </header>
-
-          <ul className="flex-1 divide-y divide-border">
-            {s.categories.map((c, i) => (
-              <CategoryRow
-                key={c.id}
-                domainSlug={s.slug}
-                first={i === 0}
-                last={i === s.categories.length - 1}
-                category={{ id: c.id, name: c.name, slug: c.slug, icon: c.icon, productCount: c.productCount }}
-              />
-            ))}
-            {s.categories.length === 0 && <li className="px-5 py-4 text-sm text-muted-foreground">No categories yet.</li>}
-          </ul>
-          <AddCategoryForm domainSlug={s.slug} />
-        </section>
+            <span className="min-w-0 flex-1">
+              <span className="block text-lg font-bold">{s.name}</span>
+              <span className="sr-only">Manage</span>
+              <span className="mt-0.5 block text-sm text-muted-foreground">
+                {plural(s.categories.length, "category", "categories")} · {plural(s.productCount, "product", "products")}
+              </span>
+            </span>
+            <ChevronRight className="size-5 shrink-0 text-primary transition-transform group-hover:translate-x-0.5" aria-hidden />
+          </Link>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }
 
@@ -65,10 +45,18 @@ export default function CategoriesPage() {
     <>
       <AdminPageHeader
         title="Sections & categories"
-        description="The 6 store sections and the categories inside them. Changes appear on the website immediately."
+        description="Your store has 6 sections. Click a section to change its details or to add, rename and remove its categories."
       />
-      <Suspense fallback={<div className="grid gap-6 xl:grid-cols-2">{Array.from({ length: 4 }, (_, i) => <div key={i} className="skeleton h-80 rounded-2xl" />)}</div>}>
-        <Sections />
+      <Suspense
+        fallback={
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {Array.from({ length: 6 }, (_, i) => (
+              <div key={i} className="skeleton h-24 rounded-2xl" />
+            ))}
+          </div>
+        }
+      >
+        <SectionCards />
       </Suspense>
     </>
   );

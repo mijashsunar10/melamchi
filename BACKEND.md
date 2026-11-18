@@ -29,9 +29,14 @@
 
 Deals, reviews, FAQ and other content still come from `src/data` until B5.
 
-**Admin: Sections & categories (B4.2)** — `/admin/categories` (admin only). Queries `src/server/admin/catalog.ts`,
+**Admin: Sections & categories (B4.2)** — admin only, built for non-technical users:
+`/admin/categories` shows 6 section cards → `/admin/categories/[slug]` has a plain "Section details" form and a
+"Categories" list (Add / Rename / Delete buttons, ↑↓ to reorder, click-a-picture icon picker, friendly confirm dialogs).
+Queries `src/server/admin/catalog.ts` (`listSectionsWithCategories`, `getSectionWithCategories`),
 actions `src/server/admin/catalog-actions.ts` (`updateSectionAction`, `create/update/delete/moveCategoryAction`).
-Section slugs are fixed (they are page URLs). Deleting a category keeps its products in the section (category → empty).
+Shared admin UI: `src/components/admin/icon-picker.tsx`, `form-bits.tsx` (toast-on-success hook, buttons, error box).
+Section slugs are fixed (they are page URLs). Category link names are created from the name and **kept when a category
+is renamed**, so shared links don't break. Deleting a category keeps its products in the section (category → empty).
 
 **Important (Next.js 16):** any Client Component that reads the URL (`usePathname`, `useSearchParams`) must be inside
 `<Suspense>` — otherwise pages can't be regenerated after an admin edit and render blank. The header links, bottom bar
