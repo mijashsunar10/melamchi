@@ -2,16 +2,16 @@ import { CreditCard, MousePointerClick, PackageCheck, UserRoundPen } from "lucid
 import { SectionHeading } from "./section-heading";
 
 const steps = [
-  { icon: MousePointerClick, title: "Choose", text: "Pick a product and package." },
-  { icon: UserRoundPen, title: "Enter details", text: "Player ID or account email." },
+  { icon: MousePointerClick, title: "Pick your game", text: "Choose the UC, diamonds or pack you want." },
+  { icon: UserRoundPen, title: "Enter Player ID", text: "Tap “Check name” to be sure it’s you." },
   { icon: CreditCard, title: "Pay locally", text: "eSewa, Khalti, IME Pay or bank." },
-  { icon: PackageCheck, title: "Receive instantly", text: "Delivered in seconds." },
+  { icon: PackageCheck, title: "Game on", text: "Top-up lands in your account in seconds." },
 ];
 
 export function HowItWorks() {
   return (
     <section className="mx-auto w-full max-w-7xl px-4 sm:px-6">
-      <SectionHeading center eyebrow="How it works" title="Order in 4 easy steps" />
+      <SectionHeading center eyebrow="How it works" title="Top up in 4 easy steps" />
       <ol className="relative mt-12 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4">
         <div aria-hidden className="absolute top-8 right-[12%] left-[12%] hidden h-px bg-[linear-gradient(90deg,var(--border)_50%,transparent_50%)] bg-[length:12px_1px] lg:block" />
         {steps.map(({ icon: I, title, text }, i) => (

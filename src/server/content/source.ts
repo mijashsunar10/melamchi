@@ -16,6 +16,7 @@ export async function loadContent(): Promise<Content> {
   const content = await readContent();
   const untilDealEnds = content.nextDealEnd ? Math.ceil((Date.parse(content.nextDealEnd) - Date.now()) / 1000) : Infinity;
   const revalidate = Math.max(60, Math.min(3600, untilDealEnds));
-  cacheLife({ stale: 60, revalidate, expire: Math.max(revalidate * 2, 86400) });
+  // stale must be ≥ 5 min, otherwise the content is left out of the instant page shell
+  cacheLife({ stale: 300, revalidate, expire: Math.max(revalidate * 2, 86400) });
   return content;
 }

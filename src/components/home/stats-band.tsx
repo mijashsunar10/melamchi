@@ -34,11 +34,11 @@ export function StatsBand({ stats: s }: { stats: SiteStats }) {
           <div>
             <p className="text-xs font-semibold tracking-[0.2em] text-accent uppercase dark:text-brand-orange-400">Why TOPX</p>
             <h2 className="mt-3 font-display text-3xl leading-tight font-black italic sm:text-5xl">
-              Nepal&apos;s Digital
+              Nepal&apos;s Gaming
               <br />
-              Powerhouse
+              Top-up Store
             </h2>
-            <p className="mt-5 max-w-sm text-muted-foreground dark:text-white/65">Built in Nepal, for Nepal — by Melamchi Tech.</p>
+            <p className="mt-5 max-w-sm text-muted-foreground dark:text-white/65">Built in Nepal, for Nepali gamers — by Melamchi Tech.</p>
           </div>
           <dl className="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-4 lg:grid-cols-2 dark:gap-x-8 dark:gap-y-8">
             {stats.map(({ value, label }) => (

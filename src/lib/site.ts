@@ -16,10 +16,10 @@ const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "97798XXXXXXXX
 export const siteConfig = {
   name: "TOPX NEPAL",
   company: "Melamchi Tech",
-  tagline: "Everything Digital. One Place.",
-  positioning: "Nepal's Digital Powerhouse",
+  tagline: "Game Top-ups in Seconds",
+  positioning: "Nepal's Gaming Top-up Store",
   description:
-    "Buy AI tools, gaming top-ups, gift cards, software licences and digital subscriptions in Nepal. Instant delivery, secure local payments and 24/7 support.",
+    "Top up PUBG UC, Free Fire diamonds, Mobile Legends, Valorant, Steam and more in Nepal — paid with eSewa or Khalti, delivered to your Player ID in seconds. Also gaming gift cards, AI tools and software.",
   // TODO: replace with the real domain
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   locale: "en_NP",
@@ -29,6 +29,10 @@ export const siteConfig = {
     "game top up Nepal",
     "PUBG UC Nepal",
     "Free Fire diamond Nepal",
+    "Mobile Legends diamond Nepal",
+    "Valorant points Nepal",
+    "Steam wallet Nepal",
+    "gaming gift card Nepal",
     "gift card Nepal",
     "ChatGPT Plus Nepal",
     "AI tools Nepal",

@@ -49,6 +49,21 @@ export async function getBestSellers(limit = 8): Promise<Product[]> {
   return [...products].filter((p) => p.domain !== "support").sort((a, b) => b.sold - a.sold).slice(0, limit);
 }
 
+/**
+ * TOPX is gaming-first: the home page shows game top-ups and gaming gift cards
+ * (Steam, PlayStation, Razer Gold, Xbox…). Other sections stay reachable from the menu.
+ */
+export function isGamingProduct(p: Product): boolean {
+  return p.domain === "gaming" || (p.domain === "gift-cards" && p.category === "gaming-cards");
+}
+
+/** Gaming products, best sellers first. */
+export async function getGamingProducts(limit?: number): Promise<Product[]> {
+  const { products } = await loadCatalog();
+  const list = products.filter(isGamingProduct).sort((a, b) => b.sold - a.sold);
+  return limit ? list.slice(0, limit) : list;
+}
+
 /** Ranked search (same scoring as the search page). BACKEND: may call GET /api/search?q=… instead. */
 export async function searchProducts(query: string, limit = 10): Promise<Product[]> {
   if (!query.trim()) return [];

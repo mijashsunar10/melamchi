@@ -45,8 +45,8 @@ export async function Footer() {
         <div className="flex flex-col gap-5">
           <Logo eager={false} className="[&_img]:h-16 sm:[&_img]:h-[72px]" />
           <p className="max-w-xs text-sm leading-relaxed">
-            <span className="font-semibold text-foreground dark:text-white">{siteConfig.tagline}</span> {siteConfig.positioning} — AI tools,
-            game top-ups, gift cards, software and digital subscriptions with local payment and 24/7 support.
+            <span className="font-semibold text-foreground dark:text-white">{siteConfig.tagline}</span> {siteConfig.positioning} — PUBG UC,
+            Free Fire diamonds, MLBB, Valorant, Steam and gaming gift cards, plus AI tools and software, with local payment and 24/7 support.
           </p>
           <div className="flex gap-2">
             <SocialIcon label="Facebook" href={social.facebook} path="M14 8h3V4h-3c-2.8 0-4 1.7-4 4.3V10H7v4h3v8h4v-8h3l1-4h-4V8.6c0-.4.3-.6.6-.6Z" />

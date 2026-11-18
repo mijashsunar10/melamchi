@@ -41,8 +41,18 @@ export async function openBrowser({ width = 1440, height = 900, scheme = "light"
     async goto(url, wait = 5000) { await send("Page.navigate", { url }); await sleep(wait); },
     close() {
       ws.close();
+      // delete the temporary profile once Chrome has really exited (it can hold 100+ MB);
+      // also on process exit, in case the script ends before Chrome does
+      const cleanup = () => {
+        try {
+          rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+        } catch {
+          // Chrome still closing — a later run's cleanup or the OS will remove it
+        }
+      };
+      chrome.once("exit", cleanup);
+      process.once("exit", cleanup);
       chrome.kill();
-      setTimeout(() => rmSync(profile, { recursive: true, force: true }), 500).unref();
     },
   };
 }

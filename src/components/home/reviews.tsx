@@ -36,14 +36,16 @@ function ReviewCard({ review, productName }: { review: Review; productName?: str
 
 export function Reviews({ reviews, products, stats }: { reviews: Review[]; products: Product[]; stats: SiteStats }) {
   const name = (slug: string) => products.find((p) => p.slug === slug)?.name;
-  const loop = [...reviews, ...reviews];
+  // repeat a short list so the scrolling strip is always full, then double it for a seamless loop
+  const base = reviews.length ? Array.from({ length: Math.ceil(6 / reviews.length) }, () => reviews).flat() : [];
+  const loop = [...base, ...base];
 
   return (
     <section className="overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeading
           eyebrow="Verified reviews"
-          title="Loved by gamers & creators"
+          title="Loved by gamers across Nepal"
           extra={
             <div className="flex items-center gap-3 rounded-2xl bg-surface px-4 py-3 shadow-card ring-1 ring-border">
               <span className="font-display text-3xl font-black italic">{stats.rating.toFixed(1)}</span>

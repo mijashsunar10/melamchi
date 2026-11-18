@@ -1,10 +1,12 @@
 import type { FAQ } from "@/types/catalog";
 
-/** Home page FAQ (later editable from the admin panel). */
+/** Starter home page FAQ (gaming-first). Loaded into the database by `npm run db:seed`, then edited in Admin → Content. */
+
 export const homeFaq: FAQ[] = [
-  { q: "Is TOPX Nepal safe?", a: "Yes. We are run by Melamchi Tech in Kathmandu. Every order has a receipt, a live status page and 24/7 human support." },
-  { q: "How fast is delivery?", a: "Top-ups and gift-card codes: usually 10–60 seconds. Subscriptions such as AI tools and streaming: 5–30 minutes." },
-  { q: "How can I pay?", a: "eSewa, Khalti, IME Pay, Fonepay QR, bank transfer or your TOPX Wallet balance." },
-  { q: "Do you need my password?", a: "Never. Top-ups only need your Player ID; subscriptions only need your account email." },
-  { q: "What if my order fails?", a: "You get a full refund to your wallet or original payment method — usually the same day." },
+  { q: "Is TOPX Nepal safe?", a: "Yes. We are run by Melamchi Tech in Kathmandu. We only ever need your Player ID — never your game password — and every order gets a receipt and 24/7 human support." },
+  { q: "How fast will my top-up arrive?", a: "UC, diamonds and game credits usually arrive 10–60 seconds after payment. Gaming gift-card codes (Steam, PlayStation, Razer Gold) are sent instantly." },
+  { q: "How do I find my Player ID?", a: "Open the game and tap your avatar or profile — the number under your name is your Player ID. For Mobile Legends you also need the Zone ID in brackets. Our blog has step-by-step guides for each game." },
+  { q: "How can I pay?", a: "eSewa, Khalti, IME Pay, Fonepay QR or bank transfer — all in rupees, no international card needed." },
+  { q: "What if I enter the wrong Player ID?", a: "Always tap “Check name” before paying: if the name shown is yours, the ID is right. Top-ups sent to a wrong ID can’t be reversed." },
+  { q: "What if my top-up doesn’t arrive?", a: "Message us on WhatsApp with your order number. We fix it or refund you in full — usually the same day." },
 ];

@@ -2,24 +2,6 @@ import type { Domain } from "@/types/catalog";
 
 export const domains: Domain[] = [
   {
-    slug: "ai-tools",
-    name: "AI Tools",
-    shortName: "AI",
-    tagline: "Premium AI, paid in rupees",
-    description:
-      "ChatGPT, Claude, Gemini, Midjourney and more — activated on your own account with local payment.",
-    icon: "Cpu",
-    gradient: "from-violet-500 to-brand-blue-600",
-    highlights: ["Activated on your own account", "Pay with eSewa, Khalti or bank", "Ready in 5–30 minutes"],
-    categories: [
-      { slug: "chat-assistants", name: "Chat Assistants", icon: "Bot" },
-      { slug: "image-video", name: "Image & Video", icon: "Image" },
-      { slug: "voice-audio", name: "Voice & Audio", icon: "Mic" },
-      { slug: "writing", name: "Writing", icon: "PenLine" },
-      { slug: "coding", name: "Coding", icon: "Code" },
-    ],
-  },
-  {
     slug: "gaming",
     name: "Gaming Top-up",
     shortName: "Gaming",
@@ -49,6 +31,24 @@ export const domains: Domain[] = [
       { slug: "app-stores", name: "App Stores", icon: "Smartphone" },
       { slug: "gaming-cards", name: "Gaming Cards", icon: "Gamepad2" },
       { slug: "shopping", name: "Shopping & Entertainment", icon: "CreditCard" },
+    ],
+  },
+  {
+    slug: "ai-tools",
+    name: "AI Tools",
+    shortName: "AI",
+    tagline: "Premium AI, paid in rupees",
+    description:
+      "ChatGPT, Claude, Gemini, Midjourney and more — activated on your own account with local payment.",
+    icon: "Cpu",
+    gradient: "from-violet-500 to-brand-blue-600",
+    highlights: ["Activated on your own account", "Pay with eSewa, Khalti or bank", "Ready in 5–30 minutes"],
+    categories: [
+      { slug: "chat-assistants", name: "Chat Assistants", icon: "Bot" },
+      { slug: "image-video", name: "Image & Video", icon: "Image" },
+      { slug: "voice-audio", name: "Voice & Audio", icon: "Mic" },
+      { slug: "writing", name: "Writing", icon: "PenLine" },
+      { slug: "coding", name: "Coding", icon: "Code" },
     ],
   },
   {

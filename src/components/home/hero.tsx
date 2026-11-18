@@ -5,7 +5,7 @@ import { buttonClasses } from "@/components/ui/button";
 import { formatCountPlus } from "@/lib/format";
 import { images } from "@/lib/images";
 import type { SiteStats } from "@/types/content";
-import { type SimpleIcon, siClaude, siNetflix, siPlaystation, siPubg, siSpotify, siSteam, siYoutube } from "simple-icons";
+import { type SimpleIcon, siActivision, siGoogleplay, siPlaystation, siPubg, siRazer, siSteam, siValorant } from "simple-icons";
 
 const trust = [
   { icon: ShieldCheck, label: "Secure payment" },
@@ -34,15 +34,15 @@ function Mountains() {
   );
 }
 
-/** Real brand logos orbiting the hero photo */
+/** Game & gaming-store logos orbiting the hero photo */
 const orbit = [
-  { icon: siNetflix, pos: "left-[47%] top-[-1%]", delay: "0s" },
+  { icon: siPubg, pos: "left-[47%] top-[-1%]", delay: "0s" },
   { icon: siPlaystation, pos: "right-[7%] top-[10%]", delay: "1.4s" },
-  { icon: siSpotify, pos: "right-[-2%] top-[44%]", delay: "0.7s" },
+  { icon: siValorant, pos: "right-[-2%] top-[44%]", delay: "0.7s" },
   { icon: siSteam, pos: "right-[10%] bottom-[16%]", delay: "2.1s" },
-  { icon: siPubg, pos: "left-[3%] top-[12%]", delay: "1s" },
-  { icon: siClaude, pos: "left-[-3%] top-[44%]", delay: "2.6s" },
-  { icon: siYoutube, pos: "left-[8%] bottom-[16%]", delay: "1.8s" },
+  { icon: siRazer, pos: "left-[3%] top-[12%]", delay: "1s" },
+  { icon: siActivision, pos: "left-[-3%] top-[44%]", delay: "2.6s" },
+  { icon: siGoogleplay, pos: "left-[8%] bottom-[16%]", delay: "1.8s" },
 ];
 
 function LogoTile({ icon, pos, delay }: { icon: SimpleIcon; pos: string; delay: string }) {
@@ -106,7 +106,7 @@ function HeroVisual({ stats }: { stats: SiteStats }) {
 
       {/* activation chip */}
       <div className="absolute top-[58%] left-[12%] z-30 flex items-center gap-2 rounded-xl bg-white px-3 py-2 text-xs font-semibold text-brand-navy shadow-xl">
-        <BadgeCheck className="size-4 text-primary" /> ChatGPT Plus activated
+        <BadgeCheck className="size-4 text-primary" /> 660 UC sent to Player ID
       </div>
 
       {/* order card */}
@@ -152,18 +152,18 @@ export function Hero({ stats }: { stats: SiteStats }) {
         <div className="flex animate-fade-up flex-col items-start gap-7">
           <span className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white px-3 py-1 text-xs font-medium text-brand-navy/80 shadow-sm backdrop-blur dark:border-white/12 dark:bg-white/[0.06] dark:text-white/80 dark:shadow-none">
             <span className="size-1.5 rounded-full bg-accent" />
-            Nepal&apos;s Digital Powerhouse
+            Nepal&apos;s Gaming Top-up Store
           </span>
 
           <h1 className="font-display text-5xl leading-[0.95] font-black italic sm:text-6xl xl:text-7xl">
             TOP<span className="text-accent">X</span> <span className="text-gradient-strong pr-2 dark:text-gradient">NEPAL</span>
             <span className="mt-4 block text-2xl leading-tight font-extrabold sm:text-3xl xl:text-[2.35rem]">
-              Everything Digital. <span className="swoosh whitespace-nowrap text-primary dark:text-brand-sky">One Place.</span>
+              Top up in seconds. <span className="swoosh whitespace-nowrap text-primary dark:text-brand-sky">Game on.</span>
             </span>
           </h1>
 
           <p className="max-w-md text-base leading-relaxed text-muted-foreground sm:text-lg dark:text-white/65">
-            AI tools, game top-ups, gift cards and software — paid in rupees, delivered in seconds.
+            PUBG UC, Free Fire diamonds, Mobile Legends, Valorant, Steam and more — paid with eSewa or Khalti, sent straight to your Player ID.
           </p>
 
           {/* search */}
@@ -172,8 +172,8 @@ export function Hero({ stats }: { stats: SiteStats }) {
               <Search className="ml-3 size-5 shrink-0 text-brand-navy/40 dark:text-white/50" />
               <input
                 name="q"
-                aria-label="Search products"
-                placeholder="Search Free Fire, ChatGPT, Netflix…"
+                aria-label="Search games"
+                placeholder="Search PUBG UC, Free Fire, MLBB, Steam…"
                 className="min-w-0 flex-1 bg-transparent py-2.5 text-sm text-brand-navy outline-none placeholder:text-brand-navy/40 dark:text-white dark:placeholder:text-white/45"
               />
               <button type="submit" className={buttonClasses({ variant: "cta", size: "md" })}>
@@ -183,8 +183,8 @@ export function Hero({ stats }: { stats: SiteStats }) {
           </form>
 
           <div className="flex flex-wrap gap-3">
-            <Link href="#categories" className={buttonClasses({ variant: "cta", size: "lg", pill: true })}>
-              Explore Now <ArrowRight />
+            <Link href="#games" className={buttonClasses({ variant: "cta", size: "lg", pill: true })}>
+              Top up now <ArrowRight />
             </Link>
             <Link
               href="#deals"
