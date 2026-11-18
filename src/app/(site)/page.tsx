@@ -9,6 +9,7 @@ import { ProductShowcase } from "@/components/home/product-showcase";
 import { Reviews } from "@/components/home/reviews";
 import { SectionHeading } from "@/components/home/section-heading";
 import { StatsBand } from "@/components/home/stats-band";
+import { productGridClass } from "@/components/product/grid";
 import { ProductCard } from "@/components/product/product-card";
 import { getDeals, getDomains, getGamingProducts, getProducts, getReviews, isGamingProduct } from "@/lib/catalog";
 import { getHomeFaq, getSiteStats } from "@/lib/content";
@@ -52,8 +53,8 @@ export default async function HomePage() {
       <section className="mx-auto w-full max-w-7xl px-4 sm:px-6">
         <SectionHeading eyebrow="Trending top-ups" title="What gamers are buying" className="mb-8" />
         <ProductShowcase links={links}>
-          <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
-            {games.slice(0, 8).map((p) => (
+          <div className={productGridClass}>
+            {games.slice(0, 10).map((p) => (
               <ProductCard key={p.slug} product={p} />
             ))}
           </div>

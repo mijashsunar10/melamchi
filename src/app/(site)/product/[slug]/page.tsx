@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { SectionHeading } from "@/components/home/section-heading";
 import { Cover } from "@/components/product/cover";
 import { OrderPanel } from "@/components/product/order-panel";
+import { productGridClass } from "@/components/product/grid";
 import { ProductCard } from "@/components/product/product-card";
 import { Accordion } from "@/components/ui/accordion";
 import { Tabs } from "@/components/ui/tabs";
@@ -43,7 +44,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
 
   const [domain, related, reviews, deal] = await Promise.all([
     getDomain(product.domain),
-    getRelatedProducts(product, 4),
+    getRelatedProducts(product, 5),
     getReviews(product.slug),
     getProductDeal(product.slug),
   ]);
@@ -184,7 +185,7 @@ export default async function ProductPage({ params }: PageProps<"/product/[slug]
             href={domain ? `/${domain.slug}` : undefined}
             className="mb-8"
           />
-          <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+          <div className={productGridClass}>
             {related.map((p) => (
               <ProductCard key={p.slug} product={p} />
             ))}

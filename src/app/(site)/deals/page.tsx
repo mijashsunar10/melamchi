@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SectionHeading } from "@/components/home/section-heading";
 import { Cover } from "@/components/product/cover";
+import { productGridClass } from "@/components/product/grid";
 import { ProductCard } from "@/components/product/product-card";
 import { Countdown } from "@/components/ui/countdown";
 import { getBestSellers, getDeals } from "@/lib/catalog";
@@ -16,11 +17,11 @@ export const metadata: Metadata = {
 };
 
 export default async function DealsPage() {
-  const [deals, bestSellers, { contact }] = await Promise.all([getDeals(), getBestSellers(8), getContact()]);
+  const [deals, bestSellers, { contact }] = await Promise.all([getDeals(), getBestSellers(10), getContact()]);
   const sorted = [...deals].sort((a, b) => b.discountPercent - a.discountPercent);
   const soonest = [...deals].sort((a, b) => a.endsAt.localeCompare(b.endsAt))[0];
   const dealSlugs = new Set(deals.map((d) => d.productSlug));
-  const more = bestSellers.filter((p) => !dealSlugs.has(p.slug)).slice(0, 4);
+  const more = bestSellers.filter((p) => !dealSlugs.has(p.slug)).slice(0, 5);
 
   return (
     <div className="flex flex-col gap-16 pb-20 sm:gap-20 sm:pb-28">
@@ -124,7 +125,7 @@ export default async function DealsPage() {
       {more.length > 0 && (
         <section className="mx-auto w-full max-w-7xl px-4 sm:px-6">
           <SectionHeading eyebrow="Popular right now" title="Best sellers" href="/products" linkLabel="See all" className="mb-8" />
-          <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+          <div className={productGridClass}>
             {more.map((p) => (
               <ProductCard key={p.slug} product={p} />
             ))}

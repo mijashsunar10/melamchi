@@ -3,6 +3,7 @@
 import { ArrowDownUp, MessageCircle, Search, SearchX, X } from "lucide-react";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { ProductCardSkeleton } from "@/components/ui/skeleton";
+import { productGridClass } from "@/components/product/grid";
 import { cn } from "@/lib/cn";
 import { POPULAR_SEARCHES, type SearchEntry, scoreEntry } from "@/lib/search";
 import { whatsappLink } from "@/lib/site";
@@ -217,13 +218,13 @@ export function SearchCatalog({
       </p>
 
       {!ready ? (
-        <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+        <div className={productGridClass}>
           {Array.from({ length: 8 }, (_, i) => (
             <ProductCardSkeleton key={i} />
           ))}
         </div>
       ) : results.length ? (
-        <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+        <div className={productGridClass}>
           {results.map(({ item }) => (
             <div key={item.slug} className="flex [&>*]:flex-1">
               {item.card}

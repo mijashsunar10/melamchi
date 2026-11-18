@@ -2,6 +2,7 @@
 
 import { ArrowDownUp, PackageSearch } from "lucide-react";
 import { type ReactNode, useMemo, useState } from "react";
+import { productGridClass } from "@/components/product/grid";
 import { cn } from "@/lib/cn";
 
 export interface CatalogItem {
@@ -90,7 +91,7 @@ export function DomainCatalog({
       </div>
 
       {visible.length ? (
-        <div key={category} className="grid animate-fade-up grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
+        <div key={category} className={`animate-fade-up ${productGridClass}`}>
           {visible.map((i) => (
             <div key={i.slug} className="flex [&>*]:flex-1">
               {i.card}

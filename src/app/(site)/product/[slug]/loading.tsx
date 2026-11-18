@@ -14,7 +14,7 @@ export default function Loading() {
         </div>
       </section>
       <div className="mx-auto grid w-full max-w-7xl grid-cols-2 gap-3 px-4 sm:gap-5 sm:px-6 md:grid-cols-3 lg:grid-cols-4">
-        {Array.from({ length: 8 }, (_, i) => (
+        {Array.from({ length: 10 }, (_, i) => (
           <ProductCardSkeleton key={i} />
         ))}
       </div>
