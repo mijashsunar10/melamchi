@@ -7,6 +7,7 @@ import { ProductCard } from "@/components/product/product-card";
 import { Countdown } from "@/components/ui/countdown";
 import { getBestSellers, getDeals } from "@/lib/catalog";
 import { formatNPR } from "@/lib/format";
+import { getContact } from "@/lib/content";
 import { whatsappLink } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function DealsPage() {
-  const [deals, bestSellers] = await Promise.all([getDeals(), getBestSellers(8)]);
+  const [deals, bestSellers, { contact }] = await Promise.all([getDeals(), getBestSellers(8), getContact()]);
   const sorted = [...deals].sort((a, b) => b.discountPercent - a.discountPercent);
   const soonest = [...deals].sort((a, b) => a.endsAt.localeCompare(b.endsAt))[0];
   const dealSlugs = new Set(deals.map((d) => d.productSlug));
@@ -114,7 +115,7 @@ export default async function DealsPage() {
             <p className="mt-1 text-sm text-muted-foreground">Message us on WhatsApp and we&apos;ll send you new offers as soon as they go live.</p>
           </div>
           <a
-            href={whatsappLink("Hi TOPX Nepal! Please send me new deals and offers.")}
+            href={whatsappLink("Hi TOPX Nepal! Please send me new deals and offers.", contact.whatsappNumber)}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex h-12 shrink-0 items-center gap-2 rounded-xl bg-[#25D366] px-6 text-sm font-bold text-white transition-colors hover:bg-[#1fb857]"

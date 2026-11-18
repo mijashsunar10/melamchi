@@ -4,12 +4,13 @@ import Link from "next/link";
 import { Accordion } from "@/components/ui/accordion";
 import { buttonClasses } from "@/components/ui/button";
 import { images } from "@/lib/images";
-import { siteConfig } from "@/lib/site";
+import { getContact } from "@/lib/content";
 import type { FAQ } from "@/types/catalog";
 import { SectionHeading } from "./section-heading";
 
 
-export function FaqCta({ faqs }: { faqs: FAQ[] }) {
+export async function FaqCta({ faqs }: { faqs: FAQ[] }) {
+  const { contact } = await getContact();
   return (
     <section className="mx-auto grid w-full max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1.2fr_1fr]">
       <div className="flex flex-col gap-8">
@@ -30,7 +31,7 @@ export function FaqCta({ faqs }: { faqs: FAQ[] }) {
           <h3 className="font-display text-2xl font-black italic">Talk to a real person</h3>
           <p className="mt-2 max-w-xs text-sm text-white/75">WhatsApp us any time — we reply in minutes.</p>
           <a
-            href={siteConfig.contact.whatsapp}
+            href={contact.whatsapp}
             className={`${buttonClasses({ variant: "cta", pill: true })} mt-5 self-start`}
           >
             Chat on WhatsApp <ArrowRight />

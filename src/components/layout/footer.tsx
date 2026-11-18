@@ -1,6 +1,7 @@
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import Link from "next/link";
 import { getDomains, getPaymentMethods } from "@/lib/catalog";
+import { getContact } from "@/lib/content";
 import { siteConfig } from "@/lib/site";
 import { Logo } from "./logo";
 
@@ -35,7 +36,7 @@ function SocialIcon({ label, href, path }: { label: string; href: string; path: 
 }
 
 export async function Footer() {
-  const [domains, payments] = await Promise.all([getDomains(), getPaymentMethods()]);
+  const [domains, payments, { contact, social }] = await Promise.all([getDomains(), getPaymentMethods(), getContact()]);
 
   return (
     <footer className="relative overflow-hidden border-t border-border bg-surface text-muted-foreground dark:border-transparent dark:bg-brand-navy-deep dark:text-white/70">
@@ -48,10 +49,10 @@ export async function Footer() {
             game top-ups, gift cards, software and digital subscriptions with local payment and 24/7 support.
           </p>
           <div className="flex gap-2">
-            <SocialIcon label="Facebook" href={siteConfig.social.facebook} path="M14 8h3V4h-3c-2.8 0-4 1.7-4 4.3V10H7v4h3v8h4v-8h3l1-4h-4V8.6c0-.4.3-.6.6-.6Z" />
-            <SocialIcon label="Instagram" href={siteConfig.social.instagram} path="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4ZM17.3 5.5a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4ZM12 2c-2.7 0-3 0-4.1.1C4.3 2.3 2.3 4.3 2.1 7.9 2 9 2 9.3 2 12s0 3 .1 4.1c.2 3.6 2.2 5.6 5.8 5.8 1.1.1 1.4.1 4.1.1s3 0 4.1-.1c3.6-.2 5.6-2.2 5.8-5.8.1-1.1.1-1.4.1-4.1s0-3-.1-4.1c-.2-3.6-2.2-5.6-5.8-5.8C15 2 14.7 2 12 2Z" />
-            <SocialIcon label="TikTok" href={siteConfig.social.tiktok} path="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.7a5.8 5.8 0 1 0 4.9 5.7V9.1a7.4 7.4 0 0 0 4.3 1.4V7.4a4.3 4.3 0 0 1-3.2-1.6Z" />
-            <SocialIcon label="YouTube" href={siteConfig.social.youtube} path="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8ZM10 15V9l5.2 3L10 15Z" />
+            <SocialIcon label="Facebook" href={social.facebook} path="M14 8h3V4h-3c-2.8 0-4 1.7-4 4.3V10H7v4h3v8h4v-8h3l1-4h-4V8.6c0-.4.3-.6.6-.6Z" />
+            <SocialIcon label="Instagram" href={social.instagram} path="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4ZM17.3 5.5a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4ZM12 2c-2.7 0-3 0-4.1.1C4.3 2.3 2.3 4.3 2.1 7.9 2 9 2 9.3 2 12s0 3 .1 4.1c.2 3.6 2.2 5.6 5.8 5.8 1.1.1 1.4.1 4.1.1s3 0 4.1-.1c3.6-.2 5.6-2.2 5.8-5.8.1-1.1.1-1.4.1-4.1s0-3-.1-4.1c-.2-3.6-2.2-5.6-5.8-5.8C15 2 14.7 2 12 2Z" />
+            <SocialIcon label="TikTok" href={social.tiktok} path="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.7a5.8 5.8 0 1 0 4.9 5.7V9.1a7.4 7.4 0 0 0 4.3 1.4V7.4a4.3 4.3 0 0 1-3.2-1.6Z" />
+            <SocialIcon label="YouTube" href={social.youtube} path="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8ZM10 15V9l5.2 3L10 15Z" />
           </div>
         </div>
 
@@ -86,17 +87,17 @@ export async function Footer() {
           <ul className="flex flex-col gap-3 text-sm">
             <li className="flex items-center gap-2.5">
               <MessageCircle className="size-4 text-success" />
-              <a href={siteConfig.contact.whatsapp} className="hover:text-foreground dark:hover:text-white">WhatsApp 24/7</a>
+              <a href={contact.whatsapp} className="hover:text-foreground dark:hover:text-white">WhatsApp 24/7</a>
             </li>
             <li className="flex items-center gap-2.5">
-              <Phone className="size-4 text-brand-sky" /> {siteConfig.contact.phone}
+              <Phone className="size-4 text-brand-sky" /> {contact.phone}
             </li>
             <li className="flex items-center gap-2.5">
               <Mail className="size-4 text-brand-sky" />
-              <a href={`mailto:${siteConfig.contact.email}`} className="hover:text-foreground dark:hover:text-white">{siteConfig.contact.email}</a>
+              <a href={`mailto:${contact.email}`} className="hover:text-foreground dark:hover:text-white">{contact.email}</a>
             </li>
             <li className="flex items-center gap-2.5">
-              <MapPin className="size-4 text-brand-orange-400" /> {siteConfig.contact.address}
+              <MapPin className="size-4 text-brand-orange-400" /> {contact.address}
             </li>
           </ul>
         </div>

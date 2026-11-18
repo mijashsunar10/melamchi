@@ -2,8 +2,8 @@ import { ArrowUpRight, ChevronRight, Clock, Mail, MapPin, MessageCircle, Phone }
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ContactForm } from "@/components/support/contact-form";
-import { getSupportTopics } from "@/lib/content";
-import { siteConfig, whatsappLink } from "@/lib/site";
+import { getContact, getSupportTopics } from "@/lib/content";
+import { whatsappLink } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Contact us",
@@ -19,7 +19,7 @@ const socials = [
 
 export default async function ContactPage() {
   const topics = await getSupportTopics();
-  const { contact, social } = siteConfig;
+  const { contact, social } = await getContact();
 
   const cards = [
     {
@@ -27,7 +27,7 @@ export default async function ContactPage() {
       title: "WhatsApp",
       value: "Chat with us",
       note: "Fastest · 24/7",
-      href: whatsappLink("Hi TOPX Nepal! "),
+      href: whatsappLink("Hi TOPX Nepal! ", contact.whatsappNumber),
       external: true,
       tone: "bg-[#25D366] text-white",
     },

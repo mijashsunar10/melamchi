@@ -13,6 +13,8 @@ const imageSizes = [64, 128, 256, 384];
 const nextConfig: NextConfig = {
   // Cache Components / partial prerendering needs a Node server; a static export prebuilds every page fully instead
   cacheComponents: !isStaticExport,
+  // product pictures are uploaded through a server action (max 5 MB + form overhead)
+  experimental: { serverActions: { bodySizeLimit: "6mb" } },
   images: {
     deviceSizes,
     imageSizes,
@@ -32,7 +34,10 @@ const nextConfig: NextConfig = {
   turbopack: {
     // Static build: read the catalog from a JSON snapshot instead of the (cached) database
     ...(isStaticExport && {
-      resolveAlias: { "@/server/catalog/source": "./src/server/catalog/static-source.ts" },
+      resolveAlias: {
+        "@/server/catalog/source": "./src/server/catalog/static-source.ts",
+        "@/server/content/source": "./src/server/content/static-source.ts",
+      },
     }),
     rules: {
       "*.css": {

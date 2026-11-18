@@ -1,4 +1,4 @@
-import { ArrowRight, BadgePercent, Clock, Layers, MonitorSmartphone, Package, ShieldCheck, Users } from "lucide-react";
+import { ArrowRight, BadgePercent, Clock, HelpCircle, Layers, MonitorSmartphone, Newspaper, Package, Settings, ShieldCheck, Star, Users } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { AdminPageHeader, StatCard } from "@/components/admin/page-header";
@@ -16,11 +16,13 @@ const timeAgo = (d: Date) => {
   return `${Math.floor(s / 86400)} d ago`;
 };
 
-const roadmap = [
-  { step: "B4", title: "Products & categories", text: "Add, edit and price products from here." },
-  { step: "B5", title: "Deals & content", text: "Flash deals, reviews, FAQ, guides and site settings." },
-  { step: "B6", title: "Orders", text: "Every website order saved here with status updates." },
-  { step: "B7", title: "Payments", text: "eSewa, Khalti and Fonepay online payments." },
+const shortcuts = [
+  { href: "/admin/products/new", icon: <Package />, title: "Add a product", text: "With packages, prices and a picture." },
+  { href: "/admin/deals", icon: <BadgePercent />, title: "Start a deal", text: "Put a package on sale until a set time." },
+  { href: "/admin/reviews", icon: <Star />, title: "Add a review", text: "Show what happy customers say." },
+  { href: "/admin/content/blog/new", icon: <Newspaper />, title: "Write a guide", text: "How-to posts that bring visitors." },
+  { href: "/admin/content", icon: <HelpCircle />, title: "Edit questions & answers", text: "Home page, sections and help center." },
+  { href: "/admin/settings", icon: <Settings />, title: "Contact details", text: "WhatsApp number, email, social links.", adminOnly: true },
 ];
 
 async function Overview() {
@@ -32,7 +34,7 @@ async function Overview() {
       <AdminPageHeader title={`Namaste, ${me.name.split(" ")[0]}`} description="Here's what's happening in your store." />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Products" value={products.length} hint={`in ${domains.length} sections · sample data until B4`} icon={<Package />} />
+        <StatCard label="Products" value={products.length} hint={`on the website, in ${domains.length} sections`} icon={<Package />} />
         <StatCard label="Active deals" value={deals.length} hint="shown on the home & deals pages" icon={<BadgePercent />} />
         <StatCard label="Team" value={stats.admins + stats.staff} hint={`${stats.admins} admin · ${stats.staff} staff`} icon={<Users />} />
         <StatCard label="Signed-in devices" value={stats.activeSessions} hint="active sessions right now" icon={<MonitorSmartphone />} />
@@ -41,17 +43,26 @@ async function Overview() {
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.4fr_1fr]">
         <section className="rounded-2xl border border-border bg-surface p-5 shadow-card sm:p-6">
           <h2 className="flex items-center gap-2 font-bold">
-            <Layers className="size-5 text-primary" /> Coming to this dashboard
+            <Layers className="size-5 text-primary" /> Quick actions
           </h2>
-          <ol className="mt-4 grid gap-3 sm:grid-cols-2">
-            {roadmap.map((r) => (
-              <li key={r.step} className="rounded-xl border border-border bg-surface-2/60 p-4">
-                <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[11px] font-bold text-primary dark:bg-primary/20">{r.step}</span>
-                <p className="mt-2 font-semibold">{r.title}</p>
-                <p className="text-sm text-muted-foreground">{r.text}</p>
-              </li>
-            ))}
-          </ol>
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+            {shortcuts
+              .filter((x) => !x.adminOnly || me.role === "admin")
+              .map((x) => (
+                <li key={x.href}>
+                  <Link
+                    href={x.href}
+                    className="flex h-full items-start gap-3 rounded-xl border border-border bg-surface-2/60 p-4 transition-colors hover:border-primary/40 hover:bg-primary/5"
+                  >
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary dark:bg-primary/20 [&_svg]:size-[18px]">{x.icon}</span>
+                    <span>
+                      <span className="block font-semibold">{x.title}</span>
+                      <span className="block text-sm text-muted-foreground">{x.text}</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+          </ul>
         </section>
 
         <section className="rounded-2xl border border-border bg-surface p-5 shadow-card sm:p-6">

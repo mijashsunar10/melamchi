@@ -3,12 +3,12 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { getDomains } from "@/lib/catalog";
-import { siteConfig } from "@/lib/site";
+import { getContact } from "@/lib/content";
 import { Logo } from "./logo";
 import { MobileMenu } from "./mobile-menu";
 import { NavLinks, NavLinksView } from "./nav-links";
 
-function TopBar() {
+function TopBar({ contact }: { contact: { whatsapp: string; email: string } }) {
   return (
     <div className="border-b border-border bg-surface-2 text-[12px] text-muted-foreground dark:border-transparent dark:bg-brand-navy dark:text-white/80">
       <div className="mx-auto flex h-9 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
@@ -20,11 +20,11 @@ function TopBar() {
           </span>
         </p>
         <div className="hidden shrink-0 items-center gap-5 md:flex">
-          <a href={siteConfig.contact.whatsapp} className="flex items-center gap-1.5 transition-colors hover:text-foreground dark:hover:text-white">
+          <a href={contact.whatsapp} className="flex items-center gap-1.5 transition-colors hover:text-foreground dark:hover:text-white">
             <MessageCircle className="size-3.5" /> WhatsApp 24/7
           </a>
-          <a href={`mailto:${siteConfig.contact.email}`} className="flex items-center gap-1.5 transition-colors hover:text-foreground dark:hover:text-white">
-            <Mail className="size-3.5" /> {siteConfig.contact.email}
+          <a href={`mailto:${contact.email}`} className="flex items-center gap-1.5 transition-colors hover:text-foreground dark:hover:text-white">
+            <Mail className="size-3.5" /> {contact.email}
           </a>
         </div>
       </div>
@@ -40,7 +40,7 @@ const navLabel = (slug: string, name: string) => {
 };
 
 export async function Header() {
-  const domains = await getDomains();
+  const [domains, { contact }] = await Promise.all([getDomains(), getContact()]);
   const navItems = [
     { href: "/", short: "Home", full: "Home" },
     ...domains.map((d) => ({ href: `/${d.slug}`, ...navLabel(d.slug, d.name) })),
@@ -48,7 +48,7 @@ export async function Header() {
 
   return (
     <header className="sticky top-0 z-50">
-      <TopBar />
+      <TopBar contact={contact} />
       <div className="border-b border-border bg-surface/85 backdrop-blur-xl supports-[backdrop-filter]:bg-surface/75">
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:h-[72px] sm:px-6">
           <Logo />
@@ -69,7 +69,7 @@ export async function Header() {
             </Link>
             <ThemeToggle className="hidden border-transparent bg-transparent sm:inline-flex" />
             <a
-              href={siteConfig.contact.whatsapp}
+              href={contact.whatsapp}
               className="hidden items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold whitespace-nowrap text-primary-foreground transition-colors hover:bg-primary-hover sm:inline-flex xl:text-[15px]"
             >
               <MessageCircle className="size-4" />

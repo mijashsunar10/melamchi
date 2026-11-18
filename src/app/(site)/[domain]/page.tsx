@@ -10,7 +10,7 @@ import { ProductCard } from "@/components/product/product-card";
 import { Accordion } from "@/components/ui/accordion";
 import { buttonClasses } from "@/components/ui/button";
 import { getDomain, getDomains, getProducts, startingPrice } from "@/lib/catalog";
-import { getDomainFaq } from "@/lib/content";
+import { getContact, getDomainFaq } from "@/lib/content";
 import { formatNPR } from "@/lib/format";
 import { siteConfig } from "@/lib/site";
 import type { DomainSlug } from "@/types/catalog";
@@ -39,6 +39,7 @@ export async function generateMetadata({ params }: PageProps<"/[domain]">): Prom
 export default async function DomainPage({ params }: PageProps<"/[domain]">) {
   const { domain: slug } = await params;
   if (!isShopDomain(slug)) notFound();
+  const { contact } = await getContact();
 
   const [domain, products, allDomains, faq] = await Promise.all([
     getDomain(slug),
@@ -112,7 +113,7 @@ export default async function DomainPage({ params }: PageProps<"/[domain]">) {
               Tell us what you need on WhatsApp and we&apos;ll recommend the right plan — usually within minutes.
             </p>
           </div>
-          <a href={siteConfig.contact.whatsapp} className={`${buttonClasses({ variant: "cta", pill: true })} self-start`}>
+          <a href={contact.whatsapp} className={`${buttonClasses({ variant: "cta", pill: true })} self-start`}>
             Ask on WhatsApp <ArrowRight />
           </a>
         </aside>

@@ -1,55 +1,58 @@
-// Data-access layer for site content (stats, FAQ). Same rule as catalog.ts:
-// components never import from src/data directly — swap these bodies for
-// API / database calls when the backend is ready.
+// Data-access layer for site content. Same rule as catalog.ts: components never import
+// src/data directly. Everything here comes from PostgreSQL (edited in the admin panel),
+// cached — see src/server/content/source.ts.
 
-import { blogPosts } from "@/data/blog";
-import { homeFaq } from "@/data/faq";
-import { accountFaq, codeFaq, licenseFaq, topupFaq } from "@/data/fields";
-import { legalPages } from "@/data/legal";
-import { siteStats } from "@/data/site-stats";
-import { supportTopics } from "@/data/support";
+import { notFound } from "next/navigation";
+import { setWhatsappNumber, whatsappLink } from "@/lib/site";
+import { loadContent } from "@/server/content/source";
 import type { DomainSlug, FAQ } from "@/types/catalog";
-import type { BlogPost, LegalPage, SiteStats, SupportTopic } from "@/types/content";
+import type { BlogPost, LegalPage, SiteSettings, SiteStats, SupportTopic } from "@/types/content";
+
+/** Contact details, social links, stats and payment methods from the admin Settings page. */
+export async function getSiteSettings(): Promise<SiteSettings> {
+  const { settings } = await loadContent();
+  setWhatsappNumber(settings.contact.whatsappNumber); // so whatsappLink() uses the saved number
+  return settings;
+}
 
 export async function getSiteStats(): Promise<SiteStats> {
-  return siteStats;
+  return (await getSiteSettings()).stats;
 }
 
 export async function getHomeFaq(): Promise<FAQ[]> {
-  return homeFaq;
+  return (await loadContent()).homeFaq;
 }
 
 export async function getSupportTopics(): Promise<SupportTopic[]> {
-  return supportTopics;
+  return (await loadContent()).supportTopics;
 }
 
 export async function getLegalPage(slug: LegalPage["slug"]): Promise<LegalPage> {
-  const page = legalPages.find((p) => p.slug === slug);
-  if (!page) throw new Error(`Unknown legal page: ${slug}`);
+  const page = (await loadContent()).legalPages.find((p) => p.slug === slug);
+  if (!page) notFound(); // not in the database yet → run `npm run db:seed`
   return page;
 }
 
 export async function getLegalPages(): Promise<Pick<LegalPage, "slug" | "title">[]> {
-  return legalPages.map(({ slug, title }) => ({ slug, title }));
+  return (await loadContent()).legalPages.map(({ slug, title }) => ({ slug, title }));
 }
 
-/** FAQ shown on a section page (later editable per section in the admin panel). */
+/** FAQ shown on a section page. */
 export async function getDomainFaq(slug: DomainSlug): Promise<FAQ[]> {
-  const bySlug: Partial<Record<DomainSlug, FAQ[]>> = {
-    "ai-tools": accountFaq,
-    gaming: topupFaq,
-    "gift-cards": codeFaq,
-    software: licenseFaq,
-    "digital-products": accountFaq,
-  };
-  return bySlug[slug] ?? [];
+  return (await loadContent()).domainFaq[slug] ?? [];
 }
 
-/** Blog posts, newest first. */
+/** Published blog posts, newest first. */
 export async function getBlogPosts(): Promise<BlogPost[]> {
-  return [...blogPosts].sort((a, b) => b.date.localeCompare(a.date));
+  return (await loadContent()).blogPosts;
 }
 
 export async function getBlogPost(slug: string): Promise<BlogPost | undefined> {
-  return blogPosts.find((p) => p.slug === slug);
+  return (await loadContent()).blogPosts.find((p) => p.slug === slug);
+}
+
+/** Contact details + a ready WhatsApp link, and social links — for server components. */
+export async function getContact() {
+  const { contact, social } = await getSiteSettings();
+  return { contact: { ...contact, whatsapp: whatsappLink(undefined, contact.whatsappNumber) }, social };
 }

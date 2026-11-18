@@ -6,7 +6,7 @@ import { DomainTiles } from "@/components/home/domain-tiles";
 import { SectionHeading } from "@/components/home/section-heading";
 import { buttonClasses } from "@/components/ui/button";
 import { getDomains } from "@/lib/catalog";
-import { getSiteStats } from "@/lib/content";
+import { getContact, getSiteStats } from "@/lib/content";
 import { formatCountPlus } from "@/lib/format";
 import { images } from "@/lib/images";
 import { siteConfig } from "@/lib/site";
@@ -24,7 +24,7 @@ const values = [
 ];
 
 export default async function AboutPage() {
-  const [stats, domains] = await Promise.all([getSiteStats(), getDomains()]);
+  const [stats, domains, { contact }] = await Promise.all([getSiteStats(), getDomains(), getContact()]);
 
   const numbers = [
     { value: formatCountPlus(stats.ordersDelivered), label: "Orders delivered" },
@@ -59,7 +59,7 @@ export default async function AboutPage() {
               subscriptions — paid in rupees, delivered in seconds, with real people to help.
             </p>
             <p className="mt-4 flex items-center gap-2 text-sm font-semibold">
-              <MapPin className="size-4 text-accent" /> {siteConfig.contact.address}
+              <MapPin className="size-4 text-accent" /> {contact.address}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/products" className={buttonClasses({ variant: "cta", size: "lg", pill: true })}>

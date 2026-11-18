@@ -1,40 +1,34 @@
 "use client";
 
 import {
-  ArrowDown,
-  ArrowLeft,
-  ArrowUp,
   Check,
   Copy,
   ExternalLink,
+  ImageUp,
   Eye,
   EyeOff,
   Loader2,
   Plus,
-  Save,
   Star,
   Trash2,
   X,
 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { type ReactNode, useEffect, useId, useMemo, useState, useTransition } from "react";
+import { useId, useMemo, useState, useTransition } from "react";
+import { AddButton, Card, fromQA, move, type QA, QAList, RowTools, SaveBar, selectCls, toQA, Toggle, uid, useDirty } from "@/components/admin/editor-bits";
 import { FormError } from "@/components/admin/form-bits";
 import { Cover } from "@/components/product/cover";
 import { Field, Input, Textarea } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
 import { discountPercent, formatNPR } from "@/lib/format";
-import { duplicateProductAction, saveProductAction } from "@/server/admin/product-actions";
+import { duplicateProductAction, removeProductImageAction, saveProductAction, uploadProductImageAction } from "@/server/admin/product-actions";
 import { DELIVERY_TYPES, type PlanInput, PRODUCT_TAGS, type ProductInput, slugify } from "@/server/admin/product-types";
 import type { DeliveryType, FAQ, OrderField, ProductTag } from "@/types/catalog";
 import { DeleteProductDialog } from "./product-list";
 import { ANSWER_TYPES, BRAND_COLORS, QUESTION_PRESETS, TYPE_DEFAULTS } from "./templates";
 
 // ---------------------------------------------------------------- state shapes
-
-let uidCounter = 0;
-const uid = () => `u${++uidCounter}`;
 
 interface PlanState {
   uid: string;
@@ -49,7 +43,6 @@ interface PlanState {
 }
 type FieldState = OrderField & { uid: string; optionsText: string };
 type StepState = { uid: string; text: string };
-type FaqState = FAQ & { uid: string };
 
 export interface ProductFormData {
   id?: string;
@@ -83,84 +76,86 @@ const toPlanState = (p: PlanInput): PlanState => ({
 const toFieldState = (f: OrderField): FieldState => ({ ...f, uid: uid(), optionsText: (f.options ?? []).join("\n") });
 const emptyPlan = (): PlanState => ({ uid: uid(), key: "", name: "", price: "", originalPrice: "", bonus: "", validity: "", inStock: true, popular: false });
 
-function move<T>(list: T[], i: number, dir: -1 | 1): T[] {
-  const j = i + dir;
-  if (j < 0 || j >= list.length) return list;
-  const next = [...list];
-  [next[i], next[j]] = [next[j], next[i]];
-  return next;
-}
-
 const toNumber = (s: string) => {
   const n = Number(s.replace(/[,\s]/g, "").replace(/^rs\.?/i, ""));
   return Number.isFinite(n) ? Math.round(n) : NaN;
 };
 
-// ---------------------------------------------------------------- small UI bits
+// ---------------------------------------------------------------- picture
 
-function Card({ id, title, description, action, children }: { id?: string; title: string; description?: ReactNode; action?: ReactNode; children: ReactNode }) {
-  return (
-    <section id={id} className="scroll-mt-24 rounded-2xl border border-border bg-surface shadow-card">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
-        <div>
-          <h2 className="text-lg font-bold">{title}</h2>
-          {description && <p className="text-sm text-muted-foreground">{description}</p>}
-        </div>
-        {action}
-      </div>
-      <div className="p-5">{children}</div>
-    </section>
-  );
-}
+function PictureUpload({ productId, image, onChange }: { productId?: string; image: string | null; onChange: (url: string | null) => void }) {
+  const toast = useToast();
+  const [busy, start] = useTransition();
+  const inputId = useId();
 
-function Toggle({ checked, onChange, label, help }: { checked: boolean; onChange: (v: boolean) => void; label: ReactNode; help?: ReactNode }) {
-  const id = useId();
-  return (
-    <label htmlFor={id} className="flex cursor-pointer items-start gap-3">
-      <span className="relative mt-0.5 inline-flex shrink-0">
-        <input id={id} type="checkbox" role="switch" checked={checked} onChange={(e) => onChange(e.target.checked)} className="peer sr-only" />
-        <span className="h-6 w-11 rounded-full bg-muted-foreground/30 transition-colors peer-checked:bg-success peer-focus-visible:ring-3 peer-focus-visible:ring-ring/30" />
-        <span className="absolute top-0.5 left-0.5 size-5 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5" />
-      </span>
-      <span className="min-w-0">
-        <span className="block text-sm font-semibold">{label}</span>
-        {help && <span className="block text-xs text-muted-foreground">{help}</span>}
-      </span>
-    </label>
-  );
-}
+  if (!productId) {
+    return <p className="mt-3 rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">You can add a picture after saving the product.</p>;
+  }
 
-function RowTools({ index, count, onMove, onRemove, removeLabel }: { index: number; count: number; onMove: (d: -1 | 1) => void; onRemove: () => void; removeLabel: string }) {
-  const btn = "flex size-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-25";
+  const upload = (file: File | undefined) => {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ type: "error", title: "That picture is too big. Please use one under 5 MB." });
+      return;
+    }
+    const fd = new FormData();
+    fd.set("image", file);
+    start(async () => {
+      const r = await uploadProductImageAction(productId, fd);
+      toast(r.ok ? { type: "success", title: r.message ?? "Picture saved." } : { type: "error", title: r.error ?? "Upload failed." });
+      if (r.ok && r.url) onChange(r.url);
+    });
+  };
+
   return (
-    <div className="flex items-center gap-0.5">
-      <button type="button" className={btn} title="Move up" aria-label="Move up" disabled={index === 0} onClick={() => onMove(-1)}>
-        <ArrowUp className="size-4" />
-      </button>
-      <button type="button" className={btn} title="Move down" aria-label="Move down" disabled={index === count - 1} onClick={() => onMove(1)}>
-        <ArrowDown className="size-4" />
-      </button>
-      <button type="button" className={cn(btn, "hover:bg-danger/10 hover:text-danger")} title={removeLabel} aria-label={removeLabel} onClick={onRemove}>
-        <Trash2 className="size-4" />
-      </button>
+    <div className="mt-3 flex flex-col gap-2">
+      <label
+        htmlFor={inputId}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault();
+          upload(e.dataTransfer.files[0]);
+        }}
+        className={cn(
+          "flex cursor-pointer flex-col items-center gap-1 rounded-xl border-2 border-dashed border-primary/40 px-3 py-4 text-center hover:border-primary hover:bg-primary/5",
+          busy && "pointer-events-none opacity-60",
+        )}
+      >
+        {busy ? <Loader2 className="size-6 animate-spin text-primary" /> : <ImageUp className="size-6 text-primary" />}
+        <span className="text-sm font-bold text-primary">{busy ? "Uploading…" : image ? "Change picture" : "Add a picture"}</span>
+        <span className="text-xs text-muted-foreground">JPG, PNG or WebP, up to 5 MB. Saved right away.</span>
+        <input
+          id={inputId}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="sr-only"
+          data-picture-input
+          onChange={(e) => {
+            upload(e.target.files?.[0]);
+            e.target.value = "";
+          }}
+        />
+      </label>
+      {image && (
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() =>
+            start(async () => {
+              const r = await removeProductImageAction(productId);
+              toast(r.ok ? { type: "success", title: r.message ?? "Removed." } : { type: "error", title: r.error ?? "Could not remove." });
+              if (r.ok) onChange(null);
+            })
+          }
+          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg text-sm font-semibold text-danger hover:bg-danger/10"
+        >
+          <Trash2 className="size-4" /> Remove picture
+        </button>
+      )}
+      {!image && <p className="text-xs text-muted-foreground">No picture: the website shows a coloured card instead.</p>}
     </div>
   );
 }
-
-function AddButton({ onClick, children }: { onClick: () => void; children: ReactNode }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="inline-flex h-10 items-center gap-2 rounded-xl border-2 border-dashed border-primary/40 px-4 text-sm font-bold text-primary hover:border-primary hover:bg-primary/5"
-    >
-      <Plus className="size-4" /> {children}
-    </button>
-  );
-}
-
-const selectCls =
-  "h-11 w-full rounded-lg border border-input bg-surface px-3.5 text-sm outline-none focus:border-ring focus:ring-3 focus:ring-ring/20";
 
 // ---------------------------------------------------------------- the form
 
@@ -184,6 +179,7 @@ function ProductFormInner({ initial, sections, canDelete, onCreated }: FormProps
   const toast = useToast();
   const isNew = !initial.id;
   const [saving, startSave] = useTransition();
+  const [image, setImage] = useState(initial.image);
   const [copying, startCopy] = useTransition();
   const [error, setError] = useState<string>();
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -208,7 +204,7 @@ function ProductFormInner({ initial, sections, canDelete, onCreated }: FormProps
   const [plans, setPlans] = useState<PlanState[]>(() => (initial.plans.length ? initial.plans.map(toPlanState) : [emptyPlan()]));
   const [fields, setFields] = useState<FieldState[]>(() => initial.fields.map(toFieldState));
   const [steps, setSteps] = useState<StepState[]>(() => initial.howTo.map((text) => ({ uid: uid(), text })));
-  const [faq, setFaq] = useState<FaqState[]>(() => initial.faq.map((f) => ({ ...f, uid: uid() })));
+  const [faq, setFaq] = useState<QA[]>(() => toQA(initial.faq));
   const [touchedTemplate, setTouchedTemplate] = useState(!isNew);
 
   const section = sections.find((s) => s.slug === domainSlug);
@@ -248,20 +244,13 @@ function ProductFormInner({ initial, sections, canDelete, onCreated }: FormProps
       options: f.type === "select" ? optionsText.split("\n").map((o) => o.trim()).filter(Boolean) : undefined,
     })),
     howTo: steps.map((s) => s.text.trim()).filter(Boolean),
-    faq: faq.map(({ q, a }) => ({ q: q.trim(), a: a.trim() })).filter((f) => f.q || f.a),
+    faq: fromQA(faq),
   });
 
   // unsaved-changes guard
   const snapshot = useMemo(() => JSON.stringify(payload()), // eslint-disable-next-line react-hooks/exhaustive-deps
     [name, slug, slugTouched, brand, domainSlug, categoryId, deliveryType, shortDescription, description, region, deliveryTime, color, initials, tags, isActive, plans, fields, steps, faq]);
-  const [saved, setSaved] = useState(snapshot);
-  const dirty = snapshot !== saved;
-  useEffect(() => {
-    if (!dirty) return;
-    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
-    window.addEventListener("beforeunload", warn);
-    return () => window.removeEventListener("beforeunload", warn);
-  }, [dirty]);
+  const { dirty, markSaved } = useDirty(snapshot);
 
   function chooseType(t: DeliveryType) {
     setDeliveryType(t);
@@ -270,7 +259,7 @@ function ProductFormInner({ initial, sections, canDelete, onCreated }: FormProps
       const d = TYPE_DEFAULTS[t];
       setFields(d.fields.map(toFieldState));
       setSteps(d.howTo.map((text) => ({ uid: uid(), text })));
-      setFaq(d.faq.map((f) => ({ ...f, uid: uid() })));
+      setFaq(toQA(d.faq));
       setDeliveryTime(d.deliveryTime);
     }
   }
@@ -292,7 +281,7 @@ function ProductFormInner({ initial, sections, canDelete, onCreated }: FormProps
         return;
       }
       toast({ type: "success", title: r.message ?? "Saved." });
-      setSaved(JSON.stringify(data));
+      markSaved(JSON.stringify(data));
       if (isNew) {
         router.replace(`/admin/products/${r.id}`);
         onCreated();
@@ -317,7 +306,7 @@ function ProductFormInner({ initial, sections, canDelete, onCreated }: FormProps
     >
       {/* header */}
       <div className="mb-6 flex flex-wrap items-center gap-4">
-        <Cover product={{ slug: initial.slug, name: name || "New product", image: initial.image, color }} size="sm" className="size-14 shrink-0 rounded-2xl" />
+        <Cover product={{ slug: initial.slug, name: name || "New product", image, color }} size="sm" className="size-14 shrink-0 rounded-2xl" />
         <div className="min-w-0 flex-1">
           <h1 className="truncate text-2xl font-bold tracking-tight">{isNew ? "Add a product" : name || "Untitled product"}</h1>
           <p className="text-sm text-muted-foreground">
@@ -678,48 +667,13 @@ function ProductFormInner({ initial, sections, canDelete, onCreated }: FormProps
 
           {/* ---------------- faq */}
           <Card id="faq" title="Questions & answers" description="Common questions customers ask about this product.">
-            <ul className="flex flex-col gap-3">
-              {faq.map((f, i) => {
-                const set = (patch: Partial<FAQ>) => {
-                  touch();
-                  setFaq((all) => all.map((x) => (x.uid === f.uid ? { ...x, ...patch } : x)));
-                };
-                return (
-                  <li key={f.uid} className="rounded-xl border border-border p-4">
-                    <div className="mb-2 flex items-center justify-between gap-2">
-                      <span className="text-sm font-bold">Q&amp;A {i + 1}</span>
-                      <RowTools
-                        index={i}
-                        count={faq.length}
-                        onMove={(dir) => {
-                          touch();
-                          setFaq((all) => move(all, i, dir));
-                        }}
-                        onRemove={() => {
-                          touch();
-                          setFaq((all) => all.filter((x) => x.uid !== f.uid));
-                        }}
-                        removeLabel="Remove question"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-3">
-                      <Input value={f.q} onChange={(e) => set({ q: e.target.value })} placeholder="Question, e.g. How long does it take?" aria-label="Question" />
-                      <Textarea value={f.a} onChange={(e) => set({ a: e.target.value })} rows={2} placeholder="Answer" aria-label="Answer" className="min-h-0" />
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-            <div className="mt-4">
-              <AddButton
-                onClick={() => {
-                  touch();
-                  setFaq((all) => [...all, { uid: uid(), q: "", a: "" }]);
-                }}
-              >
-                Add question &amp; answer
-              </AddButton>
-            </div>
+            <QAList
+              items={faq}
+              onChange={(next) => {
+                touch();
+                setFaq(next);
+              }}
+            />
           </Card>
         </div>
 
@@ -743,15 +697,14 @@ function ProductFormInner({ initial, sections, canDelete, onCreated }: FormProps
           <section className="rounded-2xl border border-border bg-surface p-5 shadow-card">
             <h2 className="mb-4 font-bold">Look</h2>
             <div className="overflow-hidden rounded-xl border border-border">
-              <Cover product={{ slug: initial.slug, name: name || "New product", image: initial.image, color }} className="aspect-[4/3]" />
+              <Cover product={{ slug: initial.slug, name: name || "New product", image, color }} className="aspect-[4/3]" />
               <div className="p-3">
                 <p className="truncate font-semibold">{name || "Product name"}</p>
                 <p className="text-sm text-muted-foreground">{fromPrice ? `From ${formatNPR(fromPrice)}` : "Price on request"}</p>
               </div>
             </div>
-            {initial.image ? (
-              <p className="mt-3 text-xs text-muted-foreground">This product has its own picture.</p>
-            ) : (
+            <PictureUpload productId={initial.id} image={image} onChange={setImage} />
+            {!image && (
               <>
                 <p className="mt-4 mb-2 text-sm font-semibold">Card colour</p>
                 <div className="flex flex-wrap items-center gap-2">
@@ -839,26 +792,7 @@ function ProductFormInner({ initial, sections, canDelete, onCreated }: FormProps
         </aside>
       </div>
 
-      {/* sticky save bar */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface/95 backdrop-blur lg:left-[260px]">
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6">
-          <Link href="/admin/products" className="inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-muted-foreground hover:bg-muted hover:text-foreground">
-            <ArrowLeft className="size-4" /> <span className="hidden sm:inline">All products</span>
-          </Link>
-          <p className={cn("flex-1 text-right text-sm", dirty ? "font-semibold text-warning" : "text-muted-foreground")} aria-live="polite">
-            {dirty ? "You have unsaved changes" : isNew ? "" : "All changes saved"}
-          </p>
-          <button
-            type="submit"
-            disabled={saving}
-            data-save
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-bold text-primary-foreground shadow-md hover:bg-primary-hover disabled:opacity-60"
-          >
-            {saving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
-            {isNew ? "Save product" : "Save changes"}
-          </button>
-        </div>
-      </div>
+      <SaveBar backHref="/admin/products" backLabel="All products" dirty={dirty} saving={saving} label={isNew ? "Save product" : "Save changes"} savedText={isNew ? "" : "All changes saved"} />
 
       {confirmDelete && initial.id && (
         <DeleteProductDialog id={initial.id} name={initial.name} onClose={() => setConfirmDelete(false)} onDeleted={() => router.replace("/admin/products")} />

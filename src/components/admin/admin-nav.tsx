@@ -9,6 +9,7 @@ import {
   Package,
   Settings,
   ShoppingCart,
+  Star,
   UserCog,
   Users,
 } from "lucide-react";
@@ -38,8 +39,9 @@ const groups: { title: string; items: NavItem[] }[] = [
       { href: "/admin/orders", label: "Orders", icon: ShoppingCart, soon: "B6" },
       { href: "/admin/products", label: "Products", icon: Package },
       { href: "/admin/categories", label: "Sections & categories", icon: FolderTree, adminOnly: true },
-      { href: "/admin/deals", label: "Deals", icon: BadgePercent, soon: "B5" },
-      { href: "/admin/content", label: "Content", icon: FileText, soon: "B5" },
+      { href: "/admin/deals", label: "Deals", icon: BadgePercent },
+      { href: "/admin/reviews", label: "Reviews", icon: Star },
+      { href: "/admin/content", label: "Content", icon: FileText },
     ],
   },
   {
@@ -47,7 +49,7 @@ const groups: { title: string; items: NavItem[] }[] = [
     items: [
       { href: "/admin/users", label: "Staff & users", icon: Users, adminOnly: true },
       { href: "/admin/account", label: "My account", icon: UserCog },
-      { href: "/admin/settings", label: "Settings", icon: Settings, soon: "B5", adminOnly: true },
+      { href: "/admin/settings", label: "Settings", icon: Settings, adminOnly: true },
     ],
   },
 ];

@@ -6,11 +6,12 @@ import { useState } from "react";
 import { Icon } from "@/components/icon";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Dialog } from "@/components/ui/dialog";
-import { siteConfig } from "@/lib/site";
+import { useSiteSettings } from "@/components/site-settings";
 import type { Domain } from "@/types/catalog";
 
 export function MobileMenu({ domains }: { domains: Domain[] }) {
   const [open, setOpen] = useState(false);
+  const { contact } = useSiteSettings();
   const close = () => setOpen(false);
 
   return (
@@ -49,7 +50,7 @@ export function MobileMenu({ domains }: { domains: Domain[] }) {
 
           <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-muted p-3">
             <a
-              href={siteConfig.contact.whatsapp}
+              href={contact.whatsapp}
               className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
             >
               <MessageCircle className="size-4" /> Contact us

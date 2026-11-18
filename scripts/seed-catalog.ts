@@ -1,4 +1,5 @@
-// Load the starter catalog (src/data: 6 sections, categories, products, packages) into the database.
+// Load the starter catalog (src/data: 6 sections, categories, products, packages) and the starter
+// content (deals, reviews, FAQ, help topics, blog, legal pages, settings) into the database.
 //
 //   npm run db:seed
 //
@@ -120,12 +121,90 @@ async function main() {
     }
   }
 
+  await seedContent(db, schema);
+
   console.log(
     force
       ? `✓ Catalog reset to starter data: ${domains.length} sections, ${categoryIds.size} categories, ${added} products`
       : `✓ Catalog seeded: ${added} product(s) added, ${skipped} already existed (left unchanged). Use --force to overwrite.`,
   );
   process.exit(0);
+}
+
+/**
+ * Starter content (deals, reviews, FAQ, help topics, blog, legal pages, settings).
+ * Each kind is only added when its table is still empty, so admin edits are never overwritten.
+ */
+async function seedContent(
+  db: typeof import("../src/server/db").db,
+  schema: typeof import("../src/server/db").schema,
+) {
+  const { count } = await import("drizzle-orm");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const isEmpty = async (table: any) =>
+    (await db.select({ n: count() }).from(table))[0].n === 0;
+  const productId = new Map((await db.select({ id: schema.products.id, slug: schema.products.slug }).from(schema.products)).map((p) => [p.slug, p.id]));
+  const done: string[] = [];
+
+  if (await isEmpty(schema.deals)) {
+    const { deals } = await import("../src/data/deals");
+    const rows = deals
+      .filter((d) => productId.has(d.productSlug))
+      // starter deals run for a week from now so the countdowns are live
+      .map((d, i) => ({
+        productId: productId.get(d.productSlug)!,
+        planSlug: d.planId,
+        discountPercent: d.discountPercent,
+        endsAt: new Date(Date.now() + (2 + i) * 86_400_000),
+        label: d.label ?? null,
+      }));
+    if (rows.length) await db.insert(schema.deals).values(rows);
+    done.push(`${rows.length} deals`);
+  }
+  if (await isEmpty(schema.reviews)) {
+    const { reviews } = await import("../src/data/reviews");
+    const rows = reviews
+      .filter((r) => productId.has(r.productSlug))
+      .map((r) => ({ productId: productId.get(r.productSlug)!, name: r.name, city: r.city, rating: r.rating, comment: r.comment, date: r.date, verified: r.verified }));
+    if (rows.length) await db.insert(schema.reviews).values(rows);
+    done.push(`${rows.length} reviews`);
+  }
+  if (await isEmpty(schema.faqs)) {
+    const { homeFaq } = await import("../src/data/faq");
+    const { accountFaq, codeFaq, licenseFaq, topupFaq } = await import("../src/data/fields");
+    const bySection: Record<string, { q: string; a: string }[]> = {
+      home: homeFaq,
+      "ai-tools": accountFaq,
+      gaming: topupFaq,
+      "gift-cards": codeFaq,
+      software: licenseFaq,
+      "digital-products": accountFaq,
+    };
+    const rows = Object.entries(bySection).flatMap(([scope, list]) => list.map((f, i) => ({ scope, q: f.q, a: f.a, sortOrder: i })));
+    await db.insert(schema.faqs).values(rows);
+    done.push(`${rows.length} FAQ`);
+  }
+  if (await isEmpty(schema.supportTopics)) {
+    const { supportTopics } = await import("../src/data/support");
+    await db.insert(schema.supportTopics).values(supportTopics.map((t, i) => ({ slug: t.slug, name: t.name, icon: t.icon, faqs: t.faqs, sortOrder: i })));
+    done.push(`${supportTopics.length} help topics`);
+  }
+  if (await isEmpty(schema.blogPosts)) {
+    const { blogPosts } = await import("../src/data/blog");
+    await db.insert(schema.blogPosts).values(blogPosts.map((p) => ({ ...p, isPublished: true })));
+    done.push(`${blogPosts.length} blog posts`);
+  }
+  if (await isEmpty(schema.legalPages)) {
+    const { legalPages } = await import("../src/data/legal");
+    await db.insert(schema.legalPages).values(legalPages);
+    done.push(`${legalPages.length} legal pages`);
+  }
+  if (await isEmpty(schema.settings)) {
+    const { defaultSiteSettings } = await import("../src/lib/site");
+    await db.insert(schema.settings).values({ key: "site", value: defaultSiteSettings() });
+    done.push("settings (from .env)");
+  }
+  console.log(done.length ? `✓ Content added: ${done.join(", ")}` : "✓ Content already in the database (left unchanged)");
 }
 
 main().catch((err) => {

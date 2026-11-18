@@ -1,7 +1,8 @@
-// Saves the current catalog from PostgreSQL to src/server/catalog/catalog-snapshot.json
-// (used by the static cPanel build). Run automatically by `npm run build:cpanel`.
+// Saves the current catalog and content from PostgreSQL for the static cPanel build:
+//   src/server/catalog/catalog-snapshot.json, src/server/content/content-snapshot.json,
+//   public/media/<id>.webp (uploaded pictures). Run automatically by `npm run build:cpanel`.
 
-import { writeFileSync } from "node:fs";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { asc, eq } from "drizzle-orm";
 
@@ -75,6 +76,25 @@ async function main() {
   const out = join(process.cwd(), "src", "server", "catalog", "catalog-snapshot.json");
   writeFileSync(out, JSON.stringify(catalog));
   console.log(`✓ Catalog snapshot: ${catalog.domains.length} sections, ${catalog.products.length} products → ${out}`);
+
+  // content (deals, reviews, FAQ, blog, legal pages, settings)
+  const { readContent } = await import("../src/server/content/read");
+  const content = await readContent();
+  const contentOut = join(process.cwd(), "src", "server", "content", "content-snapshot.json");
+  writeFileSync(contentOut, JSON.stringify(content));
+  console.log(`✓ Content snapshot: ${content.deals.length} active deals, ${content.reviews.length} reviews, ${content.blogPosts.length} posts → ${contentOut}`);
+  // note: deals in the static site end on their countdown but stay listed until the next build
+
+  // uploaded pictures used by products on the website
+  const mediaDir = join(process.cwd(), "public", "media");
+  rmSync(mediaDir, { recursive: true, force: true });
+  mkdirSync(mediaDir, { recursive: true });
+  const ids = catalog.products.flatMap((p) => p.image?.match(/^\/media\/([0-9a-f-]{36})\.webp$/)?.[1] ?? []);
+  for (const id of ids) {
+    const [m] = await db.select({ data: schema.media.data }).from(schema.media).where(eq(schema.media.id, id)).limit(1);
+    if (m) writeFileSync(join(mediaDir, `${id}.webp`), m.data);
+  }
+  console.log(`✓ ${ids.length} uploaded pictures → public/media/`);
   process.exit(0);
 }
 

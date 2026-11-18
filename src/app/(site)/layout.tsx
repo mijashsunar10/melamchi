@@ -3,10 +3,14 @@ import { BottomNav, BottomNavView } from "@/components/layout/bottom-nav";
 import { FloatingSupport, FloatingSupportView } from "@/components/layout/floating-support";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { SiteSettingsProvider } from "@/components/site-settings";
+import { getSiteSettings } from "@/lib/content";
 
-export default function SiteLayout({ children }: LayoutProps<"/">) {
+export default async function SiteLayout({ children }: LayoutProps<"/">) {
+  // contact details from the admin Settings page, for browser components (WhatsApp buttons, forms)
+  const { contact, social } = await getSiteSettings();
   return (
-    <>
+    <SiteSettingsProvider contact={contact} social={social}>
       <Header />
       <main className="flex-1 pb-16 lg:pb-0">{children}</main>
       <Footer />
@@ -17,6 +21,6 @@ export default function SiteLayout({ children }: LayoutProps<"/">) {
       <Suspense fallback={<BottomNavView pathname="" />}>
         <BottomNav />
       </Suspense>
-    </>
+    </SiteSettingsProvider>
   );
 }

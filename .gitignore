@@ -45,4 +45,6 @@ next-env.d.ts
 /dist
 /.cpanel-parked
 /src/server/catalog/catalog-snapshot.json
+/src/server/content/content-snapshot.json
+/public/media/
 /.tmp-shots

@@ -97,7 +97,8 @@ export function Cover({
   if (product.image) {
     return (
       <div className={cn("relative overflow-hidden", className)}>
-        <Image src={product.image} alt={product.name} fill className="object-cover" sizes="320px" />
+        {/* uploaded pictures (/media/…) are already resized to WebP on upload → served as they are */}
+        <Image src={product.image} alt={product.name} fill className="object-cover" sizes="320px" unoptimized={product.image.startsWith("/media/")} />
       </div>
     );
   }

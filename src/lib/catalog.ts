@@ -1,11 +1,10 @@
 // Data-access layer. Pages and components get catalog data ONLY through these functions.
 // Sections, categories, products and packages come from PostgreSQL (cached — see
-// src/server/catalog/source.ts). Deals, reviews and payments still use src/data until B5.
+// src/server/catalog/source.ts). Deals, reviews and payment methods come from the content
+// tables (src/server/content/source.ts) — all edited in the admin panel.
 
-import { deals } from "@/data/deals";
-import { paymentMethods } from "@/data/payments";
-import { reviews } from "@/data/reviews";
 import { loadCatalog } from "@/server/catalog/source";
+import { loadContent } from "@/server/content/source";
 import { dealPrice } from "@/lib/orders";
 import { scoreEntry, toSearchEntry } from "@/lib/search";
 import type { Deal, Domain, DomainSlug, Plan, Product } from "@/types/catalog";
@@ -74,8 +73,9 @@ export interface DealWithProduct extends Deal {
   dealPrice: number;
 }
 
+/** Active deals (not ended), soonest ending first. */
 export async function getDeals(): Promise<DealWithProduct[]> {
-  const { products } = await loadCatalog();
+  const [{ products }, { deals }] = await Promise.all([loadCatalog(), loadContent()]);
   return deals.flatMap((deal) => {
     const product = products.find((p) => p.slug === deal.productSlug);
     const plan = product?.plans.find((pl) => pl.id === deal.planId);
@@ -92,11 +92,13 @@ export async function getProductDeal(productSlug: string): Promise<Deal | null> 
 }
 
 export async function getReviews(productSlug?: string) {
+  const { reviews } = await loadContent();
   return productSlug ? reviews.filter((r) => r.productSlug === productSlug) : reviews;
 }
 
+/** Payment methods switched on in Settings. */
 export async function getPaymentMethods() {
-  return paymentMethods;
+  return (await loadContent()).settings.paymentMethods.filter((m) => m.enabled).map((m) => ({ id: m.id, name: m.name, description: m.description, color: m.color }));
 }
 
 /** Lowest in-stock plan price — for "From Rs X" on product cards. */

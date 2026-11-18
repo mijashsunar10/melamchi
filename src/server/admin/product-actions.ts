@@ -11,7 +11,7 @@ import { fieldKey, type ProductActionResult, type ProductInput, slugify } from "
 // Products (B4.3). Admins and staff can add / edit / show / hide; only admins can delete.
 // Every change refreshes the store cache so the website updates immediately.
 
-const { products, plans, categories, domains } = schema;
+const { products, plans, categories, domains, media } = schema;
 
 function refresh() {
   updateTag(CATALOG_TAG);
@@ -240,8 +240,67 @@ export async function duplicateProductAction(id: string): Promise<ProductActionR
 /** Delete a product and its packages (admin only). */
 export async function deleteProductAction(id: string): Promise<ProductActionResult> {
   await requireRole(["admin"]);
-  const [row] = await db.delete(products).where(eq(products.id, id)).returning({ name: products.name });
+  const [row] = await db.delete(products).where(eq(products.id, id)).returning({ name: products.name, imageUrl: products.imageUrl });
   if (!row) return { error: "Product not found." };
+  await deleteOldMedia(row.imageUrl);
   refresh();
   return { ok: true, message: `“${row.name}” deleted.` };
+}
+
+// ---------- pictures (B4.4)
+
+const MAX_UPLOAD = 5 * 1024 * 1024;
+
+/** Upload / replace a product's picture. Resized to max 1200 px and saved as WebP in the database. */
+export async function uploadProductImageAction(productId: string, formData: FormData): Promise<ProductActionResult & { url?: string }> {
+  await requireStaff();
+  const file = formData.get("image");
+  if (!(file instanceof File) || file.size === 0) return { error: "Choose a picture first." };
+  if (file.size > MAX_UPLOAD) return { error: "That picture is too big. Please use one under 5 MB." };
+  if (!/^image\/(jpeg|png|webp|gif|avif)$/.test(file.type)) return { error: "Please choose a JPG, PNG or WebP picture." };
+
+  const [product] = await db.select({ imageUrl: products.imageUrl }).from(products).where(eq(products.id, productId)).limit(1);
+  if (!product) return { error: "Product not found." };
+
+  let out: { data: Buffer; info: { width: number; height: number; size: number } };
+  try {
+    const { default: sharp } = await import("sharp");
+    out = await sharp(Buffer.from(await file.arrayBuffer()), { limitInputPixels: 50_000_000 })
+      .rotate() // respect phone camera orientation
+      .resize({ width: 1200, height: 1200, fit: "inside", withoutEnlargement: true })
+      .webp({ quality: 80 })
+      .toBuffer({ resolveWithObject: true });
+  } catch {
+    return { error: "We couldn’t read that picture. Please try another file." };
+  }
+
+  const [row] = await db
+    .insert(media)
+    .values({ data: out.data, mime: "image/webp", width: out.info.width, height: out.info.height, size: out.info.size })
+    .returning({ id: media.id });
+  const url = `/media/${row.id}.webp`;
+  // updatedAt is left alone on purpose: the open editor keeps any unsaved changes
+  await db.update(products).set({ imageUrl: url }).where(eq(products.id, productId));
+  await deleteOldMedia(product.imageUrl);
+  refresh();
+  return { ok: true, url, message: "Picture saved." };
+}
+
+/** Remove a product's picture (the branded colour card is shown again). */
+export async function removeProductImageAction(productId: string): Promise<ProductActionResult> {
+  await requireStaff();
+  const [product] = await db.select({ imageUrl: products.imageUrl }).from(products).where(eq(products.id, productId)).limit(1);
+  if (!product) return { error: "Product not found." };
+  await db.update(products).set({ imageUrl: null }).where(eq(products.id, productId));
+  await deleteOldMedia(product.imageUrl);
+  refresh();
+  return { ok: true, message: "Picture removed." };
+}
+
+async function deleteOldMedia(url: string | null) {
+  const id = url?.match(/^\/media\/([0-9a-f-]{36})\.webp$/)?.[1];
+  if (!id) return;
+  // a copied product may share the same picture — only delete it when nothing uses it any more
+  const [inUse] = await db.select({ id: products.id }).from(products).where(eq(products.imageUrl, url!)).limit(1);
+  if (!inUse) await db.delete(media).where(eq(media.id, id));
 }

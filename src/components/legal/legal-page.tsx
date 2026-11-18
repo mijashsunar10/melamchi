@@ -2,16 +2,18 @@ import { ChevronRight, FileText, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import type { LegalPage } from "@/types/content";
 import { cn } from "@/lib/cn";
+import { getContact } from "@/lib/content";
 import { siteConfig, whatsappLink } from "@/lib/site";
 
 /** Shared layout for Refund / Privacy / Terms. */
-export function LegalPageView({
+export async function LegalPageView({
   page,
   others,
 }: {
   page: LegalPage;
   others: Pick<LegalPage, "slug" | "title">[];
 }) {
+  const { contact } = await getContact();
   const updated = new Date(page.updated).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
   return (
@@ -88,14 +90,14 @@ export function LegalPageView({
             <div>
               <p className="font-bold">Questions about this policy?</p>
               <p className="text-sm text-muted-foreground">
-                {siteConfig.company} · {siteConfig.contact.address} ·{" "}
-                <a href={`mailto:${siteConfig.contact.email}`} className="text-primary hover:underline">
-                  {siteConfig.contact.email}
+                {siteConfig.company} · {contact.address} ·{" "}
+                <a href={`mailto:${contact.email}`} className="text-primary hover:underline">
+                  {contact.email}
                 </a>
               </p>
             </div>
             <a
-              href={whatsappLink(`Hi TOPX Nepal, I have a question about your ${page.title.toLowerCase()}.`)}
+              href={whatsappLink(`Hi TOPX Nepal, I have a question about your ${page.title.toLowerCase()}.`, contact.whatsappNumber)}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#25D366] px-5 py-2.5 text-sm font-bold text-white"

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { siteConfig } from "@/lib/site";
+import { useSiteSettings } from "@/components/site-settings";
 
 export function FloatingSupport() {
   return <FloatingSupportView pathname={usePathname()} />;
@@ -11,9 +11,10 @@ export function FloatingSupport() {
 export function FloatingSupportView({ pathname }: { pathname: string }) {
   // Product pages have their own sticky WhatsApp order bar on phones
   const onProduct = pathname.startsWith("/product/");
+  const { contact } = useSiteSettings();
   return (
     <a
-      href={siteConfig.contact.whatsapp}
+      href={contact.whatsapp}
       aria-label="Chat with us on WhatsApp"
       className={`group fixed right-4 bottom-20 z-40 ${onProduct ? "hidden lg:flex" : "flex"} items-center gap-2 rounded-full bg-[#25D366] p-3.5 text-white shadow-[0_10px_30px_-5px_rgba(37,211,102,0.6)] transition-transform hover:scale-105 lg:right-6 lg:bottom-6`}
     >

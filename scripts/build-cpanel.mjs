@@ -27,7 +27,8 @@ const run = (cmd, args, opts = {}) => {
 
 // 1. Static export
 // The admin panel and proxy need a Node.js server, so they are set aside during the static build.
-const serverOnly = [join(root, "src", "app", "admin"), join(root, "src", "proxy.ts")];
+// (uploaded pictures are copied to public/media by export-catalog, so the /media route isn't needed either)
+const serverOnly = [join(root, "src", "app", "admin"), join(root, "src", "proxy.ts"), join(root, "src", "app", "media")];
 const parked = join(root, ".cpanel-parked");
 const park = () => {
   mkdirSync(parked, { recursive: true });
@@ -39,7 +40,7 @@ const unpark = () => {
 };
 for (const sig of ["SIGINT", "SIGTERM"]) process.on(sig, () => { unpark(); process.exit(1); });
 
-step("Saving catalog snapshot from the database…");
+step("Saving catalog, content and pictures from the database…");
 run("npx", ["tsx", "--conditions=react-server", "scripts/export-catalog.ts"]);
 
 step("Building static site (next build, output: export) — public pages only…");

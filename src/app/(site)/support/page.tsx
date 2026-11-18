@@ -8,9 +8,9 @@ import { ProductCard } from "@/components/product/product-card";
 import { ContactForm } from "@/components/support/contact-form";
 import { HelpCenter } from "@/components/support/help-center";
 import { getProducts } from "@/lib/catalog";
-import { getSupportTopics } from "@/lib/content";
+import { getContact, getSupportTopics } from "@/lib/content";
 import { images } from "@/lib/images";
-import { siteConfig, whatsappLink } from "@/lib/site";
+import { whatsappLink } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Support & Help Center",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default async function SupportPage() {
   const [topics, services] = await Promise.all([getSupportTopics(), getProducts({ domain: "support" })]);
-  const { contact } = siteConfig;
+  const { contact } = await getContact();
 
   const channels = [
     {
@@ -28,7 +28,7 @@ export default async function SupportPage() {
       title: "WhatsApp",
       text: "Fastest — replies in minutes",
       action: "Start chat",
-      href: whatsappLink("Hi TOPX Nepal, I need help with "),
+      href: whatsappLink("Hi TOPX Nepal, I need help with ", contact.whatsappNumber),
       tone: "bg-[#25D366] text-white",
       external: true,
     },

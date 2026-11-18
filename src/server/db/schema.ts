@@ -1,8 +1,9 @@
 // Database schema (PostgreSQL, Drizzle ORM).
 // Change this file → `npm run db:generate` → `npm run db:migrate`. See BACKEND.md.
 
-import { boolean, index, integer, jsonb, pgEnum, pgTable, real, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
+import { boolean, customType, index, integer, jsonb, pgEnum, pgTable, real, text, timestamp, unique, uuid } from "drizzle-orm/pg-core";
 import type { FAQ, IconName, OrderField } from "@/types/catalog";
+import type { BlogBlock, LegalSection, SiteSettings } from "@/types/content";
 
 /** admin: everything · staff: orders & support · customer: (later) shop accounts */
 export const userRole = pgEnum("user_role", ["admin", "staff", "customer"]);
@@ -125,6 +126,112 @@ export const plans = pgTable(
   },
   (t) => [unique("plans_product_slug_unique").on(t.productId, t.slug), index("plans_product_idx").on(t.productId)],
 );
+
+// ---------------------------------------------------------------- pictures (B4.4)
+
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => "bytea" });
+
+/** Uploaded pictures, stored in the database (backed up with it) and served at /media/<id>.webp */
+export const media = pgTable("media", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  data: bytea("data").notNull(),
+  mime: text("mime").notNull(),
+  width: integer("width").notNull(),
+  height: integer("height").notNull(),
+  size: integer("size").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------- content (B5)
+
+/** Flash deals: a % discount on one package until `endsAt`. */
+export const deals = pgTable(
+  "deals",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "cascade" }),
+    planSlug: text("plan_slug").notNull(),
+    discountPercent: integer("discount_percent").notNull(),
+    endsAt: timestamp("ends_at", { withTimezone: true }).notNull(),
+    label: text("label"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("deals_ends_at_idx").on(t.endsAt)],
+);
+
+export const reviews = pgTable(
+  "reviews",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    city: text("city").notNull().default(""),
+    rating: integer("rating").notNull(),
+    comment: text("comment").notNull(),
+    date: text("date").notNull(), // YYYY-MM-DD
+    verified: boolean("verified").notNull().default(true),
+    isVisible: boolean("is_visible").notNull().default(true),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("reviews_product_idx").on(t.productId)],
+);
+
+/** FAQ lists: scope "home" = home page, otherwise a section slug (section page FAQ). */
+export const faqs = pgTable(
+  "faqs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    scope: text("scope").notNull(),
+    q: text("q").notNull(),
+    a: text("a").notNull(),
+    sortOrder: integer("sort_order").notNull().default(0),
+  },
+  (t) => [index("faqs_scope_idx").on(t.scope)],
+);
+
+/** Help-center topics on /support, each with its questions. */
+export const supportTopics = pgTable("support_topics", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  icon: text("icon").$type<IconName>().notNull(),
+  faqs: jsonb("faqs").$type<FAQ[]>().notNull().default([]),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const blogPosts = pgTable("blog_posts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  excerpt: text("excerpt").notNull(),
+  category: text("category").notNull(),
+  date: text("date").notNull(), // YYYY-MM-DD
+  readMinutes: integer("read_minutes").notNull().default(2),
+  productSlug: text("product_slug").notNull(),
+  body: jsonb("body").$type<BlogBlock[]>().notNull().default([]),
+  isPublished: boolean("is_published").notNull().default(true),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Refund / Privacy / Terms. `slug` is fixed (page URL). */
+export const legalPages = pgTable("legal_pages", {
+  slug: text("slug").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  updated: text("updated").notNull(), // YYYY-MM-DD
+  sections: jsonb("sections").$type<LegalSection[]>().notNull().default([]),
+});
+
+/** Site-wide settings (one row per key). Key "site" holds contact, social links, stats and payment methods. */
+export const settings = pgTable("settings", {
+  key: text("key").primaryKey(),
+  value: jsonb("value").$type<SiteSettings>().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;

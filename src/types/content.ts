@@ -1,4 +1,4 @@
-import type { FAQ, IconName } from "./catalog";
+import type { FAQ, IconName, PaymentMethod } from "./catalog";
 
 // Site-wide content the backend / admin panel will manage.
 
@@ -50,4 +50,30 @@ export interface BlogPost {
   /** product shown as "Buy it here"; its cover photo is used as the article image */
   productSlug: string;
   body: BlogBlock[];
+}
+
+/** Contact details shown in the header, footer, contact page and every WhatsApp button. */
+export interface SiteContact {
+  /** international format, digits only, e.g. 9779812345678 */
+  whatsappNumber: string;
+  email: string;
+  phone: string;
+  address: string;
+  mapUrl: string;
+  officeHours: string;
+}
+
+export interface SiteSocial {
+  facebook: string;
+  instagram: string;
+  tiktok: string;
+  youtube: string;
+}
+
+/** Everything on the admin Settings page. */
+export interface SiteSettings {
+  contact: SiteContact;
+  social: SiteSocial;
+  stats: SiteStats;
+  paymentMethods: (PaymentMethod & { enabled: boolean })[];
 }

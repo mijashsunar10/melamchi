@@ -288,8 +288,8 @@ Stack: Next.js server (server actions + route handlers) · PostgreSQL · Drizzle
   - [x] **B4.1** Catalog in PostgreSQL (`domains`, `categories`, `products`, `plans`), `npm run db:seed` imports the starter catalog, store reads from the DB (cached), cPanel build uses a DB snapshot
   - [x] **B4.2** Admin: sections & categories — edit section texts/highlights/icon, add/rename/reorder/delete categories; store updates immediately. Simplified for non-technical staff: section cards → one page per section, labeled buttons, picture icon picker, plain-language messages
   - [x] **B4.3** Admin: products — list with search/filters, one-click show/hide, copy, delete (admin); editor for details, packages & prices, order questions (presets), how-it-works steps, Q&A, colour/badges; sticky save bar with unsaved-changes warning; store updates immediately
-  - [ ] **B4.4** Product image upload
-- [ ] **B5** Deals, reviews, content (FAQ, blog, legal, site stats/settings)
-- [ ] **B6** Orders — save orders from the site, order list/detail, status updates, tracking API
+  - [x] **B4.4** Product picture upload (resized to WebP, stored in the database, served at /media)
+- [x] **B5** Deals, reviews, content (home/section FAQ, help center, blog, legal pages) and Settings (contact, social, stats, payment methods) — all in the database and edited in the admin panel
+- [ ] **B6** Orders (on hold — ordering & payment stay on WhatsApp for now) — save orders from the site, order list/detail, status updates, tracking API
 - [ ] **B7** Payments — eSewa / Khalti / Fonepay
 - [ ] **B8** Customer accounts (on hold) · deployment on Node hosting

@@ -27,7 +27,7 @@
 | Hidden products | `products.is_active = false` → not shown anywhere in the store |
 | cPanel static build | `npm run build:cpanel` saves a JSON snapshot of the DB catalog first (`scripts/export-catalog.ts`); the static pages are built from it |
 
-Deals, reviews, FAQ and other content still come from `src/data` until B5.
+Deals, reviews, FAQ and the other content are in the database too (B5, below).
 
 **Admin: Sections & categories (B4.2)** — admin only, built for non-technical users:
 `/admin/categories` shows 6 section cards → `/admin/categories/[slug]` has a plain "Section details" form and a
@@ -57,6 +57,37 @@ Queries `src/server/admin/products.ts`, actions `src/server/admin/product-action
 and question keys (`fields[].name`) are kept when renamed, so deals and saved orders keep pointing at the right package.
 Prices are whole rupees and are re-checked on the server; the "was" price must be higher than the price.
 Note (Next.js 16): the previous page stays mounted but hidden, so the "Add product" form resets itself after a product is created.
+
+**Product pictures (B4.4)** — upload on the product edit page ("Look" box: click or drag a JPG/PNG/WebP, max 5 MB).
+Resized to max 1200 px WebP with `sharp` and stored **in the database** (`media` table, backed up with it), served by
+`src/app/media/[file]/route.ts` at `/media/<id>.webp` (cached for a year — a new upload gets a new id). Actions
+`uploadProductImageAction` / `removeProductImageAction` in `product-actions.ts`; unused pictures are deleted.
+Server action body limit raised to 6 MB in `next.config.ts`. Static cPanel build: `export-catalog.ts` copies the pictures to `public/media/`.
+
+### Content in the database (B5)
+
+| Table | Admin page | Store getter |
+|---|---|---|
+| `deals` (product, package, % off, ends at, label) | `/admin/deals` — add (quick "in 6 h / 1 day / 1 week"), edit, end now, run again, delete | `getDeals()`, `getProductDeal()` — only running deals |
+| `reviews` (product, stars, text, name, city, date, verified, shown) | `/admin/reviews` — add, edit, show/hide, delete | `getReviews()` — shown only |
+| `faqs` (scope `home` or a section slug) | `/admin/content/faq/[scope]` | `getHomeFaq()`, `getDomainFaq()` |
+| `support_topics` (name, icon, questions) | `/admin/content/help` | `getSupportTopics()` |
+| `blog_posts` (blocks: paragraph, heading, steps, tip; published/draft) | `/admin/content/blog` (+ `/new`, `/[id]`) | `getBlogPosts()`, `getBlogPost()` — published only |
+| `legal_pages` (sections; "last updated" set on save) | `/admin/content/legal/[slug]` — admin only | `getLegalPage()` |
+| `settings` key `site`: contact, social, stats, payment methods | `/admin/settings` — admin only | `getSiteSettings()`, `getContact()`, `getSiteStats()`, `getPaymentMethods()` |
+
+- Loader: `src/server/content/read.ts` (plain DB reads) → `source.ts` `loadContent()` (`"use cache"`, tag `content`;
+  also refreshes itself when the next deal ends). Actions in `src/server/admin/content-actions.ts` call `updateTag(CONTENT_TAG)`.
+  Admin queries: `src/server/admin/content.ts`; shared input types: `content-types.ts`.
+- **Contact details** (WhatsApp number, email, phone, address, map, hours, social links) now come from Settings. Server
+  components use `getContact()`; browser components use `useSiteSettings()` from `src/components/site-settings.tsx`
+  (provider in `src/app/(site)/layout.tsx`); `whatsappLink()` uses the saved number. The `NEXT_PUBLIC_*` variables are only
+  the starting values until Settings is saved.
+- `npm run db:seed` fills each content table from `src/data` **only when it is empty** (starter deals run for 2–9 days).
+- Shared editor UI: `src/components/admin/editor-bits.tsx` (Card, Toggle, ↑↓/remove buttons, Q&A list, sticky Save bar with unsaved-changes warning).
+- Roles: deals, reviews, FAQ, help center, blog → admin + staff; legal pages and Settings → admin only.
+- Static cPanel build: `export-catalog.ts` also saves `content-snapshot.json` (aliased in `next.config.ts`). Deals in the static
+  site stop counting at 0 but stay listed until the next build.
 
 Roles: `admin` (everything, incl. team), `staff` (dashboard, own account; orders & support in B6), `customer` (later).
 
@@ -247,6 +278,7 @@ AUTH_EMAIL=… AUTH_PASSWORD=… node scripts/check-auth.mjs http://localhost:30
 AUTH_EMAIL=… AUTH_PASSWORD=… node scripts/check-admin.mjs http://localhost:3000  # dashboard, team management, staff limits, own password (TEST admin)
 AUTH_EMAIL=… AUTH_PASSWORD=… node scripts/check-categories.mjs http://localhost:3000  # sections & categories; checks the store updates immediately
 AUTH_EMAIL=… AUTH_PASSWORD=… node scripts/check-products.mjs http://localhost:3000    # products: add, edit packages/prices, hide, copy, delete; store updates immediately
+AUTH_EMAIL=… AUTH_PASSWORD=… node scripts/check-content.mjs http://localhost:3000     # pictures, deals, reviews, FAQ, help center, blog, legal, settings
 node scripts/perf.mjs http://localhost:3000            # page weight per page (run on a production build)
 node scripts/nav-speed.mjs http://localhost:3000       # click-to-page switch time
 node scripts/screenshot.mjs http://localhost:3000/ out.png 1440 light   # screenshot + console errors

@@ -6,7 +6,16 @@ import { cn } from "@/lib/cn";
 import type { IconName } from "@/types/catalog";
 
 /** Click-a-picture icon chooser. Submits the chosen icon as a hidden form field. */
-export function IconPicker({ name = "icon", defaultValue = "Package" }: { name?: string; defaultValue?: IconName }) {
+export function IconPicker({
+  name = "icon",
+  defaultValue = "Package",
+  onChange,
+}: {
+  name?: string;
+  defaultValue?: IconName;
+  /** optional: also report the choice (for editors that keep their own state) */
+  onChange?: (icon: IconName) => void;
+}) {
   const [value, setValue] = useState<IconName>(defaultValue);
 
   return (
@@ -23,7 +32,10 @@ export function IconPicker({ name = "icon", defaultValue = "Package" }: { name?:
               aria-checked={selected}
               aria-label={ICON_LABELS[n]}
               title={ICON_LABELS[n]}
-              onClick={() => setValue(n)}
+              onClick={() => {
+                setValue(n);
+                onChange?.(n);
+              }}
               className={cn(
                 "flex aspect-square items-center justify-center rounded-xl border-2 transition-all",
                 selected
