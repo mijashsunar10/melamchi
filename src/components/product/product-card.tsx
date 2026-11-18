@@ -17,20 +17,23 @@ export function ProductCard({ product, eager = false }: { product: Product; eage
       href={`/product/${product.slug}`}
       className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-card-hover"
     >
-      <div className="relative overflow-hidden">
-        <Cover product={product} eager={eager} className="aspect-[4/3] w-full transition-transform duration-500 group-hover:scale-105" />
-        {tag && (
-          <Badge className="absolute top-3 left-3 bg-white/95 text-brand-navy shadow-sm">
-            {tagBadge[tag].label}
-          </Badge>
-        )}
-        <span className="absolute right-3 bottom-3 inline-flex items-center gap-1 rounded-full bg-black/45 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur">
-          {instant ? <Zap className="size-3 text-amber-300" /> : <Clock className="size-3" />}
-          {product.deliveryTime}
-        </span>
+      {/* clean picture — nothing written on top of it */}
+      <div className="m-2 overflow-hidden rounded-xl">
+        <Cover product={product} eager={eager} className="aspect-square w-full transition-transform duration-500 group-hover:scale-105" />
       </div>
 
-      <div className="flex flex-1 flex-col gap-1.5 p-3 sm:p-4">
+      <div className="flex flex-1 flex-col gap-1.5 px-3 pt-1 pb-3 sm:px-4 sm:pb-4">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {tag && (
+            <Badge variant={tagBadge[tag].variant} className="px-2 py-0 text-[11px]">
+              {tagBadge[tag].label}
+            </Badge>
+          )}
+          <span className={`inline-flex items-center gap-1 text-[11px] font-semibold ${instant ? "text-success" : "text-muted-foreground"}`}>
+            {instant ? <Zap className="size-3 fill-current" /> : <Clock className="size-3" />}
+            {product.deliveryTime}
+          </span>
+        </div>
         <h3 className="line-clamp-2 font-sans text-[15px] leading-snug font-bold">{product.name}</h3>
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <Star className="size-3.5 fill-amber-400 text-amber-400" />

@@ -8,7 +8,7 @@ import type { Domain, Product, ProductTag } from "@/types/catalog";
 // - The whole catalog (sections, categories, active products, packages) is loaded in one go and cached.
 // - Sections come in `sort_order` (Gaming first — TOPX is gaming-first; same order in the menu and footer).
 // - Admin changes call `updateTag(CATALOG_TAG)` so the store updates immediately.
-// - Edits made directly in the database (pgAdmin) show up within the cache life (hours).
+// - Edits made directly in the database (pgAdmin, scripts/fetch-product-images.ts) show up within the cache life (hours).
 
 export const CATALOG_TAG = "catalog";
 

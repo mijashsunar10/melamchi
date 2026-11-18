@@ -62,7 +62,11 @@ Note (Next.js 16): the previous page stays mounted but hidden, so the "Add produ
 Resized to max 1200 px WebP with `sharp` and stored **in the database** (`media` table, backed up with it), served by
 `src/app/media/[file]/route.ts` at `/media/<id>.webp` (cached for a year — a new upload gets a new id). Actions
 `uploadProductImageAction` / `removeProductImageAction` in `product-actions.ts`; unused pictures are deleted.
-Server action body limit raised to 6 MB in `next.config.ts`. Static cPanel build: `export-catalog.ts` copies the pictures to `public/media/`.
+Server action body limit raised to 6 MB in `next.config.ts`.
+Starter pictures: `npx tsx --conditions=react-server scripts/fetch-product-images.ts` saves each product's official app
+artwork (Apple App Store lookup API, app ids listed in the script) the same way — only for products without a picture
+(`--force` replaces all). Cards show the picture square and clean (no text or tint on it); badges, name and price sit
+below. Wide spots (product page, blog) show the whole picture with a soft blurred copy behind it. Static cPanel build: `export-catalog.ts` copies the pictures to `public/media/`.
 
 ### Content in the database (B5)
 

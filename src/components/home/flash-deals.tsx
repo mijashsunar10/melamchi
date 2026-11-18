@@ -34,20 +34,16 @@ export function FlashDeals({ deals }: { deals: DealWithProduct[] }) {
             <Link
               key={`${d.productSlug}-${d.planId}`}
               href={`/product/${d.product.slug}`}
-              className="group relative flex w-[230px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover sm:w-[250px]"
+              className="group relative flex w-[200px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover sm:w-[220px]"
             >
-              <div className="relative overflow-hidden">
-                <Cover product={d.product} className="aspect-[16/10] w-full transition-transform duration-500 group-hover:scale-105" />
-                <span className="absolute top-3 left-3 rounded-lg bg-accent px-2 py-1 text-xs font-bold text-white shadow-sm">
-                  -{d.discountPercent}%
-                </span>
-                {d.label && (
-                  <span className="absolute top-3 right-3 rounded-full bg-black/50 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur">
-                    {d.label}
-                  </span>
-                )}
+              <div className="m-2 overflow-hidden rounded-xl">
+                <Cover product={d.product} className="aspect-square w-full transition-transform duration-500 group-hover:scale-105" />
               </div>
-              <div className="flex flex-1 flex-col gap-2 p-4">
+              <div className="flex flex-1 flex-col gap-2 px-4 pt-1 pb-4">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="rounded-md bg-accent px-1.5 py-0.5 text-xs font-bold text-white">-{d.discountPercent}%</span>
+                  {d.label && <span className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-semibold">{d.label}</span>}
+                </div>
                 <div>
                   <h3 className="truncate font-sans text-sm font-bold">{d.product.name}</h3>
                   <p className="text-xs text-muted-foreground">{d.plan.name}</p>

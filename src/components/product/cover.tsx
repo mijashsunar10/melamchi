@@ -95,10 +95,22 @@ export function Cover({
   eager?: boolean;
 }) {
   if (product.image) {
+    // uploaded pictures (/media/…) are already resized to WebP → served as they are
+    const unoptimized = product.image.startsWith("/media/");
+    const sizes = { sm: "64px", md: "(min-width: 1024px) 300px, 50vw", lg: "(min-width: 1024px) 640px, 100vw" }[size];
     return (
-      <div className={cn("relative overflow-hidden", className)}>
-        {/* uploaded pictures (/media/…) are already resized to WebP on upload → served as they are */}
-        <Image src={product.image} alt={product.name} fill className="object-cover" sizes="320px" unoptimized={product.image.startsWith("/media/")} />
+      <div className={cn("relative overflow-hidden bg-muted", className)}>
+        {/* soft blurred copy fills the sides when the picture's shape doesn't match the box (e.g. a square icon in a wide banner) */}
+        <Image src={product.image} alt="" aria-hidden fill sizes="64px" unoptimized={unoptimized} className="scale-125 object-cover opacity-70 blur-2xl" />
+        <Image
+          src={product.image}
+          alt={product.name}
+          fill
+          sizes={sizes}
+          unoptimized={unoptimized}
+          loading={eager ? "eager" : "lazy"}
+          className="object-contain"
+        />
       </div>
     );
   }
