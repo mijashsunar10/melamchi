@@ -9,7 +9,7 @@ import type { Product } from "@/types/catalog";
 export function GameTiles({ games }: { games: Product[] }) {
   return (
     <section id="games" className="relative z-10 mx-auto -mt-24 w-full max-w-7xl scroll-mt-32 px-4 sm:-mt-32 sm:px-6">
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:gap-6 xl:grid-cols-6">
         {games.map((g, i) => {
           const from = startingPrice(g);
           return (

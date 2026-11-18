@@ -29,7 +29,7 @@ export function FlashDeals({ deals }: { deals: DealWithProduct[] }) {
           href="/deals"
         />
 
-        <div className="no-scrollbar -mx-4 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-4 px-4 pt-1 pb-4 sm:-mx-6 sm:scroll-px-6 sm:px-6">
+        <div className="no-scrollbar -mx-4 mt-8 flex snap-x snap-mandatory gap-5 lg:gap-6 overflow-x-auto scroll-px-4 px-4 pt-1 pb-4 sm:-mx-6 sm:scroll-px-6 sm:px-6">
           {deals.map((d) => (
             <Link
               key={`${d.productSlug}-${d.planId}`}

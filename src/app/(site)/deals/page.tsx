@@ -57,7 +57,7 @@ export default async function DealsPage() {
         </div>
 
         {sorted.length ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className={productGridClass}>
             {sorted.map((d, i) => (
               <Link
                 key={`${d.productSlug}-${d.planId}`}
@@ -67,7 +67,7 @@ export default async function DealsPage() {
                 <div className="m-2 overflow-hidden rounded-xl">
                   <Cover product={d.product} eager={i < 4} className="aspect-square w-full transition-transform duration-500 group-hover:scale-105" />
                 </div>
-                <div className="flex flex-1 flex-col gap-3 px-4 pt-1 pb-4">
+                <div className="flex flex-1 flex-col gap-3 px-3 pt-1 pb-3 sm:px-4 sm:pb-4">
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className="rounded-md bg-accent px-2 py-0.5 text-sm font-bold text-white">-{d.discountPercent}%</span>
                     {d.label && <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-semibold">{d.label}</span>}
@@ -76,19 +76,19 @@ export default async function DealsPage() {
                     <h2 className="truncate font-sans text-[15px] font-bold">{d.product.name}</h2>
                     <p className="text-sm text-muted-foreground">{d.plan.name}</p>
                   </div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-display text-2xl font-black text-accent">{formatNPR(d.dealPrice)}</span>
-                    <span className="text-sm text-muted-foreground line-through">{formatNPR(d.plan.price)}</span>
+                  <div className="flex flex-wrap items-baseline gap-x-2 whitespace-nowrap">
+                    <span className="font-display text-lg font-black text-accent sm:text-2xl">{formatNPR(d.dealPrice)}</span>
+                    <span className="text-xs text-muted-foreground line-through sm:text-sm">{formatNPR(d.plan.price)}</span>
                   </div>
                   <p className="flex items-center gap-1.5 text-xs font-semibold text-success">
                     <BadgePercent className="size-4" /> You save {formatNPR(d.plan.price - d.dealPrice)}
                   </p>
-                  <div className="mt-auto flex items-center justify-between border-t border-dashed border-border pt-3">
-                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <div className="mt-auto flex flex-col gap-3 border-t border-dashed border-border pt-3">
+                    <span className="flex flex-wrap items-center gap-1.5 text-xs whitespace-nowrap text-muted-foreground">
                       Ends in <Countdown endsAt={d.endsAt} />
                     </span>
-                    <span className="flex items-center gap-1 text-sm font-bold text-primary">
-                      Grab <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                    <span className="flex h-9 items-center justify-center gap-1 rounded-lg bg-primary text-sm font-bold text-primary-foreground transition-colors group-hover:bg-accent">
+                      Grab deal <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
                     </span>
                   </div>
                 </div>
