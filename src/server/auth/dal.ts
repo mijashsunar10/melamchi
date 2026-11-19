@@ -1,4 +1,5 @@
 import "server-only";
+import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import type { UserRole } from "@/server/db/schema";
@@ -11,6 +12,8 @@ import { getSessionToken, type SessionUser, validateSessionToken } from "./sessi
 export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
   const token = await getSessionToken();
   if (!token) return null;
+  // the session check uses the current time → it must run per request, never while prerendering
+  await connection();
   const result = await validateSessionToken(token);
   return result?.user ?? null;
 });
