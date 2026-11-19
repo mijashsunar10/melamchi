@@ -80,7 +80,6 @@ export type CustomerRow = {
 
 /** Customers (people who registered on the website), most recent sign-in first. */
 export async function listCustomers(): Promise<CustomerRow[]> {
-  const { orders } = schema;
   const rows = await db
     .select({
       id: users.id,
@@ -89,9 +88,9 @@ export async function listCustomers(): Promise<CustomerRow[]> {
       isActive: users.isActive,
       lastLoginAt: users.lastLoginAt,
       createdAt: users.createdAt,
-      orders: sql<number>`(select count(*)::int from ${orders} where ${orders.userId} = ${users.id})`,
-      spent: sql<number>`(select coalesce(sum(${orders.total}), 0)::int from ${orders} where ${orders.userId} = ${users.id} and ${orders.status} = 'delivered')`,
-      online: sql<boolean>`exists(select 1 from ${sessions} where ${sessions.userId} = ${users.id} and ${sessions.expiresAt} > now())`,
+      orders: sql<number>`(select count(*)::int from orders o where o.user_id = "users"."id")`,
+      spent: sql<number>`(select coalesce(sum(o.total), 0)::int from orders o where o.user_id = "users"."id" and o.status = 'delivered')`,
+      online: sql<boolean>`exists(select 1 from sessions s where s.user_id = "users"."id" and s.expires_at > now())`,
     })
     .from(users)
     .where(eq(users.role, "customer"))
