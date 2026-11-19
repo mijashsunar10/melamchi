@@ -11,7 +11,7 @@ import { siteStats } from "@/data/site-stats";
 import type { SiteSettings } from "@/types/content";
 
 /** WhatsApp number in international format, digits only, e.g. 9779812345678 */
-const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "97798XXXXXXXX";
+const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "9779826115361";
 
 export const siteConfig = {
   name: "TOPX NEPAL",
@@ -41,8 +41,8 @@ export const siteConfig = {
     "digital products Nepal",
   ],
   contact: {
-    email: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@topxnepal.com",
-    phone: process.env.NEXT_PUBLIC_SUPPORT_PHONE || "+977 98XXXXXXXX",
+    email: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "mijashsunar1@gmail.com",
+    phone: process.env.NEXT_PUBLIC_SUPPORT_PHONE || "+977 9826115361",
     whatsappNumber,
     whatsapp: `https://wa.me/${whatsappNumber}`,
     address: process.env.NEXT_PUBLIC_ADDRESS || "Kathmandu, Nepal",
