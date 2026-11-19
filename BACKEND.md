@@ -310,6 +310,9 @@ To change the QR: replace `public/qr/pay-qr.jpeg`. Quote-only packages (price 0)
 ### eSewa payment (automatic)
 
 - Keys in `.env`: `ESEWA_ENV` (`test`/`live`), `ESEWA_PRODUCT_CODE`, `ESEWA_SECRET_KEY`. Empty secret → eSewa button hidden.
+- Paid exactly once: `settlePaid()` in `src/server/shop/settle.ts` (safe on refresh/double hits), auto top-up runs in background via `after()`; top-up error → order `failed` + admin note.
+- Missed payments (customer closed tab): `reconcileEsewa()` — run by cron `GET /api/cron/esewa` (header `Authorization: Bearer $CRON_SECRET`, every 10 min in `vercel.json`) and the admin "Check eSewa" button.
+- Supplier: fill `supplierTopup()` in `src/server/shop/topup.ts`, set `TOPUP_API_KEY`.
   Test keys: `EPAYTEST` / `8gBm/:&EnhH.1/q`. Test eSewa login: ID `9806800001` (to `…005`), password `Nepal@123`, MPIN `1122`, OTP `123456`.
 - Flow: payment popup "Pay with eSewa" → `startEsewaAction()` (`src/server/shop/order-actions.ts`) saves the order as
   `unpaid` (hidden everywhere) → form posts to eSewa → `src/app/pay/esewa/success/route.ts` checks the signature **and**

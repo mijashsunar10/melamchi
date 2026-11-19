@@ -8,6 +8,7 @@ import { formatNPR } from "@/lib/format";
 import { requireStaff } from "@/server/auth/dal";
 import { listAllOrders, type OrderRow } from "@/server/shop/orders";
 import { AutoRefresh } from "./auto-refresh";
+import { CheckEsewaButton } from "./check-esewa";
 import { OrderActions } from "./order-actions-ui";
 import { ProofImage } from "./proof-image";
 
@@ -91,7 +92,8 @@ async function Orders({ searchParams }: { searchParams: PageProps<"/admin/orders
 export default function OrdersPage({ searchParams }: PageProps<"/admin/orders">) {
   return (
     <>
-      <AdminPageHeader title="Orders" description="New orders appear here after the customer pays by QR. Check the payment in your Fonepay app, add the top-up, then press Delivered." />
+      <AdminPageHeader title="Orders" description="Orders appear here once eSewa confirms payment. Add the top-up (or check auto top-up), then press Delivered. Failed = auto top-up error: top up by hand or refund." />
+      <CheckEsewaButton />
       <AutoRefresh />
       <Suspense fallback={<div className="skeleton h-40 rounded-2xl" />}>
         <Orders searchParams={searchParams} />

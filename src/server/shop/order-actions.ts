@@ -8,6 +8,7 @@ import { newOrderRef, type OrderRequest, priceOrder, validateOrder } from "@/lib
 import { getCurrentUser, requireRole, requireStaff } from "@/server/auth/dal";
 import { db, schema } from "@/server/db";
 import { esewaEnabled, esewaForm } from "@/server/shop/esewa";
+import { reconcileEsewa } from "@/server/shop/settle";
 
 /** Is someone signed in, and is eSewa on? (the product page checks before showing checkout) */
 export async function whoAmIAction(): Promise<{ signedIn: boolean; esewa: boolean }> {
@@ -93,4 +94,12 @@ export async function deleteOrderAction(orderId: string): Promise<{ ok: boolean;
   if (o.paymentProofId) await db.delete(schema.media).where(eq(schema.media.id, o.paymentProofId));
   revalidatePath("/admin/orders");
   return { ok: true };
+}
+
+/** Admin/staff: ask eSewa about recent unpaid orders (customer paid but never came back). */
+export async function checkEsewaAction(): Promise<number> {
+  await requireStaff();
+  const found = await reconcileEsewa();
+  revalidatePath("/admin/orders");
+  return found;
 }

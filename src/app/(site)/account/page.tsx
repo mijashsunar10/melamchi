@@ -33,7 +33,7 @@ async function EsewaNotice({ searchParams }: { searchParams: Promise<{ esewa?: s
   if (esewa === "paid")
     return <p className="mb-4 rounded-xl bg-success/15 px-4 py-3 text-sm font-semibold text-success">eSewa payment received. Your order is being processed.</p>;
   if (esewa === "failed")
-    return <p className="mb-4 rounded-xl bg-danger/15 px-4 py-3 text-sm font-semibold text-danger">eSewa payment was not completed. No money was taken for this order — please try again.</p>;
+    return <p className="mb-4 rounded-xl bg-danger/15 px-4 py-3 text-sm font-semibold text-danger">eSewa payment was not completed — please try again. If money was taken from your eSewa, don't pay again: we check with eSewa automatically and your order will show up within 10 minutes.</p>;
   return null;
 }
 
