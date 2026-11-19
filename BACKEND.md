@@ -306,3 +306,14 @@ these emails itself, remove the `emailCopy(...)` calls in `orders.ts`, `support.
 | Admin | `/admin/orders` (tabs, auto-refresh 20 s, Delivered / Processing / Failed + note to customer); yellow "new orders" bell on every admin page |
 
 To change the QR: replace `public/qr/pay-qr.jpeg`. Quote-only packages (price 0) still go to WhatsApp.
+
+### eSewa payment (automatic)
+
+- Keys in `.env`: `ESEWA_ENV` (`test`/`live`), `ESEWA_PRODUCT_CODE`, `ESEWA_SECRET_KEY`. Empty secret → eSewa button hidden.
+  Test keys: `EPAYTEST` / `8gBm/:&EnhH.1/q`. Test eSewa login: ID `9806800001` (to `…005`), password `Nepal@123`, MPIN `1122`, OTP `123456`.
+- Flow: payment popup "Pay with eSewa" → `startEsewaAction()` (`src/server/shop/order-actions.ts`) saves the order as
+  `unpaid` (hidden everywhere) → form posts to eSewa → `src/app/pay/esewa/success/route.ts` checks the signature **and**
+  eSewa's status API (`src/server/shop/esewa.ts`) → order becomes `pending` (admin "New (paid)" tab, payment ref "eSewa …")
+  → customer lands on `/account?esewa=paid`. Failure/cancel → `/account?esewa=failed`.
+- QR + screenshot stays as the backup option. `src/app/pay` is server-only (skipped in the cPanel static build).
+- Next: auto top-up via supplier API after payment (waiting for supplier docs/keys).

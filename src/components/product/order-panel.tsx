@@ -39,6 +39,7 @@ export function OrderPanel({ product, deal = null }: { product: Product; deal?: 
   const [submitting, setSubmitting] = useState(false);
   const [playerName, setPlayerName] = useState<string | null>(null);
   const [payOpen, setPayOpen] = useState(false);
+  const [esewa, setEsewa] = useState(false);
 
   const { plan, unitPrice, onDeal, total, isQuote } = priceOrder(product, planId, qty, deal);
   const allowQty = allowsQuantity(product);
@@ -79,13 +80,14 @@ export function OrderPanel({ product, deal = null }: { product: Product; deal?: 
     setSubmitting(true);
     if (!isQuote) {
       // must be logged in to buy → then show the payment QR
-      const { signedIn } = await whoAmIAction();
+      const { signedIn, esewa: esewaOn } = await whoAmIAction();
       setSubmitting(false);
       if (!signedIn) {
         toast({ type: "error", title: "Please log in or register to buy" });
         router.push(`/login?next=${encodeURIComponent(window.location.pathname)}`);
         return;
       }
+      setEsewa(esewaOn);
       setPayOpen(true);
       return;
     }
@@ -319,7 +321,7 @@ export function OrderPanel({ product, deal = null }: { product: Product; deal?: 
         </div>
       </div>
     </form>
-    {payOpen && <PayDialog open={payOpen} onClose={() => setPayOpen(false)} amount={total} request={request()} />}
+    {payOpen && <PayDialog open={payOpen} onClose={() => setPayOpen(false)} amount={total} request={request()} esewa={esewa} />}
     </>
   );
 }

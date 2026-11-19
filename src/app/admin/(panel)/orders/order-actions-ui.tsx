@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { deleteOrderAction, setOrderStatusAction } from "@/server/shop/order-actions";
 
-type Status = "pending" | "processing" | "delivered" | "failed" | "refunded";
+type Status = "unpaid" | "pending" | "processing" | "delivered" | "failed" | "refunded";
 
 export function OrderActions({ id, status, note }: { id: string; status: Status; note: string | null }) {
   const [value, setValue] = useState<Status>(status);
@@ -15,7 +15,7 @@ export function OrderActions({ id, status, note }: { id: string; status: Status;
   const save = (s: Status) =>
     start(async () => {
       setValue(s);
-      await setOrderStatusAction(id, s, text);
+      if (s !== "unpaid") await setOrderStatusAction(id, s, text);
       router.refresh();
     });
 

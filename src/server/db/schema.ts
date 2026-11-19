@@ -240,8 +240,8 @@ export type UserRole = (typeof userRole.enumValues)[number];
 
 // ---------------------------------------------------------------- customer orders
 
-/** pending = customer says they paid by QR, waiting for admin · delivered/failed/refunded = done */
-export const orderStatus = pgEnum("order_status", ["pending", "processing", "delivered", "failed", "refunded"]);
+/** unpaid = sent to eSewa, not paid yet (hidden) · pending = customer says they paid by QR, waiting for admin · delivered/failed/refunded = done */
+export const orderStatus = pgEnum("order_status", ["unpaid", "pending", "processing", "delivered", "failed", "refunded"]);
 
 export const orders = pgTable(
   "orders",

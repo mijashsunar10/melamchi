@@ -14,7 +14,7 @@ import { ProofImage } from "./proof-image";
 export const metadata = { title: "Orders" };
 
 const TABS: { key?: OrderRow["status"]; label: string }[] = [
-  { key: "pending", label: "New (paid by QR)" },
+  { key: "pending", label: "New (paid)" },
   { key: "processing", label: "Processing" },
   { key: "delivered", label: "Delivered" },
   { key: "failed", label: "Failed" },

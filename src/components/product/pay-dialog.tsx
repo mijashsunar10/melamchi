@@ -9,13 +9,26 @@ import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { formatNPR } from "@/lib/format";
 import type { OrderRequest } from "@/lib/orders";
-import { placeOrderAction } from "@/server/shop/order-actions";
+import { placeOrderAction, startEsewaAction } from "@/server/shop/order-actions";
 
 const QR_SRC = "/qr/pay-qr.jpeg";
 const TIME_LIMIT = 10 * 60; // seconds
 
 /** Scan-to-pay popup. "I have paid" saves the order → it appears in the admin Orders page as a new order. */
-export function PayDialog({ open, onClose, amount, request }: { open: boolean; onClose: () => void; amount: number; request: OrderRequest }) {
+export function PayDialog({
+  open,
+  onClose,
+  amount,
+  request,
+  esewa,
+}: {
+  open: boolean;
+  onClose: () => void;
+  amount: number;
+  request: OrderRequest;
+  /** show "Pay with eSewa" (automatic payment check) */
+  esewa?: boolean;
+}) {
   const [left, setLeft] = useState(TIME_LIMIT);
   const [ref, setRef] = useState("");
   const [shot, setShot] = useState<File | null>(null);
@@ -43,6 +56,31 @@ export function PayDialog({ open, onClose, amount, request }: { open: boolean; o
     else setError(r.error);
   }
 
+  /** Save the order, then send the customer to eSewa with an auto-submitted form. */
+  async function payEsewa() {
+    setBusy(true);
+    setError("");
+    const r = await startEsewaAction(request);
+    if (!r.ok) {
+      setBusy(false);
+      if (r.needLogin) router.push(`/login?next=${encodeURIComponent(window.location.pathname)}`);
+      else setError(r.error);
+      return;
+    }
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = r.url;
+    for (const [k, v] of Object.entries(r.fields)) {
+      const i = document.createElement("input");
+      i.type = "hidden";
+      i.name = k;
+      i.value = v;
+      form.appendChild(i);
+    }
+    document.body.appendChild(form);
+    form.submit();
+  }
+
   const mm = String(Math.floor(left / 60)).padStart(2, "0");
   const ss = String(left % 60).padStart(2, "0");
 
@@ -63,6 +101,21 @@ export function PayDialog({ open, onClose, amount, request }: { open: boolean; o
           </>
         ) : (
           <>
+            {esewa && (
+              <>
+                <button
+                  type="button"
+                  onClick={payEsewa}
+                  disabled={busy}
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#60bb46] text-base font-bold text-white hover:brightness-95 disabled:opacity-60"
+                >
+                  {busy && <Loader2 className="size-5 animate-spin" />}
+                  Pay {formatNPR(amount)} with eSewa
+                </button>
+                <p className="-mt-2 text-xs text-muted-foreground">Instant — no screenshot needed</p>
+                <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase">or scan QR</p>
+              </>
+            )}
             <p className="flex items-center gap-1.5 text-xs font-bold tracking-widest text-accent uppercase">
               <QrCode className="size-4" /> Fonepay
             </p>

@@ -15,6 +15,6 @@ export async function trackOrderAction(orderId: string): Promise<TrackResult> {
   if (o.status === "processing" || o.status === "delivered") history.push({ status: "paid", at: updated }, { status: "processing", at: updated });
   if (o.status === "delivered") history.push({ status: "delivered", at: updated });
   if (o.status === "failed" || o.status === "refunded") history.push({ status: o.status, at: updated });
-  const status: OrderStatus = o.status === "pending" ? "received" : o.status;
+  const status: OrderStatus = o.status === "pending" || o.status === "unpaid" ? "received" : o.status;
   return { found: true, order: { orderId: o.id, status, productName: o.productName, packageName: o.planName, total: o.total, history } };
 }

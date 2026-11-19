@@ -28,9 +28,21 @@ async function Dashboard() {
   );
 }
 
-export default function AccountPage() {
+async function EsewaNotice({ searchParams }: { searchParams: Promise<{ esewa?: string }> }) {
+  const { esewa } = await searchParams;
+  if (esewa === "paid")
+    return <p className="mb-4 rounded-xl bg-success/15 px-4 py-3 text-sm font-semibold text-success">eSewa payment received. Your order is being processed.</p>;
+  if (esewa === "failed")
+    return <p className="mb-4 rounded-xl bg-danger/15 px-4 py-3 text-sm font-semibold text-danger">eSewa payment was not completed. No money was taken for this order — please try again.</p>;
+  return null;
+}
+
+export default function AccountPage({ searchParams }: { searchParams: Promise<{ esewa?: string }> }) {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
+      <Suspense>
+        <EsewaNotice searchParams={searchParams} />
+      </Suspense>
       <Suspense fallback={<div className="skeleton h-40 rounded-3xl" />}>
         <Dashboard />
       </Suspense>

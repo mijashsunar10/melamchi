@@ -2,16 +2,65 @@
 
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { getProduct, getProductDeal } from "@/lib/catalog";
 import { newOrderRef, type OrderRequest, priceOrder, validateOrder } from "@/lib/orders";
 import { getCurrentUser, requireRole, requireStaff } from "@/server/auth/dal";
 import { db, schema } from "@/server/db";
+import { esewaEnabled, esewaForm } from "@/server/shop/esewa";
 
 export type PlaceOrderResult = { ok: true; orderId: string } | { ok: false; error: string; needLogin?: boolean };
 
 /** Is someone signed in? (the product page checks before showing the QR) */
-export async function whoAmIAction(): Promise<{ signedIn: boolean }> {
-  return { signedIn: !!(await getCurrentUser()) };
+export async function whoAmIAction(): Promise<{ signedIn: boolean; esewa: boolean }> {
+  return { signedIn: !!(await getCurrentUser()), esewa: esewaEnabled() };
+}
+
+/** Re-check the order on the server (fields, stock, price). */
+type OrderValues = Omit<typeof schema.orders.$inferInsert, "id" | "userId">;
+async function prepareOrder(req: OrderRequest): Promise<{ error: string } | { total: number; row: OrderValues }> {
+  const product = await getProduct(String(req.productSlug));
+  if (!product) return { error: "Product not found." };
+  const clean: OrderRequest = {
+    productSlug: product.slug,
+    planId: String(req.planId),
+    quantity: Number(req.quantity) || 1,
+    details: Object.fromEntries(product.fields.map((f) => [f.name, String(req.details?.[f.name] ?? "").trim().slice(0, 300)])),
+  };
+  const errors = validateOrder(product, clean);
+  if (Object.keys(errors).length) return { error: Object.values(errors)[0] };
+  const deal = await getProductDeal(product.slug);
+  const { plan, quantity, unitPrice, total, isQuote } = priceOrder(product, clean.planId, clean.quantity, deal);
+  if (isQuote || total <= 0) return { error: "This package has no fixed price. Please ask for a quote on WhatsApp." };
+  return {
+    total,
+    row: {
+      productSlug: product.slug,
+      productName: product.name,
+      planId: plan.id,
+      planName: plan.name,
+      quantity,
+      details: clean.details,
+      unitPrice,
+      total,
+    },
+  };
+}
+
+export type StartEsewaResult = { ok: true; url: string; fields: Record<string, string> } | { ok: false; error: string; needLogin?: boolean };
+
+/** Pay with eSewa: save the order as "unpaid" and return the form that sends the customer to eSewa. */
+export async function startEsewaAction(req: OrderRequest): Promise<StartEsewaResult> {
+  const user = await getCurrentUser();
+  if (!user) return { ok: false, error: "Please log in first.", needLogin: true };
+  if (!esewaEnabled()) return { ok: false, error: "eSewa is not available right now." };
+  const o = await prepareOrder(req);
+  if ("error" in o) return { ok: false, error: o.error };
+  const id = newOrderRef();
+  await db.insert(schema.orders).values({ id, userId: user.id, status: "unpaid", seenByAdmin: true, ...o.row });
+  const h = await headers();
+  const origin = `${h.get("x-forwarded-proto") ?? "http"}://${h.get("x-forwarded-host") ?? h.get("host")}`;
+  return { ok: true, ...esewaForm(id, o.total, origin) };
 }
 
 /** Customer paid by QR → save the order as "pending" so it shows up for the admin. Price is re-calculated here. */
@@ -23,20 +72,8 @@ export async function placeOrderAction(req: OrderRequest, paymentRef: string, pr
   if (!(file instanceof File) || file.size === 0) return { ok: false, error: "Please upload your payment screenshot." };
   if (file.size > 5 * 1024 * 1024) return { ok: false, error: "Screenshot is too big (max 5 MB)." };
 
-  const product = await getProduct(String(req.productSlug));
-  if (!product) return { ok: false, error: "Product not found." };
-  const clean: OrderRequest = {
-    productSlug: product.slug,
-    planId: String(req.planId),
-    quantity: Number(req.quantity) || 1,
-    details: Object.fromEntries(product.fields.map((f) => [f.name, String(req.details?.[f.name] ?? "").trim().slice(0, 300)])),
-  };
-  const errors = validateOrder(product, clean);
-  if (Object.keys(errors).length) return { ok: false, error: Object.values(errors)[0] };
-
-  const deal = await getProductDeal(product.slug);
-  const { plan, quantity, unitPrice, total, isQuote } = priceOrder(product, clean.planId, clean.quantity, deal);
-  if (isQuote || total <= 0) return { ok: false, error: "This package has no fixed price. Please ask for a quote on WhatsApp." };
+  const o = await prepareOrder(req);
+  if ("error" in o) return { ok: false, error: o.error };
   let shot;
   try {
     const { default: sharp } = await import("sharp");
@@ -58,14 +95,7 @@ export async function placeOrderAction(req: OrderRequest, paymentRef: string, pr
     paymentProofId: img.id,
     id,
     userId: user.id,
-    productSlug: product.slug,
-    productName: product.name,
-    planId: plan.id,
-    planName: plan.name,
-    quantity,
-    details: clean.details,
-    unitPrice,
-    total,
+    ...o.row,
     paymentRef: paymentRef?.trim().slice(0, 100) || null,
   });
   return { ok: true, orderId: id };

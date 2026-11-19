@@ -1,11 +1,11 @@
 import "server-only";
-import { count, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, ne } from "drizzle-orm";
 import { db, schema } from "@/server/db";
 
 export type OrderRow = typeof schema.orders.$inferSelect;
 
 export async function listMyOrders(userId: string): Promise<OrderRow[]> {
-  return db.select().from(schema.orders).where(eq(schema.orders.userId, userId)).orderBy(desc(schema.orders.createdAt));
+  return db.select().from(schema.orders).where(and(eq(schema.orders.userId, userId), ne(schema.orders.status, "unpaid"))).orderBy(desc(schema.orders.createdAt));
 }
 
 export async function listAllOrders(status?: OrderRow["status"]) {
@@ -15,7 +15,7 @@ export async function listAllOrders(status?: OrderRow["status"]) {
     .innerJoin(schema.users, eq(schema.users.id, schema.orders.userId))
     .orderBy(desc(schema.orders.createdAt))
     .limit(300);
-  return status ? q.where(eq(schema.orders.status, status)) : q;
+  return q.where(status ? eq(schema.orders.status, status) : ne(schema.orders.status, "unpaid"));
 }
 
 export async function countPendingOrders() {
