@@ -134,13 +134,17 @@ export async function trackOrder(orderId: string, phone?: string): Promise<Track
 }
 
 /**
+ * Is a real player-name lookup available? While false, the "Check name" button is hidden —
+ * never show customers a made-up name. Set to true once lookupPlayerName() calls a real API.
+ */
+export const PLAYER_NAME_CHECK = false;
+
+/**
  * Look up the in-game name for a Player ID.
- * NOW: demo name. BACKEND: GET /api/player-name?product=…&id=… → { name } | 404.
+ * NOW: not available (returns null). BACKEND: GET /api/player-name?product=…&id=… → { name } | 404.
  */
 export async function lookupPlayerName(productSlug: string, playerId: string): Promise<string | null> {
-  if (!/^\d{5,15}$/.test(playerId)) return null;
-  await new Promise((r) => setTimeout(r, 900));
-  const names = ["NepaliGamer", "HimalayanAce", "KTMSniper", "PokharaPro", "EverestKing"];
-  const n = [...playerId].reduce((a, c) => a + c.charCodeAt(0), 0);
-  return `${names[n % names.length]}${n % 100}`;
+  void productSlug;
+  void playerId;
+  return null;
 }

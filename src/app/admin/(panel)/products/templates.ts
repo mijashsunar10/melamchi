@@ -28,7 +28,7 @@ export const TYPE_DEFAULTS: Record<DeliveryType, { fields: OrderField[]; howTo: 
     fields: [playerIdField()],
     faq: topupFaq,
     deliveryTime: "Instant",
-    howTo: ["Enter your Player ID and tap “Check name”.", "Choose a package and pay.", "Open the game — your top-up is already there."],
+    howTo: ["Enter your Player ID (copy it from your game profile).", "Choose a package and pay.", "Open the game — your top-up is already there."],
   },
   CODE: {
     fields: [deliveryEmailField],

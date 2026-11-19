@@ -38,7 +38,7 @@ export const legalPages: LegalPage[] = [
         heading: "When we can't give a refund",
         paragraphs: ["Digital products are delivered instantly and can't be taken back, so we can't refund when:"],
         bullets: [
-          "The top-up was sent to the Player ID / account you entered, but the ID was wrong. Always use “Check name” before ordering.",
+          "The top-up was sent to the Player ID / account you entered, but the ID was wrong. Always double-check your ID before ordering.",
           "A code or key was delivered, works, and has been revealed or redeemed.",
           "A subscription was activated on the account you gave us.",
           "You changed your mind after delivery.",

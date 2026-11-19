@@ -182,7 +182,7 @@ All in **`src/lib/orders.ts`**:
 | `submitOrder(product, request)` | builds a WhatsApp message and returns its link | `POST /api/orders` → create order, return `{ orderId, paymentUrl }`; function returns `{ ok: true, orderId, redirectUrl: paymentUrl }` |
 | `newOrderRef()` | makes a ref like `TX-8K2F9Q`, added to the WhatsApp message and shown to the customer | replace with the real order ID from `POST /api/orders` |
 | `trackOrder(orderId, phone?)` | returns `{ found: false, reason: "offline" }` → `/track` asks on WhatsApp | `GET /api/orders/{orderId}?phone=…` → `{ found: true, order: OrderTracking }` (or `reason: "not-found"`). The `/track` page already renders the status timeline |
-| `lookupPlayerName(productSlug, playerId)` | returns a demo name | `GET /api/player-name?product=…&id=…` → `{ name }` or 404 (supplier API) |
+| `lookupPlayerName(productSlug, playerId)` | off (`PLAYER_NAME_CHECK = false` hides the button) — set true once wired | `GET /api/player-name?product=…&id=…` → `{ name }` or 404 (supplier API) |
 | `validateOrder(product, request)` | runs in the browser | **also run it on the server** before saving an order (same function, no changes) |
 | `priceOrder(product, planId, qty, deal?)` | runs in the browser; applies the deal discount to the deal's package | **always recalculate the price on the server** (with the active deal) — never trust the price from the browser |
 

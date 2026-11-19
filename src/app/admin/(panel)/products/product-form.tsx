@@ -586,7 +586,7 @@ function ProductFormInner({ initial, sections, canDelete, onCreated }: FormProps
                     <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3">
                       <Toggle checked={f.required} onChange={(v) => set({ required: v })} label={f.required ? "Must be filled in" : "Optional"} />
                       {deliveryType === "TOPUP" && (
-                        <Toggle checked={!!f.verifiable} onChange={(v) => set({ verifiable: v })} label="Show “Check name” button" help="For Player / User IDs" />
+                        <Toggle checked={!!f.verifiable} onChange={(v) => set({ verifiable: v })} label="Show “Check name” button" help="For Player / User IDs — stays hidden on the site until a real name lookup is connected" />
                       )}
                     </div>
                   </li>

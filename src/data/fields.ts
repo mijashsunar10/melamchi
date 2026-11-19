@@ -69,7 +69,7 @@ export const phoneField: OrderField = {
 
 export const topupFaq: FAQ[] = [
   { q: "How long does a top-up take?", a: "Most top-ups arrive within 10–60 seconds after payment. Rarely it can take up to 15 minutes." },
-  { q: "What if I enter the wrong Player ID?", a: "Use “Check name” before paying. Top-ups sent to a wrong ID can’t be reversed, so double-check it." },
+  { q: "What if I enter the wrong Player ID?", a: "Copy it from your in-game profile and double-check it before paying. Top-ups sent to a wrong ID can’t be reversed, so double-check it." },
   { q: "Is my account safe?", a: "Yes. We only need your Player ID — never your password." },
 ];
 

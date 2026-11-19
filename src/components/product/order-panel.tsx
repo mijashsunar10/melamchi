@@ -6,7 +6,7 @@ import { Field, Input, Select, Textarea } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
 import { discountPercent, formatNPR } from "@/lib/format";
-import { allowsQuantity, dealPrice, lookupPlayerName, MAX_QUANTITY, type OrderRequest, priceOrder, submitOrder, validateOrder } from "@/lib/orders";
+import { allowsQuantity, dealPrice, lookupPlayerName, MAX_QUANTITY, PLAYER_NAME_CHECK, type OrderRequest, priceOrder, submitOrder, validateOrder } from "@/lib/orders";
 import type { Deal, OrderField, Plan, Product } from "@/types/catalog";
 
 function defaultPlan(plans: Plan[]) {
@@ -177,7 +177,7 @@ export function OrderPanel({ product, deal = null }: { product: Product; deal?: 
                       value={values[f.name] ?? ""}
                       onChange={(e) => setValue(f.name, e.target.value)}
                     />
-                  ) : f.verifiable ? (
+                  ) : f.verifiable && PLAYER_NAME_CHECK ? (
                     <div className="flex flex-col gap-2">
                       <div className="flex gap-2">
                         <Input
@@ -212,6 +212,7 @@ export function OrderPanel({ product, deal = null }: { product: Product; deal?: 
                       aria-describedby={describedBy}
                       aria-invalid={invalid}
                       type={f.type === "email" ? "email" : f.type === "tel" ? "tel" : "text"}
+                      inputMode={f.verifiable ? "numeric" : undefined}
                       placeholder={f.placeholder}
                       value={values[f.name] ?? ""}
                       onChange={(e) => setValue(f.name, e.target.value)}

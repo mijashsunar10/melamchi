@@ -29,7 +29,7 @@ export const supportTopics: SupportTopic[] = [
     icon: "Gamepad2",
     faqs: [
       { q: "Where do I find my Player ID?", a: "Open the game, tap your avatar or profile — the numeric ID is usually shown under your name. For Mobile Legends you also need the Zone ID in brackets." },
-      { q: "I entered the wrong Player ID.", a: "Top-ups sent to a wrong ID can't be reversed by the game, so always use “Check name” before ordering. Contact us immediately and we'll try to help." },
+      { q: "I entered the wrong Player ID.", a: "Top-ups sent to a wrong ID can't be reversed by the game, so always double-check your ID before ordering. Contact us immediately and we'll try to help." },
       { q: "Do you need my game password?", a: "Never. We only need your Player ID." },
     ],
   },

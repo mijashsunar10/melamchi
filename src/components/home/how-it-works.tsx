@@ -3,7 +3,7 @@ import { SectionHeading } from "./section-heading";
 
 const steps = [
   { icon: MousePointerClick, title: "Pick your game", text: "Choose the UC, diamonds or pack you want." },
-  { icon: UserRoundPen, title: "Enter Player ID", text: "Tap “Check name” to be sure it’s you." },
+  { icon: UserRoundPen, title: "Enter Player ID", text: "Copy it from your game profile." },
   { icon: CreditCard, title: "Pay locally", text: "eSewa, Khalti, IME Pay or bank." },
   { icon: PackageCheck, title: "Game on", text: "Top-up lands in your account in seconds." },
 ];
