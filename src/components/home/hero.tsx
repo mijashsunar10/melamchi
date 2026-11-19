@@ -110,7 +110,7 @@ function HeroVisual({ stats, games }: { stats: SiteStats; games: Product[] }) {
       </div>
 
       {/* order card */}
-      <div className="absolute -bottom-[3%] left-1/2 z-30 w-[300px] -translate-x-1/2 rounded-2xl border border-border bg-white/95 p-4 text-brand-navy shadow-[0_24px_60px_-24px_rgba(16,24,64,0.35)] backdrop-blur-xl dark:border-white/15 dark:bg-brand-navy/75 dark:text-white dark:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.8)]">
+      <div className="absolute -bottom-[3%] left-1/2 z-30 w-[300px] max-w-[calc(100%-1rem)] -translate-x-1/2 rounded-2xl border border-border bg-white/95 p-4 text-brand-navy shadow-[0_24px_60px_-24px_rgba(16,24,64,0.35)] backdrop-blur-xl dark:border-white/15 dark:bg-brand-navy/75 dark:text-white dark:shadow-[0_24px_60px_-20px_rgba(0,0,0,0.8)]">
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-semibold tracking-[0.18em] text-muted-foreground uppercase dark:text-white/55">Order #TX-20931</span>
           <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-600 dark:bg-emerald-400/15 dark:text-emerald-300">
