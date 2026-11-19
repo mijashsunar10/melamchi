@@ -287,3 +287,9 @@ node scripts/perf.mjs http://localhost:3000            # page weight per page (r
 node scripts/nav-speed.mjs http://localhost:3000       # click-to-page switch time
 node scripts/screenshot.mjs http://localhost:3000/ out.png 1440 light   # screenshot + console errors
 ```
+
+## Email copies (temporary)
+
+`src/lib/notify.ts` emails a copy of every order, support request and reseller application to
+`NEXT_PUBLIC_ORDER_EMAIL` through FormSubmit, straight from the browser. When the backend sends
+these emails itself, remove the `emailCopy(...)` calls in `orders.ts`, `support.ts`, `reseller.ts` and delete `notify.ts`.

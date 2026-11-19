@@ -1,6 +1,7 @@
 // Business / reseller applications — the ONE place the reseller form submits to.
 // NOW: opens WhatsApp with the application. BACKEND: POST /api/reseller-applications → { applicationId }.
 
+import { emailCopy } from "@/lib/notify";
 import { whatsappLink } from "@/lib/site";
 
 export interface ResellerApplication {
@@ -46,5 +47,6 @@ export async function submitResellerApplication(a: ResellerApplication): Promise
     `• Interested in: ${a.interests.join(", ")}`,
     ...(a.message?.trim() ? ["", a.message.trim()] : []),
   ].join("\n");
+  emailCopy(`Reseller application — ${a.businessName.trim()}`, text);
   return { ok: true, redirectUrl: whatsappLink(text) };
 }

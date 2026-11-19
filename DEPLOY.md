@@ -14,6 +14,7 @@ NEXT_PUBLIC_SITE_URL=https://yourdomain.com
 NEXT_PUBLIC_WHATSAPP_NUMBER=9779800000000     # digits only, with 977
 NEXT_PUBLIC_SUPPORT_EMAIL=support@yourdomain.com
 NEXT_PUBLIC_SUPPORT_PHONE=+977 9800000000
+NEXT_PUBLIC_ORDER_EMAIL=orders@yourdomain.com  # gets an email copy of every order (click "Activate" in the first one)
 NEXT_PUBLIC_ADDRESS=Kathmandu, Nepal
 NEXT_PUBLIC_MAP_URL=https://maps.google.com/?q=...
 NEXT_PUBLIC_OFFICE_HOURS=Sun–Fri, 10:00 AM – 6:00 PM

@@ -1,6 +1,7 @@
 // Support requests — the ONE place the contact form submits to.
-// NOW: opens WhatsApp with the message. BACKEND: POST /api/support → { ticketId }.
+// NOW: opens WhatsApp with the message and emails a copy (src/lib/notify.ts). BACKEND: POST /api/support → { ticketId }.
 
+import { emailCopy } from "@/lib/notify";
 import { whatsappLink } from "@/lib/site";
 
 export interface SupportRequest {
@@ -35,5 +36,6 @@ export async function submitSupportRequest(req: SupportRequest): Promise<Support
     "",
     req.message.trim(),
   ].join("\n");
+  emailCopy(`Support request — ${req.topic} — ${req.name.trim()}`, text);
   return { ok: true, redirectUrl: whatsappLink(text) };
 }

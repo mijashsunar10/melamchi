@@ -6,6 +6,7 @@
 // server can run exactly the same checks.
 
 import { formatNPR } from "@/lib/format";
+import { emailCopy } from "@/lib/notify";
 import { whatsappLink } from "@/lib/site";
 import type { Deal, Plan, Product } from "@/types/catalog";
 
@@ -80,7 +81,7 @@ export function orderSummary(product: Product, req: OrderRequest, deal?: Deal | 
 
 /**
  * Submit an order.
- * NOW: builds a WhatsApp message.
+ * NOW: builds a WhatsApp message and emails a copy to the shop (src/lib/notify.ts).
  * BACKEND: POST /api/orders with `req` → { orderId, paymentUrl } and return
  *          { ok: true, orderId, redirectUrl: paymentUrl }.
  */
@@ -88,7 +89,10 @@ export async function submitOrder(product: Product, req: OrderRequest, deal?: De
   const errors = validateOrder(product, req);
   if (Object.keys(errors).length) return { ok: false, error: Object.values(errors)[0] };
   const orderId = newOrderRef();
-  return { ok: true, orderId, redirectUrl: whatsappLink(orderSummary(product, req, deal, orderId)) };
+  const summary = orderSummary(product, req, deal, orderId);
+  const email = product.fields.find((f) => f.type === "email" && req.details[f.name]?.trim());
+  emailCopy(`New order ${orderId} — ${product.name}`, summary, email && req.details[email.name].trim());
+  return { ok: true, orderId, redirectUrl: whatsappLink(summary) };
 }
 
 /** Short, readable order reference, e.g. "TX-8K2F9Q" (the backend will issue real order IDs). */
