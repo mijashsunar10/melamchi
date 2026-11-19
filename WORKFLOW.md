@@ -216,8 +216,8 @@ public/brand/ public/products/ public/payments/
 - [x] **10.1** Blog list + post; About; Privacy / Terms / Refund / KYC
 - [ ] **10.2** EN/NP translations
 - [ ] **10.3** PWA (manifest, icons, install prompt)
-- [ ] **10.4** SEO: metadata per page, OG images, sitemap, robots, JSON-LD (Organization, Product)
-- [ ] **10.5** Loading, error, and 404 pages (branded)
+- [ ] **10.4** SEO: metadata per page, OG images, sitemap, robots, JSON-LD (Organization, Product) *(sitemap + robots done)*
+- [x] **10.5** Loading, error, and 404 pages (branded)
 - [ ] **10.6** Accessibility + Lighthouse 90+, full responsive and dark-mode QA
 - [x] **10.7** Backend hand-off doc (every data model + API the UI needs)
 
@@ -290,6 +290,8 @@ Stack: Next.js server (server actions + route handlers) · PostgreSQL · Drizzle
   - [x] **B4.3** Admin: products — list with search/filters, one-click show/hide, copy, delete (admin); editor for details, packages & prices, order questions (presets), how-it-works steps, Q&A, colour/badges; sticky save bar with unsaved-changes warning; store updates immediately
   - [x] **B4.4** Product picture upload (resized to WebP, stored in the database, served at /media)
 - [x] **B5** Deals, reviews, content (home/section FAQ, help center, blog, legal pages) and Settings (contact, social, stats, payment methods) — all in the database and edited in the admin panel
-- [ ] **B6** Orders (on hold — ordering & payment stay on WhatsApp for now) — save orders from the site, order list/detail, status updates, tracking API
+- [x] **B6** Orders — QR payment + screenshot, saved orders, admin orders page (status, note, delete finished), customer list + customer dashboard view, `/track` reads real orders
 - [ ] **B7** Payments — eSewa / Khalti / Fonepay
-- [ ] **B8** Customer accounts (on hold) · deployment on Node hosting
+- [x] **B8a** Customer accounts — register / login / `/account` dashboard
+- [ ] **B8b** Forgot password, order-status emails to customers
+- [ ] **B9** Deployment on Node hosting (login, orders and admin don't work on the static cPanel build)

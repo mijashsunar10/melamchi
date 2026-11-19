@@ -128,9 +128,13 @@ export type TrackResult =
  * NOW: no order database → returns "offline". BACKEND: GET /api/orders/{orderId}?phone=… → OrderTracking | 404.
  */
 export async function trackOrder(orderId: string, phone?: string): Promise<TrackResult> {
-  void orderId;
   void phone;
-  return { found: false, reason: "offline" };
+  try {
+    const { trackOrderAction } = await import("@/server/shop/track");
+    return await trackOrderAction(orderId);
+  } catch {
+    return { found: false, reason: "offline" }; // static site / server down → ask on WhatsApp
+  }
 }
 
 /**

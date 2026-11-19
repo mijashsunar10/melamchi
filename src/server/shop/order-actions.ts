@@ -35,7 +35,8 @@ export async function placeOrderAction(req: OrderRequest, paymentRef: string, pr
   if (Object.keys(errors).length) return { ok: false, error: Object.values(errors)[0] };
 
   const deal = await getProductDeal(product.slug);
-  const { plan, quantity, unitPrice, total } = priceOrder(product, clean.planId, clean.quantity, deal);
+  const { plan, quantity, unitPrice, total, isQuote } = priceOrder(product, clean.planId, clean.quantity, deal);
+  if (isQuote || total <= 0) return { ok: false, error: "This package has no fixed price. Please ask for a quote on WhatsApp." };
   let shot;
   try {
     const { default: sharp } = await import("sharp");
