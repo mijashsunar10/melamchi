@@ -9,9 +9,7 @@ import { getCurrentUser, requireRole, requireStaff } from "@/server/auth/dal";
 import { db, schema } from "@/server/db";
 import { esewaEnabled, esewaForm } from "@/server/shop/esewa";
 
-export type PlaceOrderResult = { ok: true; orderId: string } | { ok: false; error: string; needLogin?: boolean };
-
-/** Is someone signed in? (the product page checks before showing the QR) */
+/** Is someone signed in, and is eSewa on? (the product page checks before showing checkout) */
 export async function whoAmIAction(): Promise<{ signedIn: boolean; esewa: boolean }> {
   return { signedIn: !!(await getCurrentUser()), esewa: esewaEnabled() };
 }
@@ -61,44 +59,6 @@ export async function startEsewaAction(req: OrderRequest): Promise<StartEsewaRes
   const h = await headers();
   const origin = `${h.get("x-forwarded-proto") ?? "http"}://${h.get("x-forwarded-host") ?? h.get("host")}`;
   return { ok: true, ...esewaForm(id, o.total, origin) };
-}
-
-/** Customer paid by QR → save the order as "pending" so it shows up for the admin. Price is re-calculated here. */
-export async function placeOrderAction(req: OrderRequest, paymentRef: string, proof: FormData): Promise<PlaceOrderResult> {
-  const user = await getCurrentUser();
-  if (!user) return { ok: false, error: "Please log in first.", needLogin: true };
-
-  const file = proof.get("screenshot");
-  if (!(file instanceof File) || file.size === 0) return { ok: false, error: "Please upload your payment screenshot." };
-  if (file.size > 5 * 1024 * 1024) return { ok: false, error: "Screenshot is too big (max 5 MB)." };
-
-  const o = await prepareOrder(req);
-  if ("error" in o) return { ok: false, error: o.error };
-  let shot;
-  try {
-    const { default: sharp } = await import("sharp");
-    shot = await sharp(Buffer.from(await file.arrayBuffer()), { limitInputPixels: 50_000_000 })
-      .rotate()
-      .resize({ width: 1400, height: 1400, fit: "inside", withoutEnlargement: true })
-      .webp({ quality: 80 })
-      .toBuffer({ resolveWithObject: true });
-  } catch {
-    return { ok: false, error: "That file is not a picture. Upload a screenshot (JPG / PNG)." };
-  }
-  const [img] = await db
-    .insert(schema.media)
-    .values({ data: shot.data, mime: "image/webp", width: shot.info.width, height: shot.info.height, size: shot.info.size })
-    .returning({ id: schema.media.id });
-
-  const id = newOrderRef();
-  await db.insert(schema.orders).values({
-    paymentProofId: img.id,
-    id,
-    userId: user.id,
-    ...o.row,
-    paymentRef: paymentRef?.trim().slice(0, 100) || null,
-  });
-  return { ok: true, orderId: id };
 }
 
 const STATUSES = ["pending", "processing", "delivered", "failed", "refunded"] as const;

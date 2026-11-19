@@ -79,7 +79,7 @@ export function OrderPanel({ product, deal = null }: { product: Product; deal?: 
     }
     setSubmitting(true);
     if (!isQuote) {
-      // must be logged in to buy → then show the payment QR
+      // must be logged in to buy → then show checkout (eSewa)
       const { signedIn, esewa: esewaOn } = await whoAmIAction();
       setSubmitting(false);
       if (!signedIn) {
@@ -321,7 +321,18 @@ export function OrderPanel({ product, deal = null }: { product: Product; deal?: 
         </div>
       </div>
     </form>
-    {payOpen && <PayDialog open={payOpen} onClose={() => setPayOpen(false)} amount={total} request={request()} esewa={esewa} />}
+    {payOpen && (
+        <PayDialog
+          open={payOpen}
+          onClose={() => setPayOpen(false)}
+          amount={total}
+          request={request()}
+          esewa={esewa}
+          productName={product.name}
+          planName={plan.name}
+          lines={product.fields.filter((f) => values[f.name]?.trim()).map((f) => [f.label, values[f.name].trim()])}
+        />
+      )}
     </>
   );
 }

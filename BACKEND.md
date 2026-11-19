@@ -315,5 +315,5 @@ To change the QR: replace `public/qr/pay-qr.jpeg`. Quote-only packages (price 0)
   `unpaid` (hidden everywhere) → form posts to eSewa → `src/app/pay/esewa/success/route.ts` checks the signature **and**
   eSewa's status API (`src/server/shop/esewa.ts`) → order becomes `pending` (admin "New (paid)" tab, payment ref "eSewa …")
   → customer lands on `/account?esewa=paid`. Failure/cancel → `/account?esewa=failed`.
-- QR + screenshot stays as the backup option. `src/app/pay` is server-only (skipped in the cPanel static build).
+- QR + screenshot checkout removed (old orders keep their screenshots in admin). `src/app/pay` is server-only (skipped in the cPanel static build).
 - Next: auto top-up via supplier API after payment (waiting for supplier docs/keys).
