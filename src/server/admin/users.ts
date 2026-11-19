@@ -1,5 +1,5 @@
 import "server-only";
-import { and, count, desc, eq, gt, inArray, isNotNull } from "drizzle-orm";
+import { and, count, desc, eq, gt, inArray, isNotNull, sql } from "drizzle-orm";
 import { db, schema } from "@/server/db";
 
 const { users, sessions } = schema;
@@ -64,4 +64,49 @@ export async function countUserSessions(userId: string) {
     .from(sessions)
     .where(and(eq(sessions.userId, userId), gt(sessions.expiresAt, new Date())));
   return row.n;
+}
+
+export type CustomerRow = {
+  id: string;
+  name: string;
+  email: string;
+  isActive: boolean;
+  lastLoginAt: Date | null;
+  createdAt: Date;
+  orders: number;
+  spent: number;
+  online: boolean;
+};
+
+/** Customers (people who registered on the website), most recent sign-in first. */
+export async function listCustomers(): Promise<CustomerRow[]> {
+  const { orders } = schema;
+  const rows = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      isActive: users.isActive,
+      lastLoginAt: users.lastLoginAt,
+      createdAt: users.createdAt,
+      orders: sql<number>`(select count(*)::int from ${orders} where ${orders.userId} = ${users.id})`,
+      spent: sql<number>`(select coalesce(sum(${orders.total}), 0)::int from ${orders} where ${orders.userId} = ${users.id} and ${orders.status} = 'delivered')`,
+      online: sql<boolean>`exists(select 1 from ${sessions} where ${sessions.userId} = ${users.id} and ${sessions.expiresAt} > now())`,
+    })
+    .from(users)
+    .where(eq(users.role, "customer"))
+    .orderBy(sql`${users.lastLoginAt} desc nulls last`, desc(users.createdAt))
+    .limit(500);
+  return rows;
+}
+
+/** One customer (null if the id is not a customer). */
+export async function getCustomer(id: string) {
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
+  const [u] = await db
+    .select({ id: users.id, name: users.name, email: users.email, isActive: users.isActive, lastLoginAt: users.lastLoginAt, createdAt: users.createdAt })
+    .from(users)
+    .where(and(eq(users.id, id), eq(users.role, "customer")))
+    .limit(1);
+  return u ?? null;
 }
