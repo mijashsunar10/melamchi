@@ -4,7 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getProduct, getProductDeal } from "@/lib/catalog";
 import { newOrderRef, type OrderRequest, priceOrder, validateOrder } from "@/lib/orders";
-import { getCurrentUser, requireStaff } from "@/server/auth/dal";
+import { getCurrentUser, requireRole, requireStaff } from "@/server/auth/dal";
 import { db, schema } from "@/server/db";
 
 export type PlaceOrderResult = { ok: true; orderId: string } | { ok: false; error: string; needLogin?: boolean };
@@ -90,4 +90,16 @@ export async function markOrderSeenAction(orderId: string) {
     .update(schema.orders)
     .set({ seenByAdmin: true })
     .where(and(eq(schema.orders.id, orderId), eq(schema.orders.seenByAdmin, false)));
+}
+
+/** Admin: delete a finished order (delivered / failed / refunded) and its payment screenshot. */
+export async function deleteOrderAction(orderId: string): Promise<{ ok: boolean; error?: string }> {
+  await requireRole(["admin"]);
+  const [o] = await db.select().from(schema.orders).where(eq(schema.orders.id, orderId)).limit(1);
+  if (!o) return { ok: false, error: "Order not found." };
+  if (!["delivered", "failed", "refunded"].includes(o.status)) return { ok: false, error: "Only finished orders can be deleted." };
+  await db.delete(schema.orders).where(eq(schema.orders.id, orderId));
+  if (o.paymentProofId) await db.delete(schema.media).where(eq(schema.media.id, o.paymentProofId));
+  revalidatePath("/admin/orders");
+  return { ok: true };
 }

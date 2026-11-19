@@ -1,9 +1,9 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { setOrderStatusAction } from "@/server/shop/order-actions";
+import { deleteOrderAction, setOrderStatusAction } from "@/server/shop/order-actions";
 
 type Status = "pending" | "processing" | "delivered" | "failed" | "refunded";
 
@@ -47,6 +47,22 @@ export function OrderActions({ id, status, note }: { id: string; status: Status;
             <option key={s}>{s}</option>
           ))}
         </select>
+        {(value === "delivered" || value === "failed" || value === "refunded") && (
+          <button
+            disabled={pending}
+            onClick={() => {
+              if (!confirm(`Delete order ${id}? This cannot be undone.`)) return;
+              start(async () => {
+                const r = await deleteOrderAction(id);
+                if (!r.ok) alert(r.error);
+                router.refresh();
+              });
+            }}
+            className="ml-auto inline-flex items-center gap-1 rounded-lg border border-danger/40 px-3 py-1.5 text-xs font-bold text-danger hover:bg-danger/10 disabled:opacity-60"
+          >
+            <Trash2 className="size-3.5" /> Delete
+          </button>
+        )}
         {pending && <Loader2 className="size-4 animate-spin" />}
       </div>
     </div>
