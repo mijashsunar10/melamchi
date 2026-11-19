@@ -2,8 +2,9 @@ import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { db, schema } from "@/server/db";
 import { esewaPaid, readEsewaResponse } from "@/server/shop/esewa";
+import { autoTopup } from "@/server/shop/topup";
 
-// eSewa sends the customer here after paying (?data=…). We check with eSewa itself, then mark the order paid.
+// eSewa sends the customer here after paying (?data=…). We check with eSewa itself, then mark the order paid (processing) and start the auto top-up.
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const done = (q: string) => NextResponse.redirect(new URL(`/account?esewa=${q}`, url));
@@ -16,7 +17,8 @@ export async function GET(req: Request) {
   if (!check.paid) return done("failed");
   await db
     .update(schema.orders)
-    .set({ status: "pending", seenByAdmin: false, paymentRef: `eSewa ${check.refId ?? res.transactionCode}`, updatedAt: new Date() })
+    .set({ status: "processing", seenByAdmin: false, paymentRef: `eSewa ${check.refId ?? res.transactionCode}`, updatedAt: new Date() })
     .where(and(eq(schema.orders.id, o.id), eq(schema.orders.status, "unpaid")));
+  await autoTopup(o.id); // paid → processing → delivered (once the supplier is connected)
   return done("paid");
 }

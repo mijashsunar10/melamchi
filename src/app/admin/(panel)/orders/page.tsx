@@ -14,8 +14,7 @@ import { ProofImage } from "./proof-image";
 export const metadata = { title: "Orders" };
 
 const TABS: { key?: OrderRow["status"]; label: string }[] = [
-  { key: "pending", label: "New (paid)" },
-  { key: "processing", label: "Processing" },
+  { key: "processing", label: "Paid · processing" },
   { key: "delivered", label: "Delivered" },
   { key: "failed", label: "Failed" },
   { label: "All" },
@@ -26,7 +25,7 @@ const fmt = (d: Date) => d.toLocaleString("en-GB", { day: "numeric", month: "sho
 async function Orders({ searchParams }: { searchParams: PageProps<"/admin/orders">["searchParams"] }) {
   await requireStaff();
   const sp = await searchParams;
-  const status = TABS.find((t) => t.key === sp.status)?.key ?? (sp.status === "all" ? undefined : "pending");
+  const status = TABS.find((t) => t.key === sp.status)?.key ?? (sp.status === "all" ? undefined : "processing");
   const rows = await listAllOrders(status);
 
   return (
@@ -50,11 +49,11 @@ async function Orders({ searchParams }: { searchParams: PageProps<"/admin/orders
       ) : (
         <ul className="flex flex-col gap-3">
           {rows.map(({ order: o, customer }) => (
-            <li key={o.id} className={cn("rounded-2xl border bg-surface p-4 shadow-card sm:p-5", o.status === "pending" ? "border-amber-500/60" : "border-border")}>
+            <li key={o.id} className={cn("rounded-2xl border bg-surface p-4 shadow-card sm:p-5", !o.seenByAdmin ? "border-amber-500/60" : "border-border")}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="flex items-center gap-2 font-bold">
-                    {o.status === "pending" && <Bell className="size-4 text-amber-500" />}
+                    {!o.seenByAdmin && <Bell className="size-4 text-amber-500" />}
                     {o.productName} · {o.planName}
                     {o.quantity > 1 && ` × ${o.quantity}`}
                   </p>

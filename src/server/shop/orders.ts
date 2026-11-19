@@ -19,6 +19,10 @@ export async function listAllOrders(status?: OrderRow["status"]) {
 }
 
 export async function countPendingOrders() {
-  const [r] = await db.select({ n: count() }).from(schema.orders).where(eq(schema.orders.status, "pending"));
+  // new paid orders the admin hasn't opened yet
+  const [r] = await db
+    .select({ n: count() })
+    .from(schema.orders)
+    .where(and(eq(schema.orders.seenByAdmin, false), ne(schema.orders.status, "unpaid")));
   return r?.n ?? 0;
 }
