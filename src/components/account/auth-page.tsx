@@ -9,7 +9,7 @@ async function Inner({ mode, searchParams }: { mode: "login" | "register"; searc
   const [sp, user] = await Promise.all([searchParams, getCurrentUser()]);
   const next = clean(sp.next);
   if (user) redirect(next);
-  return <AuthForm mode={mode} next={next} />;
+  return <AuthForm mode={mode} next={next} error={typeof sp.error === "string" ? sp.error : undefined} />;
 }
 
 export function AuthPage({ mode, searchParams }: { mode: "login" | "register"; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
