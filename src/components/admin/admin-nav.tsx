@@ -36,7 +36,7 @@ const groups: { title: string; items: NavItem[] }[] = [
   {
     title: "Store",
     items: [
-      { href: "/admin/orders", label: "Orders", icon: ShoppingCart, soon: "B6" },
+      { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
       { href: "/admin/products", label: "Products", icon: Package },
       { href: "/admin/categories", label: "Sections & categories", icon: FolderTree, adminOnly: true },
       { href: "/admin/deals", label: "Deals", icon: BadgePercent },

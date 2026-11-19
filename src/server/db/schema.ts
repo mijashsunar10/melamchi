@@ -237,3 +237,33 @@ export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
 export type UserRole = (typeof userRole.enumValues)[number];
+
+// ---------------------------------------------------------------- customer orders
+
+/** pending = customer says they paid by QR, waiting for admin · delivered/failed/refunded = done */
+export const orderStatus = pgEnum("order_status", ["pending", "processing", "delivered", "failed", "refunded"]);
+
+export const orders = pgTable(
+  "orders",
+  {
+    id: text("id").primaryKey(), // TX-XXXXXX
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    productSlug: text("product_slug").notNull(),
+    productName: text("product_name").notNull(),
+    planId: text("plan_id").notNull(),
+    planName: text("plan_name").notNull(),
+    quantity: integer("quantity").notNull().default(1),
+    details: jsonb("details").$type<Record<string, string>>().notNull().default({}),
+    unitPrice: integer("unit_price").notNull(),
+    total: integer("total").notNull(),
+    paymentRef: text("payment_ref"),
+    status: orderStatus("status").notNull().default("pending"),
+    adminNote: text("admin_note"),
+    seenByAdmin: boolean("seen_by_admin").notNull().default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("orders_user_id_idx").on(t.userId), index("orders_status_idx").on(t.status)],
+);

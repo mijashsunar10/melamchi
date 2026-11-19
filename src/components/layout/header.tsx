@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { getDomains } from "@/lib/catalog";
 import { getContact } from "@/lib/content";
+import { AccountButtons, GuestButtons } from "./account-buttons";
 import { Logo } from "./logo";
 import { MobileMenu } from "./mobile-menu";
 import { NavLinks, NavLinksView } from "./nav-links";
@@ -68,14 +69,9 @@ export async function Header() {
               <Search className="size-5" />
             </Link>
             <ThemeToggle className="hidden border-transparent bg-transparent sm:inline-flex" />
-            <a
-              href={contact.whatsapp}
-              className="hidden items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-semibold whitespace-nowrap text-primary-foreground transition-colors hover:bg-primary-hover sm:inline-flex xl:text-[15px]"
-            >
-              <MessageCircle className="size-4" />
-              <span className="lg:hidden xl:inline">Contact us</span>
-              <span className="hidden lg:inline xl:hidden">Contact</span>
-            </a>
+            <Suspense fallback={<GuestButtons />}>
+              <AccountButtons />
+            </Suspense>
             {/* phones & tablets: menu button on the right */}
             <MobileMenu domains={domains} />
           </div>

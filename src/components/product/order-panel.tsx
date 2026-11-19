@@ -1,7 +1,10 @@
 "use client";
 
-import { BadgeCheck, Loader2, Minus, Plus, Search, ShieldCheck } from "lucide-react";
+import { BadgeCheck, Loader2, Minus, Plus, Search, ShieldCheck, ShoppingCart } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
+import { PayDialog } from "@/components/product/pay-dialog";
+import { whoAmIAction } from "@/server/shop/order-actions";
 import { Field, Input, Select, Textarea } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
@@ -25,6 +28,7 @@ function StepTitle({ n, children }: { n: number; children: React.ReactNode }) {
 /** Product order form. All order logic lives in src/lib/orders.ts (backend swap point). */
 export function OrderPanel({ product, deal = null }: { product: Product; deal?: Deal | null }) {
   const toast = useToast();
+  const router = useRouter();
   const formId = useId();
   // a deal pre-selects its package
   const [planId, setPlanId] = useState(() => deal?.planId ?? defaultPlan(product.plans));
@@ -34,6 +38,7 @@ export function OrderPanel({ product, deal = null }: { product: Product; deal?: 
   const [checking, setChecking] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [playerName, setPlayerName] = useState<string | null>(null);
+  const [payOpen, setPayOpen] = useState(false);
 
   const { plan, unitPrice, onDeal, total, isQuote } = priceOrder(product, planId, qty, deal);
   const allowQty = allowsQuantity(product);
@@ -72,6 +77,18 @@ export function OrderPanel({ product, deal = null }: { product: Product; deal?: 
       return;
     }
     setSubmitting(true);
+    if (!isQuote) {
+      // must be logged in to buy → then show the payment QR
+      const { signedIn } = await whoAmIAction();
+      setSubmitting(false);
+      if (!signedIn) {
+        toast({ type: "error", title: "Please log in or register to buy" });
+        router.push(`/login?next=${encodeURIComponent(window.location.pathname)}`);
+        return;
+      }
+      setPayOpen(true);
+      return;
+    }
     const result = await submitOrder(product, request(), deal);
     setSubmitting(false);
     if (!result.ok) {
@@ -88,6 +105,7 @@ export function OrderPanel({ product, deal = null }: { product: Product; deal?: 
   }
 
   return (
+    <>
     <form id={formId} onSubmit={submit} noValidate className="flex flex-col gap-7">
       {/* 1. Package */}
       <section className="flex flex-col gap-4">
@@ -278,15 +296,13 @@ export function OrderPanel({ product, deal = null }: { product: Product; deal?: 
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex h-13 items-center justify-center gap-2.5 rounded-xl bg-[#25D366] px-6 text-base font-bold text-white shadow-[0_12px_30px_-10px_rgba(37,211,102,0.7)] transition-all hover:-translate-y-0.5 hover:bg-[#1fb857]"
+          className="inline-flex h-13 items-center justify-center gap-2.5 rounded-xl bg-accent px-6 text-base font-bold text-white shadow-card-hover transition-all hover:-translate-y-0.5 hover:opacity-95 disabled:opacity-60"
         >
-          <svg viewBox="0 0 24 24" className="size-5 fill-white" aria-hidden>
-            <path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4ZM12 2a10 10 0 0 0-8.6 15l-1.4 5 5.1-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2Z" />
-          </svg>
-          {isQuote ? "Request a quote on WhatsApp" : "Order on WhatsApp"}
+          {submitting ? <Loader2 className="size-5 animate-spin" /> : <ShoppingCart className="size-5" />}
+          {isQuote ? "Request a quote on WhatsApp" : "Buy now"}
         </button>
         <p className="flex items-center justify-center gap-2 text-center text-xs text-muted-foreground">
-          <ShieldCheck className="size-4 text-success" /> Pay with eSewa, Khalti, IME Pay or bank after we confirm
+          <ShieldCheck className="size-4 text-success" /> Login required · pay by QR (eSewa, Khalti, IME Pay, bank)
         </p>
       </section>
 
@@ -297,11 +313,13 @@ export function OrderPanel({ product, deal = null }: { product: Product; deal?: 
             <p className="truncate text-xs text-muted-foreground">{plan.name}</p>
             <p className="font-display text-lg font-black text-accent">{isQuote ? "Quote" : formatNPR(total)}</p>
           </div>
-          <button type="submit" form={formId} className="h-11 shrink-0 rounded-xl bg-[#25D366] px-5 text-sm font-bold text-white">
-            Order now
+          <button type="submit" form={formId} className="h-11 shrink-0 rounded-xl bg-accent px-5 text-sm font-bold text-white">
+            Buy now
           </button>
         </div>
       </div>
     </form>
+    {payOpen && <PayDialog open={payOpen} onClose={() => setPayOpen(false)} amount={total} request={request()} />}
+    </>
   );
 }

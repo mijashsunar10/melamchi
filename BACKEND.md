@@ -293,3 +293,16 @@ node scripts/screenshot.mjs http://localhost:3000/ out.png 1440 light   # screen
 `src/lib/notify.ts` emails a copy of every order, support request and reseller application to
 `NEXT_PUBLIC_ORDER_EMAIL` through FormSubmit, straight from the browser. When the backend sends
 these emails itself, remove the `emailCopy(...)` calls in `orders.ts`, `support.ts`, `reseller.ts` and delete `notify.ts`.
+
+## Customer accounts & QR orders
+
+| Part | Where |
+|---|---|
+| Register / log in (customers) | `/register`, `/login` → `src/server/auth/customer-actions.ts` (same `users` + `sessions` tables, role `customer`) |
+| Header Login / Register / My account | `src/components/layout/account-buttons.tsx` |
+| User dashboard (my orders, history, totals, log out) | `/account` → `src/app/(site)/account/page.tsx` |
+| Orders table | `orders` in `schema.ts` (status `pending → processing → delivered / failed / refunded`) |
+| Buy flow | product page **Buy now** → must be logged in → QR popup (`src/components/product/pay-dialog.tsx`, picture `public/qr/pay-qr.jpeg`) → "I have paid" → `placeOrderAction()` saves the order (price re-calculated on the server) |
+| Admin | `/admin/orders` (tabs, auto-refresh 20 s, Delivered / Processing / Failed + note to customer); yellow "new orders" bell on every admin page |
+
+To change the QR: replace `public/qr/pay-qr.jpeg`. Quote-only packages (price 0) still go to WhatsApp.
