@@ -259,6 +259,8 @@ export const orders = pgTable(
     unitPrice: integer("unit_price").notNull(),
     total: integer("total").notNull(),
     paymentRef: text("payment_ref"),
+    /** payment screenshot uploaded by the customer (media.id) — staff-only at /admin/payment-proof/<id> */
+    paymentProofId: uuid("payment_proof_id"),
     status: orderStatus("status").notNull().default("pending"),
     adminNote: text("admin_note"),
     seenByAdmin: boolean("seen_by_admin").notNull().default(false),

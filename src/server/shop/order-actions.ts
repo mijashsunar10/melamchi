@@ -15,9 +15,13 @@ export async function whoAmIAction(): Promise<{ signedIn: boolean }> {
 }
 
 /** Customer paid by QR → save the order as "pending" so it shows up for the admin. Price is re-calculated here. */
-export async function placeOrderAction(req: OrderRequest, paymentRef?: string): Promise<PlaceOrderResult> {
+export async function placeOrderAction(req: OrderRequest, paymentRef: string, proof: FormData): Promise<PlaceOrderResult> {
   const user = await getCurrentUser();
   if (!user) return { ok: false, error: "Please log in first.", needLogin: true };
+
+  const file = proof.get("screenshot");
+  if (!(file instanceof File) || file.size === 0) return { ok: false, error: "Please upload your payment screenshot." };
+  if (file.size > 5 * 1024 * 1024) return { ok: false, error: "Screenshot is too big (max 5 MB)." };
 
   const product = await getProduct(String(req.productSlug));
   if (!product) return { ok: false, error: "Product not found." };
@@ -32,8 +36,25 @@ export async function placeOrderAction(req: OrderRequest, paymentRef?: string): 
 
   const deal = await getProductDeal(product.slug);
   const { plan, quantity, unitPrice, total } = priceOrder(product, clean.planId, clean.quantity, deal);
+  let shot;
+  try {
+    const { default: sharp } = await import("sharp");
+    shot = await sharp(Buffer.from(await file.arrayBuffer()), { limitInputPixels: 50_000_000 })
+      .rotate()
+      .resize({ width: 1400, height: 1400, fit: "inside", withoutEnlargement: true })
+      .webp({ quality: 80 })
+      .toBuffer({ resolveWithObject: true });
+  } catch {
+    return { ok: false, error: "That file is not a picture. Upload a screenshot (JPG / PNG)." };
+  }
+  const [img] = await db
+    .insert(schema.media)
+    .values({ data: shot.data, mime: "image/webp", width: shot.info.width, height: shot.info.height, size: shot.info.size })
+    .returning({ id: schema.media.id });
+
   const id = newOrderRef();
   await db.insert(schema.orders).values({
+    paymentProofId: img.id,
     id,
     userId: user.id,
     productSlug: product.slug,

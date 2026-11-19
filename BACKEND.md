@@ -302,7 +302,7 @@ these emails itself, remove the `emailCopy(...)` calls in `orders.ts`, `support.
 | Header Login / Register / My account | `src/components/layout/account-buttons.tsx` |
 | User dashboard (my orders, history, totals, log out) | `/account` → `src/app/(site)/account/page.tsx` |
 | Orders table | `orders` in `schema.ts` (status `pending → processing → delivered / failed / refunded`) |
-| Buy flow | product page **Buy now** → must be logged in → QR popup (`src/components/product/pay-dialog.tsx`, picture `public/qr/pay-qr.jpeg`) → "I have paid" → `placeOrderAction()` saves the order (price re-calculated on the server) |
+| Buy flow | product page **Buy now** → must be logged in → QR popup + required payment screenshot (stored in `media`, `orders.payment_proof_id`, staff-only at `/admin/payment-proof/<id>`) (`src/components/product/pay-dialog.tsx`, picture `public/qr/pay-qr.jpeg`) → "I have paid" → `placeOrderAction()` saves the order (price re-calculated on the server) |
 | Admin | `/admin/orders` (tabs, auto-refresh 20 s, Delivered / Processing / Failed + note to customer); yellow "new orders" bell on every admin page |
 
 To change the QR: replace `public/qr/pay-qr.jpeg`. Quote-only packages (price 0) still go to WhatsApp.

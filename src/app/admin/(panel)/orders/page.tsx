@@ -68,6 +68,16 @@ async function Orders({ searchParams }: { searchParams: PageProps<"/admin/orders
                           {k}: <strong>{v}</strong>
                         </span>
                       ))}
+                    {o.paymentProofId && (
+                      <a
+                        href={`/admin/payment-proof/${o.paymentProofId}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-lg bg-primary/10 px-2.5 py-1 font-semibold text-primary hover:underline"
+                      >
+                        View payment screenshot ↗
+                      </a>
+                    )}
                     {o.paymentRef && <span className="rounded-lg bg-amber-500/10 px-2.5 py-1">Payment ref: <strong>{o.paymentRef}</strong></span>}
                   </div>
                 </div>
@@ -76,6 +86,12 @@ async function Orders({ searchParams }: { searchParams: PageProps<"/admin/orders
                   <OrderStatusBadge status={o.status} />
                 </div>
               </div>
+              {o.paymentProofId && (
+                <a href={`/admin/payment-proof/${o.paymentProofId}`} target="_blank" rel="noreferrer" className="mt-3 block w-fit">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- private, staff-only image */}
+                  <img src={`/admin/payment-proof/${o.paymentProofId}`} alt="Payment screenshot" className="max-h-56 rounded-xl border border-border" loading="lazy" />
+                </a>
+              )}
               <div className="mt-3 border-t border-border pt-3">
                 <OrderActions id={o.id} status={o.status} note={o.adminNote} />
               </div>

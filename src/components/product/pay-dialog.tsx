@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Download, Hourglass, Loader2, QrCode, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Download, Hourglass, ImageUp, Loader2, QrCode, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -18,6 +18,7 @@ const TIME_LIMIT = 10 * 60; // seconds
 export function PayDialog({ open, onClose, amount, request }: { open: boolean; onClose: () => void; amount: number; request: OrderRequest }) {
   const [left, setLeft] = useState(TIME_LIMIT);
   const [ref, setRef] = useState("");
+  const [shot, setShot] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [orderId, setOrderId] = useState<string | null>(null);
@@ -30,9 +31,12 @@ export function PayDialog({ open, onClose, amount, request }: { open: boolean; o
   }, [open]);
 
   async function paid() {
+    if (!shot) return setError("Please upload your payment screenshot.");
     setBusy(true);
     setError("");
-    const r = await placeOrderAction(request, ref);
+    const fd = new FormData();
+    fd.append("screenshot", shot);
+    const r = await placeOrderAction(request, ref, fd);
     setBusy(false);
     if (r.ok) setOrderId(r.orderId);
     else if (r.needLogin) router.push(`/login?next=${encodeURIComponent(window.location.pathname)}`);
@@ -80,6 +84,22 @@ export function PayDialog({ open, onClose, amount, request }: { open: boolean; o
               <p className="text-sm font-semibold text-danger">Time is up. Close and press Buy Now again.</p>
             ) : (
               <>
+                <label className="flex w-full cursor-pointer flex-col items-center gap-1 rounded-xl border-2 border-dashed border-primary/40 bg-primary/5 px-4 py-4 text-sm hover:border-primary">
+                  <ImageUp className="size-6 text-primary" />
+                  <span className="font-semibold">{shot ? shot.name : "Upload payment screenshot *"}</span>
+                  <span className="text-xs text-muted-foreground">{shot ? "Tap to change" : "JPG or PNG, max 5 MB"}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0] ?? null;
+                      if (f && f.size > 5 * 1024 * 1024) return setError("Screenshot is too big (max 5 MB).");
+                      setError("");
+                      setShot(f);
+                    }}
+                  />
+                </label>
                 <Input
                   value={ref}
                   onChange={(e) => setRef(e.target.value)}
@@ -96,7 +116,7 @@ export function PayDialog({ open, onClose, amount, request }: { open: boolean; o
                   {busy ? <Loader2 className="size-5 animate-spin" /> : <ShieldCheck className="size-5" />}
                   I have paid
                 </button>
-                <p className="text-xs text-muted-foreground">Pay exactly {formatNPR(amount)}, then press &quot;I have paid&quot;.</p>
+                <p className="text-xs text-muted-foreground">Pay exactly {formatNPR(amount)}, upload the screenshot, then press &quot;I have paid&quot;.</p>
               </>
             )}
           </>
