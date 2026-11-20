@@ -20,7 +20,7 @@ export const siteConfig = {
   positioning: "Nepal's Gaming Top-up Store",
   description:
     "Top up PUBG UC, Free Fire diamonds, Mobile Legends, Valorant, Steam and more in Nepal — paid with eSewa or Khalti, delivered to your Player ID in seconds. Also gaming gift cards, AI tools and software.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.topxnepal.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://topxnepal.com",
   locale: "en_NP",
   keywords: [
     "TOPX Nepal",
