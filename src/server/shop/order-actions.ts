@@ -59,8 +59,12 @@ export async function startEsewaAction(req: OrderRequest): Promise<StartEsewaRes
   if ("error" in o) return { ok: false, error: o.error };
   const id = newOrderRef();
   await db.insert(schema.orders).values({ id, userId: user.id, status: "unpaid", seenByAdmin: true, ...o.row });
+  // In production use the fixed site address so a faked Host header can't change eSewa's return links.
   const h = await headers();
-  const origin = `${h.get("x-forwarded-proto") ?? "http"}://${h.get("x-forwarded-host") ?? h.get("host")}`;
+  const origin =
+    process.env.NODE_ENV === "production" && process.env.NEXT_PUBLIC_SITE_URL
+      ? process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")
+      : `${h.get("x-forwarded-proto") ?? "http"}://${h.get("x-forwarded-host") ?? h.get("host")}`;
   return { ok: true, ...esewaForm(id, o.total, origin) };
 }
 
