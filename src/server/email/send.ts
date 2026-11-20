@@ -31,7 +31,7 @@ export async function sendEmail(to: string, subject: string, lines: string[], bu
   }
 }
 
-const site = () => (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+const site = () => (process.env.NEXT_PUBLIC_SITE_URL || "https://www.topxnepal.com").replace(/\/$/, "");
 
 const STATUS_TEXT: Record<string, [string, string]> = {
   processing: ["Payment received", "We got your payment. Your order is being processed now."],

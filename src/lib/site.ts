@@ -11,7 +11,7 @@ import { siteStats } from "@/data/site-stats";
 import type { SiteSettings } from "@/types/content";
 
 /** WhatsApp number in international format, digits only, e.g. 9779812345678 */
-const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "9779826115361";
+const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "9779844602730";
 
 export const siteConfig = {
   name: "TOPX NEPAL",
@@ -20,8 +20,7 @@ export const siteConfig = {
   positioning: "Nepal's Gaming Top-up Store",
   description:
     "Top up PUBG UC, Free Fire diamonds, Mobile Legends, Valorant, Steam and more in Nepal — paid with eSewa or Khalti, delivered to your Player ID in seconds. Also gaming gift cards, AI tools and software.",
-  // TODO: replace with the real domain
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.topxnepal.com",
   locale: "en_NP",
   keywords: [
     "TOPX Nepal",
@@ -42,7 +41,7 @@ export const siteConfig = {
   ],
   contact: {
     email: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "mijashsunar1@gmail.com",
-    phone: process.env.NEXT_PUBLIC_SUPPORT_PHONE || "+977 9826115361",
+    phone: process.env.NEXT_PUBLIC_SUPPORT_PHONE || "+977 9844602730",
     whatsappNumber,
     whatsapp: `https://wa.me/${whatsappNumber}`,
     address: process.env.NEXT_PUBLIC_ADDRESS || "Kathmandu, Nepal",
@@ -52,7 +51,7 @@ export const siteConfig = {
     officeHours: process.env.NEXT_PUBLIC_OFFICE_HOURS || "Sun–Fri, 10:00 AM – 6:00 PM",
   },
   social: {
-    facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || "#",
+    facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || "https://www.facebook.com/share/1LrubhTUX7/",
     instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "#",
     tiktok: process.env.NEXT_PUBLIC_TIKTOK_URL || "#",
     youtube: process.env.NEXT_PUBLIC_YOUTUBE_URL || "#",
