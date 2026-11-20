@@ -18,13 +18,21 @@ async function SignedInShell({ children }: { children: React.ReactNode }) {
   const pending = await countPendingOrders();
   return (
     <AdminShell role={user.role} userMenu={<UserMenu user={user} />}>
-      {pending > 0 && (
+      {pending.processing + pending.failed > 0 && (
         <Link
-          href="/admin/orders?status=pending"
+          href={`/admin/orders?status=${pending.processing > 0 ? "processing" : "failed"}`}
           className="mb-5 flex items-center gap-3 rounded-2xl border border-amber-500/50 bg-amber-500/10 px-4 py-3 font-semibold text-amber-700 dark:text-amber-300"
         >
-          <Bell className="size-5 animate-pulse" />
-          {pending} new order{pending > 1 ? "s" : ""} waiting — customer paid by QR. Click to check →
+          <Bell className="size-5 shrink-0 animate-pulse" />
+          <span>
+            {[
+              pending.processing > 0 && `${pending.processing} paid order${pending.processing > 1 ? "s" : ""} waiting`,
+              pending.failed > 0 && `${pending.failed} failed auto top-up${pending.failed > 1 ? "s" : ""}`,
+            ]
+              .filter(Boolean)
+              .join(" · ")}{" "}
+            — click to check →
+          </span>
         </Link>
       )}
       {children}

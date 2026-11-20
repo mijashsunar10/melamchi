@@ -325,3 +325,15 @@ To change the QR: replace `public/qr/pay-qr.jpeg`. Quote-only packages (price 0)
 - `src/server/email/send.ts` — `sendEmail()` (SMTP via nodemailer; logs to terminal when `SMTP_HOST` is empty) and `sendOrderStatusEmail(orderId)`.
 - Order emails go out on: eSewa paid (processing), auto top-up delivered, and any admin status change.
 - Forgot password: `/forgot-password` → email link → `/reset-password?token=…` (HMAC with `AUTH_SECRET`, 1 hour, invalid once the password changes; logs out all other sessions). Customers only.
+
+
+
+
+
+
+
+
+- eSewa ID: 9806800001 (any number up to 9806800005 also works)
+- Password: Nepal@123
+- MPIN: 1122
+- OTP: 123456

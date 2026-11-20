@@ -1,5 +1,5 @@
 import "server-only";
-import { and, count, desc, eq, ne } from "drizzle-orm";
+import { and, count, desc, eq, inArray, ne } from "drizzle-orm";
 import { db, schema } from "@/server/db";
 
 export type OrderRow = typeof schema.orders.$inferSelect;
@@ -18,11 +18,13 @@ export async function listAllOrders(status?: OrderRow["status"]) {
   return q.where(status ? eq(schema.orders.status, status) : ne(schema.orders.status, "unpaid"));
 }
 
+/** New orders that need the admin: paid and waiting (processing) or auto top-up failed. Unseen auto-delivered ones need nothing. */
 export async function countPendingOrders() {
-  // new paid orders the admin hasn't opened yet
-  const [r] = await db
-    .select({ n: count() })
+  const rows = await db
+    .select({ status: schema.orders.status, n: count() })
     .from(schema.orders)
-    .where(and(eq(schema.orders.seenByAdmin, false), ne(schema.orders.status, "unpaid")));
-  return r?.n ?? 0;
+    .where(and(eq(schema.orders.seenByAdmin, false), inArray(schema.orders.status, ["processing", "failed"])))
+    .groupBy(schema.orders.status);
+  const by = (s: string) => rows.find((r) => r.status === s)?.n ?? 0;
+  return { processing: by("processing"), failed: by("failed") };
 }
