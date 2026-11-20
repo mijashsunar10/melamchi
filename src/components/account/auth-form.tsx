@@ -53,6 +53,11 @@ export function AuthForm({ mode, next = "/account", error }: { mode: "login" | "
           <Input id={id} name="email" type="email" autoComplete="email" defaultValue={state.email} placeholder="you@gmail.com" icon={<Mail />} />
         )}
       </Field>
+      {mode === "login" && (
+        <Link href="/forgot-password" className="-mb-3 self-end text-xs font-semibold text-primary hover:underline">
+          Forgot password?
+        </Link>
+      )}
       <Field label="Password" help={mode === "register" ? "At least 8 characters." : undefined}>
         {(id) => (
           <Input

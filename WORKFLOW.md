@@ -293,5 +293,5 @@ Stack: Next.js server (server actions + route handlers) · PostgreSQL · Drizzle
 - [x] **B6** Orders — QR payment + screenshot, saved orders, admin orders page (status, note, delete finished), customer list + customer dashboard view, `/track` reads real orders
 - [ ] **B7** Payments — eSewa / Khalti / Fonepay
 - [x] **B8a** Customer accounts — register / login / `/account` dashboard
-- [ ] **B8b** Forgot password, order-status emails to customers
+- [x] **B8b** Forgot password (signed 1-hour link, dies after use) + order-status emails (paid, delivered, failed, refunded) via SMTP — prints to terminal when SMTP_HOST is empty
 - [ ] **B9** Deployment on Node hosting (login, orders and admin don't work on the static cPanel build)

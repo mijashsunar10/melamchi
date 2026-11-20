@@ -3,6 +3,7 @@ import { and, eq, gt, lt } from "drizzle-orm";
 import { after } from "next/server";
 import { db, schema } from "@/server/db";
 import { esewaPaid } from "@/server/shop/esewa";
+import { sendOrderStatusEmail } from "@/server/email/send";
 import { autoTopup } from "@/server/shop/topup";
 
 /** Mark an unpaid order as paid (processing) exactly once, then start the auto top-up in the background.
@@ -14,7 +15,10 @@ export async function settlePaid(orderId: string, ref: string): Promise<boolean>
     .where(and(eq(schema.orders.id, orderId), eq(schema.orders.status, "unpaid")))
     .returning({ id: schema.orders.id });
   if (!flipped.length) return false;
-  after(() => autoTopup(orderId));
+  after(async () => {
+    await sendOrderStatusEmail(orderId);
+    await autoTopup(orderId);
+  });
   return true;
 }
 

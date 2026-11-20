@@ -320,3 +320,8 @@ To change the QR: replace `public/qr/pay-qr.jpeg`. Quote-only packages (price 0)
   → customer lands on `/account?esewa=paid`. Failure/cancel → `/account?esewa=failed`.
 - QR + screenshot checkout removed (old orders keep their screenshots in admin). `src/app/pay` is server-only (skipped in the cPanel static build).
 - Next: auto top-up via supplier API after payment (waiting for supplier docs/keys).
+
+## Emails (B8b)
+- `src/server/email/send.ts` — `sendEmail()` (SMTP via nodemailer; logs to terminal when `SMTP_HOST` is empty) and `sendOrderStatusEmail(orderId)`.
+- Order emails go out on: eSewa paid (processing), auto top-up delivered, and any admin status change.
+- Forgot password: `/forgot-password` → email link → `/reset-password?token=…` (HMAC with `AUTH_SECRET`, 1 hour, invalid once the password changes; logs out all other sessions). Customers only.

@@ -3,10 +3,12 @@
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { after } from "next/server";
 import { getProduct, getProductDeal } from "@/lib/catalog";
 import { newOrderRef, type OrderRequest, priceOrder, validateOrder } from "@/lib/orders";
 import { getCurrentUser, requireRole, requireStaff } from "@/server/auth/dal";
 import { db, schema } from "@/server/db";
+import { sendOrderStatusEmail } from "@/server/email/send";
 import { esewaEnabled, esewaForm } from "@/server/shop/esewa";
 import { reconcileEsewa } from "@/server/shop/settle";
 
@@ -68,10 +70,12 @@ const STATUSES = ["pending", "processing", "delivered", "failed", "refunded"] as
 export async function setOrderStatusAction(orderId: string, status: (typeof STATUSES)[number], note?: string) {
   await requireStaff();
   if (!STATUSES.includes(status)) return;
+  const [old] = await db.select({ status: schema.orders.status }).from(schema.orders).where(eq(schema.orders.id, orderId)).limit(1);
   await db
     .update(schema.orders)
     .set({ status, adminNote: note?.trim() || null, seenByAdmin: true, updatedAt: new Date() })
     .where(eq(schema.orders.id, orderId));
+  if (old && old.status !== status) after(() => sendOrderStatusEmail(orderId));
   revalidatePath("/admin/orders");
 }
 

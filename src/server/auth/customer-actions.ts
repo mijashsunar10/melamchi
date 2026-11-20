@@ -7,7 +7,9 @@ import { z } from "zod";
 import { db, schema } from "@/server/db";
 import { getDummyHash, hashPassword, verifyPassword } from "./password";
 import { checkLoginRateLimit, clearLoginAttempts, recordFailedLogin } from "./rate-limit";
-import { createSession, deleteSessionCookie, getSessionToken, invalidateSession, setSessionCookie } from "./session";
+import { createSession, deleteSessionCookie, getSessionToken, invalidateAllSessions, invalidateSession, setSessionCookie } from "./session";
+import { checkResetToken, makeResetToken, readResetToken } from "./reset-token";
+import { sendEmail, site } from "@/server/email/send";
 
 export interface CustomerAuthState {
   error?: string;
@@ -91,4 +93,42 @@ export async function customerLogoutAction() {
   if (token) await invalidateSession(token);
   await deleteSessionCookie();
   redirect("/");
+}
+
+// ---------------------------------------------------------------- forgot password
+
+export interface ResetState {
+  error?: string;
+  sent?: boolean;
+}
+
+export async function forgotPasswordAction(_prev: ResetState, formData: FormData): Promise<ResetState> {
+  const email = z.string().trim().toLowerCase().email().safeParse(formData.get("email"));
+  if (!email.success) return { error: "Enter a valid email address." };
+  const { ip } = await clientMeta();
+  const key = `reset:${ip}`;
+  const limit = checkLoginRateLimit(key);
+  if (!limit.ok) return { error: `Too many requests. Try again in ${limit.retryInMinutes} minute(s).` };
+  recordFailedLogin(key);
+  const [user] = await db.select().from(schema.users).where(eq(schema.users.email, email.data)).limit(1);
+  // same answer whether or not the account exists (no email guessing); staff reset via the admin
+  if (user && user.isActive && user.role === "customer") {
+    const url = `${site()}/reset-password?token=${makeResetToken(user.id, user.passwordHash)}`;
+    await sendEmail(user.email, "Reset your TopX password", [`Hi ${user.name},`, "Click the button below to set a new password. The link works for 1 hour.", "If you didn't ask for this, ignore this email."], { label: "Reset password", url });
+  }
+  return { sent: true };
+}
+
+export async function resetPasswordAction(_prev: ResetState, formData: FormData): Promise<ResetState> {
+  const pw = String(formData.get("password") ?? "");
+  if (pw.length < 8 || pw.length > 200) return { error: "Password must be at least 8 characters." };
+  if (pw !== String(formData.get("confirm") ?? "")) return { error: "The two passwords don't match." };
+  const t = readResetToken(String(formData.get("token") ?? ""));
+  const [user] = t ? await db.select().from(schema.users).where(eq(schema.users.id, t.userId)).limit(1) : [];
+  if (!t || !user || !user.isActive || !checkResetToken(t, user.passwordHash))
+    return { error: "This reset link is invalid or expired. Please ask for a new one." };
+  await db.update(schema.users).set({ passwordHash: await hashPassword(pw), updatedAt: new Date() }).where(eq(schema.users.id, user.id));
+  await invalidateAllSessions(user.id);
+  await signIn(user.id);
+  redirect("/account");
 }

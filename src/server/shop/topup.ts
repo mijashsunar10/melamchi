@@ -1,6 +1,7 @@
 import "server-only";
 import { and, eq } from "drizzle-orm";
 import { db, schema } from "@/server/db";
+import { sendOrderStatusEmail } from "@/server/email/send";
 
 // Automatic top-up — runs in the background right after eSewa confirms the payment (order is "processing").
 // Supplier not connected yet (TOPUP_API_KEY empty) → the order stays "processing" and staff top up by hand.
@@ -12,6 +13,7 @@ export async function autoTopup(orderId: string): Promise<void> {
   try {
     await supplierTopup(o);
     await setResult(o.id, "delivered", null);
+    await sendOrderStatusEmail(o.id);
   } catch (e) {
     await setResult(o.id, "failed", `Auto top-up failed: ${e instanceof Error ? e.message : String(e)} — top up by hand or refund.`);
   }
