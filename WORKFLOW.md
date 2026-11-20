@@ -284,14 +284,14 @@ Stack: Next.js server (server actions + route handlers) · PostgreSQL · Drizzle
 - [x] **B1** Database setup — Drizzle + `pg`, schema in `src/server/db/schema.ts`, migrations in `drizzle/`, `npm run db:migrate`
 - [x] **B2** Authentication — admin/staff login at `/admin/login`, DB sessions, rate-limited login, `proxy.ts` guard, `requireStaff()`, `npm run admin:create`
 - [x] **B3** Admin dashboard — sidebar + mobile menu, top bar, overview stats & recent sign-ins, Staff & users (create, (de)activate, role, reset password, delete — admin only), My account (change password, sign out other devices)
-- [ ] **B4** Products
+- [x] **B4** Products
   - [x] **B4.1** Catalog in PostgreSQL (`domains`, `categories`, `products`, `plans`), `npm run db:seed` imports the starter catalog, store reads from the DB (cached), cPanel build uses a DB snapshot
   - [x] **B4.2** Admin: sections & categories — edit section texts/highlights/icon, add/rename/reorder/delete categories; store updates immediately. Simplified for non-technical staff: section cards → one page per section, labeled buttons, picture icon picker, plain-language messages
   - [x] **B4.3** Admin: products — list with search/filters, one-click show/hide, copy, delete (admin); editor for details, packages & prices, order questions (presets), how-it-works steps, Q&A, colour/badges; sticky save bar with unsaved-changes warning; store updates immediately
   - [x] **B4.4** Product picture upload (resized to WebP, stored in the database, served at /media)
 - [x] **B5** Deals, reviews, content (home/section FAQ, help center, blog, legal pages) and Settings (contact, social, stats, payment methods) — all in the database and edited in the admin panel
 - [x] **B6** Orders — QR payment + screenshot, saved orders, admin orders page (status, note, delete finished), customer list + customer dashboard view, `/track` reads real orders
-- [ ] **B7** Payments — eSewa / Khalti / Fonepay
+- [x] **B7** Payments — eSewa done (auto check + missed-payment cron). Khalti / Fonepay: not for now
 - [x] **B8a** Customer accounts — register / login / `/account` dashboard
 - [x] **B8b** Forgot password (signed 1-hour link, dies after use) + order-status emails (paid, delivered, failed, refunded) via SMTP — prints to terminal when SMTP_HOST is empty
 - [ ] **B9** Deployment on Node hosting (login, orders and admin don't work on the static cPanel build)
